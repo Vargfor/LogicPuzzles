@@ -1,0 +1,46 @@
+[
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_logic_grid.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_logic_grid.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_lights_out.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_lights_out.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_puzzle_menu.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_puzzle_menu.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_item_puzzle_card.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/item_puzzle_card.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/drawable_ic_launcher.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/drawable/ic_launcher.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_kakuro.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_kakuro.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_main.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/drawable_bg_cell_selected.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/drawable/bg_cell_selected.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/drawable_bg_cell_normal.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/drawable/bg_cell_normal.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_nonogram.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_nonogram.xml"
+    },
+    {
+        "merged": "com.logicpuzzles.app-debug-33:/layout_activity_mastermind.xml.flat",
+        "source": "com.logicpuzzles.app-main-35:/layout/activity_mastermind.xml"
+    }
+]

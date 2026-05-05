@@ -1,0 +1,330 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:2:1-27:12
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:2:1-27:12
+MERGED from [com.google.android.material:material:1.12.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c748de230d39e390b543292e001e6e22\transformed\material-1.12.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6309947a7c7fd1af056412d5ba5a1211\transformed\constraintlayout-2.2.1\AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4969f7c568e751397e6178a64ded62f6\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat:1.7.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5025681f72885839209cc093a696bd30\transformed\appcompat-1.7.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.viewpager2:viewpager2:1.1.0-beta02] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6b48374fbaba86014f8998836b7217f8\transformed\viewpager2-1.1.0-beta02\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.recyclerview:recyclerview:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5cd2af26f8cb437e6105c3c5fe5ba309\transformed\recyclerview-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f82a6ee7f25859e784273a8858a6bd48\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\01b76513d6d6231339dadd11acf20723\transformed\fragment-1.5.4\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.8.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\ebf86103b85b9ca9d1985b2549ce6d38\transformed\activity-1.8.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\57411ea98b44118552c59a4c7e5c3a79\transformed\drawerlayout-1.1.1\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\a3ffa61522bfcf971ba4cec4d635f698\transformed\coordinatorlayout-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.transition:transition:1.5.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\89ad227a1f22f7d7f52b9d4708da108f\transformed\transition-1.5.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\74e0b6fdd824a40289135ad9ac736e1f\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f789ac195c6d5c97330e8fd949db5be4\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\b48c08a185371c049f9d5ebd2111b0b8\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5275fd60fc6415c4842d857daa3ff8f6\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4aa1ee62f37b29767327d819403d5451\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\3d8064be93f18726ddf8f726bcb808c2\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\d635dd24504eecb7758585e37a1b9e52\transformed\customview-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\0ec0a25c526e6cfaa100db624f2f78f9\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c8a7da2283d4b11d12b9b780999c18ee\transformed\savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4fcc0d465a347a46d557decab2c82ac0\transformed\lifecycle-livedata-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4293c9187c1caf6aa654152cbf39456a\transformed\lifecycle-viewmodel-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f44d8a02d9668ee70bab7d8a3bcf8a95\transformed\lifecycle-livedata-core-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\13e1d13a364b4ea561ad0bbc60e4ffcb\transformed\lifecycle-runtime-2.6.2\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\13d657c8645c975fa1270eedd8032da6\transformed\lifecycle-viewmodel-savedstate-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\a97d36b185886aec16856af5cbeaea43\transformed\core-ktx-1.16.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\cbedf47df1ccd6ad2f64cc76e1a601b4\transformed\cardview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\785382ce3b064df6dcffcf36e79bdd33\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c3f3a9031efdbdf8b2a5721a8b3c591c\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6ef2ecbf9fc8298f88b255c668ebcbb6\transformed\tracing-1.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5b3f38fb3a4719f6cffbcf97ee4622a6\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\ee3646b8c916bf47ce0d9f5559976834\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\1360aaba164d75df6126edb024ef83af\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\8e1435f2dc186a690d2cefee8e3a87ea\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6acc45633d43a0c4015a62bb8fb456a9\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\b41714f6e8bdae874c32cb17cb713425\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core-viewtree:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\7198b70b36c07ac46321b02f6abd5eac\transformed\core-viewtree-1.0.0\AndroidManifest.xml:2:1-7:12
+	package
+		INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:2:11-69
+application
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:3:5-26:19
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:3:5-26:19
+MERGED from [com.google.android.material:material:1.12.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c748de230d39e390b543292e001e6e22\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.material:material:1.12.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c748de230d39e390b543292e001e6e22\transformed\material-1.12.0\AndroidManifest.xml:22:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6309947a7c7fd1af056412d5ba5a1211\transformed\constraintlayout-2.2.1\AndroidManifest.xml:7:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6309947a7c7fd1af056412d5ba5a1211\transformed\constraintlayout-2.2.1\AndroidManifest.xml:7:5-20
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5b3f38fb3a4719f6cffbcf97ee4622a6\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5b3f38fb3a4719f6cffbcf97ee4622a6\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:8:9-35
+	android:label
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:6:9-41
+	android:roundIcon
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:7:9-50
+	android:icon
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:5:9-45
+	android:allowBackup
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:4:9-35
+	android:theme
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:9:9-50
+activity#com.logicpuzzles.MainActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:11:9-19:20
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:14:13-49
+	android:exported
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:13:13-36
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:12:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:15:13-18:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:16:17-69
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:16:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:17:17-77
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:17:27-74
+activity#com.logicpuzzles.PuzzleMenuActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:20:9-92
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:20:54-90
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:20:19-53
+activity#com.logicpuzzles.nonogram.NonogramGameActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:21:9-103
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:21:65-101
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:21:19-64
+activity#com.logicpuzzles.mastermind.MastermindGameActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:22:9-107
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:22:69-105
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:22:19-68
+activity#com.logicpuzzles.lightsout.LightsOutGameActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:23:9-105
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:23:67-103
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:23:19-66
+activity#com.logicpuzzles.kakuro.KakuroGameActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:24:9-99
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:24:61-97
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:24:19-60
+activity#com.logicpuzzles.logicgrid.LogicGridGameActivity
+ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:25:9-105
+	android:screenOrientation
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:25:67-103
+	android:name
+		ADDED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml:25:19-66
+uses-sdk
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+MERGED from [com.google.android.material:material:1.12.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c748de230d39e390b543292e001e6e22\transformed\material-1.12.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.material:material:1.12.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c748de230d39e390b543292e001e6e22\transformed\material-1.12.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6309947a7c7fd1af056412d5ba5a1211\transformed\constraintlayout-2.2.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6309947a7c7fd1af056412d5ba5a1211\transformed\constraintlayout-2.2.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4969f7c568e751397e6178a64ded62f6\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4969f7c568e751397e6178a64ded62f6\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5025681f72885839209cc093a696bd30\transformed\appcompat-1.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5025681f72885839209cc093a696bd30\transformed\appcompat-1.7.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.viewpager2:viewpager2:1.1.0-beta02] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6b48374fbaba86014f8998836b7217f8\transformed\viewpager2-1.1.0-beta02\AndroidManifest.xml:5:5-44
+MERGED from [androidx.viewpager2:viewpager2:1.1.0-beta02] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6b48374fbaba86014f8998836b7217f8\transformed\viewpager2-1.1.0-beta02\AndroidManifest.xml:5:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5cd2af26f8cb437e6105c3c5fe5ba309\transformed\recyclerview-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.recyclerview:recyclerview:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5cd2af26f8cb437e6105c3c5fe5ba309\transformed\recyclerview-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f82a6ee7f25859e784273a8858a6bd48\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f82a6ee7f25859e784273a8858a6bd48\transformed\emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\01b76513d6d6231339dadd11acf20723\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\01b76513d6d6231339dadd11acf20723\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.8.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\ebf86103b85b9ca9d1985b2549ce6d38\transformed\activity-1.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\ebf86103b85b9ca9d1985b2549ce6d38\transformed\activity-1.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\57411ea98b44118552c59a4c7e5c3a79\transformed\drawerlayout-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\57411ea98b44118552c59a4c7e5c3a79\transformed\drawerlayout-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\a3ffa61522bfcf971ba4cec4d635f698\transformed\coordinatorlayout-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\a3ffa61522bfcf971ba4cec4d635f698\transformed\coordinatorlayout-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.transition:transition:1.5.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\89ad227a1f22f7d7f52b9d4708da108f\transformed\transition-1.5.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.transition:transition:1.5.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\89ad227a1f22f7d7f52b9d4708da108f\transformed\transition-1.5.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\74e0b6fdd824a40289135ad9ac736e1f\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.dynamicanimation:dynamicanimation:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\74e0b6fdd824a40289135ad9ac736e1f\transformed\dynamicanimation-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f789ac195c6d5c97330e8fd949db5be4\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f789ac195c6d5c97330e8fd949db5be4\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\b48c08a185371c049f9d5ebd2111b0b8\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\b48c08a185371c049f9d5ebd2111b0b8\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5275fd60fc6415c4842d857daa3ff8f6\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5275fd60fc6415c4842d857daa3ff8f6\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4aa1ee62f37b29767327d819403d5451\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4aa1ee62f37b29767327d819403d5451\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\3d8064be93f18726ddf8f726bcb808c2\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\3d8064be93f18726ddf8f726bcb808c2\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\d635dd24504eecb7758585e37a1b9e52\transformed\customview-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.1.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\d635dd24504eecb7758585e37a1b9e52\transformed\customview-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\0ec0a25c526e6cfaa100db624f2f78f9\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\0ec0a25c526e6cfaa100db624f2f78f9\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c8a7da2283d4b11d12b9b780999c18ee\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c8a7da2283d4b11d12b9b780999c18ee\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4fcc0d465a347a46d557decab2c82ac0\transformed\lifecycle-livedata-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4fcc0d465a347a46d557decab2c82ac0\transformed\lifecycle-livedata-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4293c9187c1caf6aa654152cbf39456a\transformed\lifecycle-viewmodel-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\4293c9187c1caf6aa654152cbf39456a\transformed\lifecycle-viewmodel-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f44d8a02d9668ee70bab7d8a3bcf8a95\transformed\lifecycle-livedata-core-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\f44d8a02d9668ee70bab7d8a3bcf8a95\transformed\lifecycle-livedata-core-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\13e1d13a364b4ea561ad0bbc60e4ffcb\transformed\lifecycle-runtime-2.6.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\13e1d13a364b4ea561ad0bbc60e4ffcb\transformed\lifecycle-runtime-2.6.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\13d657c8645c975fa1270eedd8032da6\transformed\lifecycle-viewmodel-savedstate-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\13d657c8645c975fa1270eedd8032da6\transformed\lifecycle-viewmodel-savedstate-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\a97d36b185886aec16856af5cbeaea43\transformed\core-ktx-1.16.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\a97d36b185886aec16856af5cbeaea43\transformed\core-ktx-1.16.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\cbedf47df1ccd6ad2f64cc76e1a601b4\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cardview:cardview:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\cbedf47df1ccd6ad2f64cc76e1a601b4\transformed\cardview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\785382ce3b064df6dcffcf36e79bdd33\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\785382ce3b064df6dcffcf36e79bdd33\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c3f3a9031efdbdf8b2a5721a8b3c591c\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c3f3a9031efdbdf8b2a5721a8b3c591c\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6ef2ecbf9fc8298f88b255c668ebcbb6\transformed\tracing-1.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6ef2ecbf9fc8298f88b255c668ebcbb6\transformed\tracing-1.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5b3f38fb3a4719f6cffbcf97ee4622a6\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\5b3f38fb3a4719f6cffbcf97ee4622a6\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\ee3646b8c916bf47ce0d9f5559976834\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\ee3646b8c916bf47ce0d9f5559976834\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\1360aaba164d75df6126edb024ef83af\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\1360aaba164d75df6126edb024ef83af\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\8e1435f2dc186a690d2cefee8e3a87ea\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\8e1435f2dc186a690d2cefee8e3a87ea\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6acc45633d43a0c4015a62bb8fb456a9\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6acc45633d43a0c4015a62bb8fb456a9\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\b41714f6e8bdae874c32cb17cb713425\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\b41714f6e8bdae874c32cb17cb713425\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-viewtree:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\7198b70b36c07ac46321b02f6abd5eac\transformed\core-viewtree-1.0.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-viewtree:1.0.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\7198b70b36c07ac46321b02f6abd5eac\transformed\core-viewtree-1.0.0\AndroidManifest.xml:5:5-44
+	android:targetSdkVersion
+		INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\Henrik\OneDrive\Skrivebord\Android Projects\LogicPuzzlesApp\app\src\main\AndroidManifest.xml
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\48b9a072272f87956d388fffab4b4fae\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\eddebe2c5a05b8855a454b04c3ae2dba\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:23:9-81
+permission#com.logicpuzzles.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:26:22-94
+uses-permission#com.logicpuzzles.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.16.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\c49796d640fc36a59566016fa4dca0da\transformed\core-1.16.0\AndroidManifest.xml:26:22-94
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\6513bdf2daa1a4274376b04ba53d3566\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Henrik\.gradle\caches\9.5.0-milestone-7\transforms\76ff3b07a09cfe886eafe6c18b6a929d\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92

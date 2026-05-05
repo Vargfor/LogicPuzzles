@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.LogicPuzzles">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".PuzzleMenuActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".nonogram.NonogramGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".mastermind.MastermindGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".lightsout.LightsOutGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".kakuro.KakuroGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".logicgrid.LogicGridGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".slitherlink.SlitherlinkGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".nurikabe.NurikabeGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".hidato.HidatoGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".futoshiki.FutoshikiGameActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".skyscraper.SkyscraperGameActivity" android:screenOrientation="portrait"/>
+    </application>
+</manifest>
