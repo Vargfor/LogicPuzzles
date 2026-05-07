@@ -1,20 +1,23 @@
 package com.logicpuzzles
 
 import android.content.Intent
-import android.net.Uri
-import android.graphics.Color
+import android.content.res.ColorStateList
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.net.toUri
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.PuzzleVerifier
+import com.logicpuzzles.utils.ThemeManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,19 +38,23 @@ class MainActivity : AppCompatActivity() {
         const val TYPE_SKYSCRAPER = 9
     }
 
-    private data class PuzzleInfo(val type: Int, val name: String, val desc: String, val color: String)
+    private data class PuzzleInfo(
+        val type: Int,
+        @StringRes val nameResId: Int,
+        @StringRes val descResId: Int
+    )
 
     private val puzzleTypes = listOf(
-        PuzzleInfo(TYPE_NONOGRAM,     "Nonogram",     "Fill the grid using number clues",       "#4ECDC4"),
-        PuzzleInfo(TYPE_MASTERMIND,   "Mastermind",   "Crack the secret color code",            "#E94560"),
-        PuzzleInfo(TYPE_LIGHTS_OUT,   "Lights Out",   "Toggle lights to turn them all off",     "#FFD93D"),
-        PuzzleInfo(TYPE_KAKURO,       "Kakuro",       "Fill digits so each run hits its sum",   "#6BCB77"),
-        PuzzleInfo(TYPE_LOGIC_GRID,   "Logic Grid",   "Match clues to find who owns what",      "#A855F7"),
-        PuzzleInfo(TYPE_SLITHERLINK,  "Slitherlink",  "Draw a single closed loop using clues",  "#F59E0B"),
-        PuzzleInfo(TYPE_NURIKABE,     "Nurikabe",     "Shade cells to form islands & a river",  "#06B6D4"),
-        PuzzleInfo(TYPE_HIDATO,       "Hidato",       "Fill consecutive numbers along a path",  "#EC4899"),
-        PuzzleInfo(TYPE_FUTOSHIKI,    "Futoshiki",    "Sudoku-style with < and > inequalities", "#10B981"),
-        PuzzleInfo(TYPE_SKYSCRAPER,   "Skyscraper",   "Place buildings using visibility clues", "#3B82F6")
+        PuzzleInfo(TYPE_NONOGRAM, R.string.puzzle_nonogram, R.string.desc_nonogram),
+        PuzzleInfo(TYPE_MASTERMIND, R.string.puzzle_mastermind, R.string.desc_mastermind),
+        PuzzleInfo(TYPE_LIGHTS_OUT, R.string.puzzle_lights_out, R.string.desc_lights_out),
+        PuzzleInfo(TYPE_KAKURO, R.string.puzzle_kakuro, R.string.desc_kakuro),
+        PuzzleInfo(TYPE_LOGIC_GRID, R.string.puzzle_logic_grid, R.string.desc_logic_grid),
+        PuzzleInfo(TYPE_SLITHERLINK, R.string.puzzle_slitherlink, R.string.desc_slitherlink),
+        PuzzleInfo(TYPE_NURIKABE, R.string.puzzle_nurikabe, R.string.desc_nurikabe),
+        PuzzleInfo(TYPE_HIDATO, R.string.puzzle_hidato, R.string.desc_hidato),
+        PuzzleInfo(TYPE_FUTOSHIKI, R.string.puzzle_futoshiki, R.string.desc_futoshiki),
+        PuzzleInfo(TYPE_SKYSCRAPER, R.string.puzzle_skyscraper, R.string.desc_skyscraper)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,17 +62,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<Button>(R.id.btn_support).setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://buymeacoffee.com/vargfor")))
+            startActivity(Intent(Intent.ACTION_VIEW, "https://buymeacoffee.com/vargfor".toUri()))
         }
 
-        findViewById<Button>(R.id.btn_reset_progress).apply {
-            setOnClickListener { confirmReset() }
+        findViewById<Button>(R.id.btn_settings).apply {
+            setOnClickListener { showSettings() }
             // Long-press = run puzzle uniqueness verifier (results to logcat under "PuzzleVerifier")
             setOnLongClickListener {
                 Thread { PuzzleVerifier.verifyAll() }.start()
                 android.widget.Toast.makeText(
                     this@MainActivity,
-                    "Verifying puzzles… check logcat (tag: PuzzleVerifier)",
+                    getString(R.string.verifying_puzzles),
                     android.widget.Toast.LENGTH_SHORT
                 ).show()
                 true
@@ -73,15 +80,95 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showSettings() {
+        val palette = ThemeManager.currentPalette(this)
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(8), dp(18), dp(4))
+        }
+        content.addView(TextView(this).apply {
+            text = getString(R.string.color_theme)
+            textSize = 14f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(palette.textPrimary)
+            setPadding(0, 0, 0, dp(8))
+        })
+
+        var dialog: AlertDialog? = null
+        for (option in ThemeManager.palettes) {
+            val selected = option.id == ThemeManager.selectedThemeId(this)
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(12), dp(10), dp(12), dp(10))
+                background = roundedDrawable(
+                    if (selected) palette.surfaceStrong else palette.surface,
+                    palette.gridLine,
+                    dp(8).toFloat()
+                )
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
+                setOnClickListener {
+                    ThemeManager.setTheme(this@MainActivity, option.id)
+                    dialog?.dismiss()
+                    buildCards()
+                }
+            }
+            row.addView(View(this).apply {
+                background = roundedDrawable(option.accent, option.gridLine, dp(12).toFloat())
+                layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(10) }
+            })
+            row.addView(TextView(this).apply {
+                text = if (selected) getString(R.string.theme_selected, option.name) else option.name
+                textSize = 14f
+                setTextColor(palette.textPrimary)
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            content.addView(row)
+        }
+
+        content.addView(Button(this).apply {
+            text = getString(R.string.reset_progress_shuffle)
+            textSize = 13f
+            backgroundTintList = ColorStateList.valueOf(palette.danger)
+            setTextColor(palette.buttonText)
+            setOnClickListener {
+                dialog?.dismiss()
+                confirmReset()
+            }
+        })
+
+        dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.settings)
+            .setView(content)
+            .setNegativeButton(R.string.close, null)
+            .create()
+        dialog.show()
+    }
+
+    private fun roundedDrawable(fill: Int, stroke: Int, radius: Float): GradientDrawable =
+        GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = radius
+            setColor(fill)
+            setStroke(1, stroke)
+        }
+
     private fun confirmReset() {
         AlertDialog.Builder(this)
-            .setTitle("Reset all progress?")
-            .setMessage("This will clear every completed puzzle across all puzzle types. This cannot be undone.")
-            .setPositiveButton("Reset") { _, _ ->
-                PrefsManager(this).clearAll()
+            .setTitle(R.string.reset_all_progress_title)
+            .setMessage(R.string.reset_all_progress_message)
+            .setPositiveButton(R.string.reset) { _, _ ->
+                PrefsManager(this).resetProgressAndShuffleLevels()
                 buildCards()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
@@ -91,18 +178,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buildCards() {
+        val palette = ThemeManager.currentPalette(this)
         val prefs = PrefsManager(this)
         val container = findViewById<LinearLayout>(R.id.puzzle_container)
         container.removeAllViews()
+        findViewById<View>(R.id.main_root).setBackgroundColor(palette.background)
+        findViewById<TextView>(R.id.main_title).setTextColor(palette.textPrimary)
+        findViewById<TextView>(R.id.main_subtitle).setTextColor(palette.textSecondary)
+        findViewById<Button>(R.id.btn_support).apply {
+            text = getString(R.string.support)
+            backgroundTintList = ColorStateList.valueOf(palette.warning)
+            setTextColor(palette.cellText)
+        }
+        findViewById<Button>(R.id.btn_settings).apply {
+            backgroundTintList = ColorStateList.valueOf(palette.button)
+            setTextColor(palette.buttonText)
+        }
 
         val density = resources.displayMetrics.density
         fun dp(v: Int) = (v * density).toInt()
 
         for (info in puzzleTypes) {
+            val puzzleName = getString(info.nameResId)
             val card = CardView(this).apply {
                 radius = 12f * density
                 cardElevation = 4f * density
-                setCardBackgroundColor(Color.parseColor("#16213E"))
+                setCardBackgroundColor(palette.surface)
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -119,7 +220,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val accent = View(this).apply {
-                setBackgroundColor(Color.parseColor(info.color))
+                setBackgroundColor(ThemeManager.puzzleAccent(this@MainActivity, info.type))
                 layoutParams = LinearLayout.LayoutParams(dp(4), dp(40)).apply {
                     marginEnd = dp(12)
                 }
@@ -132,17 +233,21 @@ class MainActivity : AppCompatActivity() {
             }
 
             val total = prefs.getTotalCompleted(info.type)
-            val titleText = if (total > 0) "${info.name}  ★$total/${PrefsManager.PUZZLES_PER_TYPE}" else info.name
+            val titleText = if (total > 0) {
+                getString(R.string.puzzle_completion_title, puzzleName, total, PrefsManager.PUZZLES_PER_TYPE)
+            } else {
+                puzzleName
+            }
 
             val title = TextView(this).apply {
                 text = titleText
-                setTextColor(Color.WHITE)
+                setTextColor(palette.textPrimary)
                 textSize = 20f
                 setTypeface(null, Typeface.BOLD)
             }
             val desc = TextView(this).apply {
-                text = info.desc
-                setTextColor(Color.parseColor("#A0A0C0"))
+                text = getString(info.descResId)
+                setTextColor(palette.textSecondary)
                 textSize = 13f
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -156,7 +261,7 @@ class MainActivity : AppCompatActivity() {
 
             val arrow = TextView(this).apply {
                 text = "▶"
-                setTextColor(Color.parseColor(info.color))
+                setTextColor(ThemeManager.puzzleAccent(this@MainActivity, info.type))
                 textSize = 18f
             }
             row.addView(arrow)

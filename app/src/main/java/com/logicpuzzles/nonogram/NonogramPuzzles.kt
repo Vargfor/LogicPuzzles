@@ -81,6 +81,51 @@ object NonogramPuzzles {
             intArrayOf(1,0,0,0,1),
             intArrayOf(1,0,0,0,1),
             intArrayOf(1,1,1,1,1)
+        ),
+        // 11: Crown 6x6
+        arrayOf(
+            intArrayOf(1,0,1,0,1,0),
+            intArrayOf(1,0,1,0,1,0),
+            intArrayOf(1,1,1,1,1,1),
+            intArrayOf(0,1,1,1,1,0),
+            intArrayOf(0,1,1,1,1,0),
+            intArrayOf(0,1,1,1,1,0)
+        ),
+        // 12: Rocket 6x6
+        arrayOf(
+            intArrayOf(0,0,1,1,0,0),
+            intArrayOf(0,1,1,1,1,0),
+            intArrayOf(0,1,1,1,1,0),
+            intArrayOf(1,1,1,1,1,1),
+            intArrayOf(0,1,0,0,1,0),
+            intArrayOf(0,1,0,0,1,0)
+        ),
+        // 13: Stairs 6x6
+        arrayOf(
+            intArrayOf(1,0,0,0,0,0),
+            intArrayOf(1,1,0,0,0,0),
+            intArrayOf(1,1,1,0,0,0),
+            intArrayOf(1,1,1,1,0,0),
+            intArrayOf(1,1,1,1,1,0),
+            intArrayOf(1,1,1,1,1,1)
+        ),
+        // 14: Ring 6x6
+        arrayOf(
+            intArrayOf(0,1,1,1,1,0),
+            intArrayOf(1,1,0,0,1,1),
+            intArrayOf(1,0,0,0,0,1),
+            intArrayOf(1,0,0,0,0,1),
+            intArrayOf(1,1,0,0,1,1),
+            intArrayOf(0,1,1,1,1,0)
+        ),
+        // 15: Lightning 6x6
+        arrayOf(
+            intArrayOf(0,0,1,1,1,0),
+            intArrayOf(0,1,1,1,0,0),
+            intArrayOf(0,1,1,0,0,0),
+            intArrayOf(0,0,0,1,1,0),
+            intArrayOf(0,0,0,1,1,1),
+            intArrayOf(0,0,0,0,1,1)
         )
     )
 
@@ -184,6 +229,61 @@ object NonogramPuzzles {
             intArrayOf(1,1,1,1,1,1,1),
             intArrayOf(1,1,1,0,1,1,1),
             intArrayOf(1,1,0,0,0,1,1)
+        ),
+        // 11: Hourglass 8x8
+        arrayOf(
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(0,1,1,1,1,1,1,0),
+            intArrayOf(0,0,1,1,1,1,0,0),
+            intArrayOf(0,0,0,1,1,0,0,0),
+            intArrayOf(0,0,0,1,1,0,0,0),
+            intArrayOf(0,0,1,1,1,1,0,0),
+            intArrayOf(0,1,1,1,1,1,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1)
+        ),
+        // 12: Target 8x8
+        arrayOf(
+            intArrayOf(0,0,1,1,1,1,0,0),
+            intArrayOf(0,1,0,0,0,0,1,0),
+            intArrayOf(1,0,0,1,1,0,0,1),
+            intArrayOf(1,0,1,0,0,1,0,1),
+            intArrayOf(1,0,1,0,0,1,0,1),
+            intArrayOf(1,0,0,1,1,0,0,1),
+            intArrayOf(0,1,0,0,0,0,1,0),
+            intArrayOf(0,0,1,1,1,1,0,0)
+        ),
+        // 13: Snowflake 8x8
+        arrayOf(
+            intArrayOf(0,0,0,1,1,0,0,0),
+            intArrayOf(0,1,0,1,1,0,1,0),
+            intArrayOf(0,0,1,1,1,1,0,0),
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(0,0,1,1,1,1,0,0),
+            intArrayOf(0,1,0,1,1,0,1,0),
+            intArrayOf(0,0,0,1,1,0,0,0)
+        ),
+        // 14: Arch 8x8
+        arrayOf(
+            intArrayOf(0,0,1,1,1,1,0,0),
+            intArrayOf(0,1,1,0,0,1,1,0),
+            intArrayOf(1,1,0,0,0,0,1,1),
+            intArrayOf(1,1,0,0,0,0,1,1),
+            intArrayOf(1,1,0,0,0,0,1,1),
+            intArrayOf(1,1,1,0,0,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1)
+        ),
+        // 15: City 8x8
+        arrayOf(
+            intArrayOf(0,1,0,0,1,0,1,0),
+            intArrayOf(0,1,0,0,1,0,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(1,0,1,0,1,0,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(1,0,1,0,1,0,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,0,0,0)
         )
     )
 
@@ -307,6 +407,71 @@ object NonogramPuzzles {
             intArrayOf(1,1,0,0,0,0,0,1,1),
             intArrayOf(1,1,0,0,0,0,0,1,1),
             intArrayOf(1,1,0,0,0,0,0,1,1)
+        ),
+        // 11: Star 10x10
+        arrayOf(
+            intArrayOf(0,0,0,0,1,1,0,0,0,0),
+            intArrayOf(0,0,0,1,1,1,1,0,0,0),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(0,0,1,1,1,1,1,1,0,0),
+            intArrayOf(0,0,1,1,1,1,1,1,0,0),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(1,1,0,0,1,1,0,0,1,1),
+            intArrayOf(1,0,0,0,0,0,0,0,0,1),
+            intArrayOf(0,0,0,0,0,0,0,0,0,0)
+        ),
+        // 12: Owl 10x10
+        arrayOf(
+            intArrayOf(0,1,1,0,0,0,0,1,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,0,1,1,1,1,0,1,1),
+            intArrayOf(1,0,0,0,1,1,0,0,0,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,1,0,1,1,0,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(0,0,1,1,1,1,1,1,0,0),
+            intArrayOf(0,0,1,0,0,0,0,1,0,0)
+        ),
+        // 13: Rocket 10x10
+        arrayOf(
+            intArrayOf(0,0,0,0,1,1,0,0,0,0),
+            intArrayOf(0,0,0,1,1,1,1,0,0,0),
+            intArrayOf(0,0,1,1,1,1,1,1,0,0),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(0,1,1,0,0,0,0,1,1,0),
+            intArrayOf(0,1,1,0,0,0,0,1,1,0)
+        ),
+        // 14: Big frame 10x10
+        arrayOf(
+            intArrayOf(1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,0,0,0,0,0,0,0,0,1),
+            intArrayOf(1,0,0,0,0,0,0,0,0,1),
+            intArrayOf(1,0,0,1,1,1,1,0,0,1),
+            intArrayOf(1,0,0,1,0,0,1,0,0,1),
+            intArrayOf(1,0,0,1,0,0,1,0,0,1),
+            intArrayOf(1,0,0,1,1,1,1,0,0,1),
+            intArrayOf(1,0,0,0,0,0,0,0,0,1),
+            intArrayOf(1,0,0,0,0,0,0,0,0,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1)
+        ),
+        // 15: Knight 10x10
+        arrayOf(
+            intArrayOf(0,0,1,1,0,0,0,0,0,0),
+            intArrayOf(0,1,1,1,1,0,0,0,0,0),
+            intArrayOf(1,1,1,1,1,1,0,0,0,0),
+            intArrayOf(1,1,1,1,1,1,1,0,0,0),
+            intArrayOf(0,1,1,1,1,1,1,1,0,0),
+            intArrayOf(0,0,1,1,1,1,1,1,1,0),
+            intArrayOf(0,0,0,1,1,1,1,1,1,1),
+            intArrayOf(0,0,0,0,1,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,0,1,1,1,1)
         )
     )
 
@@ -450,6 +615,81 @@ object NonogramPuzzles {
             intArrayOf(1,1,1,0,0,0,0,0,1,1,1),
             intArrayOf(1,1,1,0,0,0,0,0,1,1,1),
             intArrayOf(1,1,1,0,0,0,0,0,1,1,1)
+        ),
+        // 11: Dragon 12x12
+        arrayOf(
+            intArrayOf(0,0,0,0,1,1,1,0,0,0,0,0),
+            intArrayOf(0,0,0,1,1,1,1,1,0,0,0,0),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0,0,0),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,0,0),
+            intArrayOf(1,1,0,1,1,1,1,1,0,1,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,1,0),
+            intArrayOf(0,1,1,1,1,0,1,1,1,1,1,1),
+            intArrayOf(0,0,1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(0,0,0,1,1,1,1,1,1,1,0,0),
+            intArrayOf(0,0,0,0,1,1,1,1,0,0,0,0),
+            intArrayOf(0,0,0,0,1,0,0,1,0,0,0,0),
+            intArrayOf(0,0,0,0,1,0,0,1,0,0,0,0)
+        ),
+        // 12: Castle 12x12
+        arrayOf(
+            intArrayOf(1,0,1,0,1,0,1,0,1,0,1,0),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,0,0,0,1,1,0,0,0,1,1),
+            intArrayOf(1,1,0,0,0,1,1,0,0,0,1,1),
+            intArrayOf(1,1,0,0,0,0,0,0,0,0,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,0,0,1,1,1,1,0,0,1,1),
+            intArrayOf(1,1,0,0,1,1,1,1,0,0,1,1),
+            intArrayOf(1,1,0,0,0,0,0,0,0,0,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,1,1),
+            intArrayOf(1,1,1,1,1,1,1,1,1,1,1,1)
+        ),
+        // 13: Sunflower 12x12
+        arrayOf(
+            intArrayOf(0,0,0,1,1,1,1,1,0,0,0,0),
+            intArrayOf(0,0,1,1,0,0,0,1,1,0,0,0),
+            intArrayOf(0,1,1,0,0,0,0,0,1,1,0,0),
+            intArrayOf(1,1,0,0,1,1,1,0,0,1,1,0),
+            intArrayOf(1,0,0,1,1,1,1,1,0,0,0,1),
+            intArrayOf(1,0,0,1,1,1,1,1,0,0,0,1),
+            intArrayOf(1,0,0,1,1,1,1,1,0,0,0,1),
+            intArrayOf(1,1,0,0,1,1,1,0,0,1,1,0),
+            intArrayOf(0,1,1,0,0,0,0,0,1,1,0,0),
+            intArrayOf(0,0,1,1,0,0,0,1,1,0,0,0),
+            intArrayOf(0,0,0,1,1,1,1,1,0,0,0,0),
+            intArrayOf(0,0,0,0,1,1,1,0,0,0,0,0)
+        ),
+        // 14: Knight 12x12
+        arrayOf(
+            intArrayOf(0,0,1,1,1,0,0,0,0,0,0,0),
+            intArrayOf(0,1,1,1,1,1,0,0,0,0,0,0),
+            intArrayOf(1,1,1,1,1,1,1,0,0,0,0,0),
+            intArrayOf(1,1,1,1,1,1,1,1,0,0,0,0),
+            intArrayOf(0,1,1,1,1,1,1,1,1,0,0,0),
+            intArrayOf(0,0,1,1,1,1,1,1,1,1,0,0),
+            intArrayOf(0,0,0,1,1,1,1,1,1,1,1,0),
+            intArrayOf(0,0,0,0,1,1,1,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,1,1,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,0,1,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,0,0,1,1,1,1,1),
+            intArrayOf(0,0,0,0,0,0,0,0,1,1,1,1)
+        ),
+        // 15: Big X 12x12
+        arrayOf(
+            intArrayOf(1,1,0,0,0,0,0,0,0,0,1,1),
+            intArrayOf(1,1,1,0,0,0,0,0,0,1,1,1),
+            intArrayOf(0,1,1,1,0,0,0,0,1,1,1,0),
+            intArrayOf(0,0,1,1,1,0,0,1,1,1,0,0),
+            intArrayOf(0,0,0,1,1,1,1,1,1,0,0,0),
+            intArrayOf(0,0,0,0,1,1,1,1,0,0,0,0),
+            intArrayOf(0,0,0,0,1,1,1,1,0,0,0,0),
+            intArrayOf(0,0,0,1,1,1,1,1,1,0,0,0),
+            intArrayOf(0,0,1,1,1,0,0,1,1,1,0,0),
+            intArrayOf(0,1,1,1,0,0,0,0,1,1,1,0),
+            intArrayOf(1,1,1,0,0,0,0,0,0,1,1,1),
+            intArrayOf(1,1,0,0,0,0,0,0,0,0,1,1)
         )
     )
 

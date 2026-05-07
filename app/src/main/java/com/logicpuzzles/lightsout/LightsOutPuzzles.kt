@@ -1,66 +1,64 @@
 package com.logicpuzzles.lightsout
 
+import kotlin.random.Random
+
 data class LightsOutPuzzle(val size: Int, val initial: Array<BooleanArray>)
 
 object LightsOutPuzzles {
-    private fun make(size: Int, encoded: String): LightsOutPuzzle {
-        val rows = encoded.split("/")
-        val grid = Array(size) { r -> BooleanArray(size) { c -> rows[r][c] == '1' } }
+    private const val LEVELS = 15
+
+    private val EASY by lazy { buildLevels(0) }
+    private val MEDIUM by lazy { buildLevels(1) }
+    private val HARD by lazy { buildLevels(2) }
+    private val EXPERT by lazy { buildLevels(3) }
+
+    private fun buildLevels(difficulty: Int): List<LightsOutPuzzle> =
+        List(LEVELS) { index ->
+            val size = sizeFor(difficulty, index)
+            val pressCount = targetPressCount(difficulty, index)
+            buildFromPresses(size, pressCells(size, pressCount, difficulty, index))
+        }
+
+    private fun sizeFor(difficulty: Int, index: Int): Int = when (difficulty) {
+        0 -> 5
+        1 -> if (index < 10) 5 else 6
+        2 -> if (index < 10) 6 else 7
+        else -> if (index < 10) 7 else 8
+    }
+
+    private fun targetPressCount(difficulty: Int, index: Int): Int = when (difficulty) {
+        0 -> 1 + (index % 3) + if (index >= 10) 1 else 0
+        1 -> 5 + (index % 4) + if (index >= 10) 1 else 0
+        2 -> 9 + (index % 5) + if (index >= 10) 2 else 0
+        else -> 14 + (index % 7) + if (index >= 10) 4 else 0
+    }
+
+    private fun pressCells(size: Int, count: Int, difficulty: Int, index: Int): List<Pair<Int, Int>> {
+        val cells = (0 until size * size).toMutableList()
+        cells.shuffle(Random(50_000 + difficulty * 10_007 + index * 997 + size * 53))
+        return cells.take(count).map { cell -> cell / size to cell % size }
+    }
+
+    private fun buildFromPresses(size: Int, presses: List<Pair<Int, Int>>): LightsOutPuzzle {
+        val grid = Array(size) { BooleanArray(size) }
+        for ((r, c) in presses) toggle(grid, r, c)
         return LightsOutPuzzle(size, grid)
     }
 
-    private val EASY = listOf(
-        make(5, "10001/00000/00000/00000/10001"),
-        make(5, "00100/01010/10001/01010/00100"),
-        make(5, "11111/00000/00000/00000/00000"),
-        make(5, "00000/01110/01110/01110/00000"),
-        make(5, "10000/01000/00100/00010/00001"),
-        make(5, "00100/00100/11111/00100/00100"),
-        make(5, "11011/10001/00000/10001/11011"),
-        make(5, "00000/00100/01010/00100/00000"),
-        make(5, "10010/01001/10010/01001/10010"),
-        make(5, "01010/10101/01010/10101/01010")
-    )
-    private val MEDIUM = listOf(
-        make(5, "10101/01010/10101/01010/10101"),
-        make(5, "11111/10001/10001/10001/11111"),
-        make(5, "11111/00010/00100/01000/11111"),
-        make(5, "10110/01001/11010/00101/10011"),
-        make(5, "11100/11000/10101/00011/00111"),
-        make(5, "11011/11011/00000/11011/11011"),
-        make(5, "01110/10101/01010/10101/01110"),
-        make(5, "11111/11111/11111/11111/11111"),
-        make(5, "10001/01010/00100/01010/10001"),
-        make(5, "00010/00100/01000/10000/11111")
-    )
-    private val HARD = listOf(
-        make(6, "101010/010101/101010/010101/101010/010101"),
-        make(6, "111111/100001/100001/100001/100001/111111"),
-        make(6, "100001/010010/001100/001100/010010/100001"),
-        make(6, "110101/001011/101100/011010/100110/011001"),
-        make(6, "111000/110100/101010/010101/001011/000111"),
-        make(6, "010010/101101/010010/010010/101101/010010"),
-        make(6, "111111/000000/111111/000000/111111/000000"),
-        make(6, "000000/011110/010010/010010/011110/000000"),
-        make(6, "100110/011001/001100/110011/100110/011001"),
-        make(6, "101010/101010/101010/010101/010101/010101")
-    )
-    private val EXPERT = listOf(
-        make(7, "1111110/1111110/1111110/1111110/1111110/1111110/0000000"),
-        make(7, "0001000/0111100/1111111/0111100/0001000/0111100/0001000"),
-        make(7, "1010110/0101011/1101010/0010111/1110010/0111001/1010101"),
-        make(7, "1100101/0011110/1010011/0101101/1011010/0110101/1001110"),
-        make(7, "1111110/1000011/1011101/1010101/1011101/1000011/1111110"),
-        make(7, "1010101/0101010/1010101/0101010/1010101/0101010/1010101"),
-        make(7, "1111111/1000001/1011101/1010101/1011101/1000001/1111111"),
-        make(7, "0011100/0110110/1111111/1011101/1111111/0110110/0011100"),
-        make(7, "1100011/1100011/0011100/0011100/0011100/1100011/1100011"),
-        make(7, "1010101/1010101/1010101/1010101/0101010/0101010/0101010")
-    )
+    private fun toggle(grid: Array<BooleanArray>, r: Int, c: Int) {
+        grid[r][c] = !grid[r][c]
+        if (r > 0) grid[r - 1][c] = !grid[r - 1][c]
+        if (r < grid.size - 1) grid[r + 1][c] = !grid[r + 1][c]
+        if (c > 0) grid[r][c - 1] = !grid[r][c - 1]
+        if (c < grid.size - 1) grid[r][c + 1] = !grid[r][c + 1]
+    }
 
     fun get(difficulty: Int, index: Int): LightsOutPuzzle {
         val pool = when (difficulty) {
-            0 -> EASY; 1 -> MEDIUM; 2 -> HARD; else -> EXPERT
+            0 -> EASY
+            1 -> MEDIUM
+            2 -> HARD
+            else -> EXPERT
         }
         return pool[index.coerceIn(0, pool.size - 1)]
     }

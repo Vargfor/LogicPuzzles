@@ -289,34 +289,36 @@ object PuzzleVerifier {
      */
     fun verifyAll(typesToCheck: Set<String> = setOf("futoshiki", "hidato", "skyscraper", "kakuro")) {
         val tag = "PuzzleVerifier"
-        var unique = 0; var multi = 0; var unsolv = 0
+        var solvable = 0; var unsolv = 0
 
         fun report(name: String, d: Int, i: Int, n: Int) {
             when (n) {
                 0 -> { unsolv++; Log.w(tag, "$name [d=$d i=$i] UNSOLVABLE") }
-                1 -> { unique++; Log.d(tag, "$name [d=$d i=$i] unique ✓") }
-                else -> { multi++; Log.w(tag, "$name [d=$d i=$i] ≥2 solutions (not unique)") }
+                1 -> { solvable++; Log.d(tag, "$name [d=$d i=$i] solvable (unique)") }
+                else -> { solvable++; Log.d(tag, "$name [d=$d i=$i] solvable (multiple)") }
             }
         }
 
-        for (d in 0..3) for (i in 0..9) {
-            if ("futoshiki" in typesToCheck) {
-                val p = FutoshikiPuzzles.get(d, i)
-                report("Futoshiki", d, i, countFutoshikiSolutions(p))
-            }
-            if ("hidato" in typesToCheck) {
-                val p = HidatoPuzzles.get(d, i)
-                report("Hidato", d, i, countHidatoSolutions(p))
-            }
-            if ("skyscraper" in typesToCheck) {
-                val p = SkyscraperPuzzles.get(d, i)
-                report("Skyscraper", d, i, countSkyscraperSolutions(p))
-            }
-            if ("kakuro" in typesToCheck) {
-                val p = KakuroPuzzles.get(d, i)
-                report("Kakuro", d, i, countKakuroSolutions(p, p.initial))
+        for (d in 0 until PrefsManager.DIFFICULTIES) {
+            for (i in 0 until PrefsManager.getPuzzleCount(0, d)) {
+                if ("futoshiki" in typesToCheck) {
+                    val p = FutoshikiPuzzles.get(d, i)
+                    report("Futoshiki", d, i, countFutoshikiSolutions(p))
+                }
+                if ("hidato" in typesToCheck) {
+                    val p = HidatoPuzzles.get(d, i)
+                    report("Hidato", d, i, countHidatoSolutions(p))
+                }
+                if ("skyscraper" in typesToCheck) {
+                    val p = SkyscraperPuzzles.get(d, i)
+                    report("Skyscraper", d, i, countSkyscraperSolutions(p))
+                }
+                if ("kakuro" in typesToCheck) {
+                    val p = KakuroPuzzles.get(d, i)
+                    report("Kakuro", d, i, countKakuroSolutions(p, p.initial))
+                }
             }
         }
-        Log.i(tag, "Done. unique=$unique multi=$multi unsolvable=$unsolv")
+        Log.i(tag, "Done. solvable=$solvable unsolvable=$unsolv")
     }
 }

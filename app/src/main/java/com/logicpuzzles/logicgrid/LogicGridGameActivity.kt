@@ -1,6 +1,5 @@
 package com.logicpuzzles.logicgrid
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -11,12 +10,14 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.puzzleHeader
 
 class LogicGridGameActivity : AppCompatActivity() {
 
@@ -36,7 +37,8 @@ class LogicGridGameActivity : AppCompatActivity() {
 
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
-        puzzle = LogicGridPuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_LOGIC_GRID, difficulty, puzzleIndex)
+        puzzle = LogicGridPuzzles.get(difficulty, catalogIndex)
 
         val nCats = puzzle.categories.size
         val nItems = puzzle.items[0].size
@@ -48,8 +50,11 @@ class LogicGridGameActivity : AppCompatActivity() {
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_LOGIC_GRID)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -71,14 +76,14 @@ class LogicGridGameActivity : AppCompatActivity() {
 
         // Title
         content.addView(TextView(this).apply {
-            text = "Logic Grid • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE)
+            text = puzzleHeader(R.string.puzzle_logic_grid, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary)
             textSize = 18f
             setTypeface(null, Typeface.BOLD)
         })
         content.addView(TextView(this).apply {
             text = puzzle.title
-            setTextColor(Color.parseColor("#A855F7"))
+            setTextColor(accent)
             textSize = 16f
             setTypeface(null, Typeface.BOLD)
             val lp = LinearLayout.LayoutParams(
@@ -89,7 +94,7 @@ class LogicGridGameActivity : AppCompatActivity() {
         })
         content.addView(TextView(this).apply {
             text = puzzle.description
-            setTextColor(Color.parseColor("#A0A0C0"))
+            setTextColor(palette.textSecondary)
             textSize = 13f
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -115,22 +120,22 @@ class LogicGridGameActivity : AppCompatActivity() {
         // Action bar
         val actions = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setBackgroundColor(Color.parseColor("#16213E"))
+            setBackgroundColor(palette.surface)
             setPadding(dp(8), dp(8), dp(8), dp(8))
         }
         actions.addView(Button(this).apply {
-            text = "Check Solution"
-            setBackgroundColor(Color.parseColor("#A855F7"))
-            setTextColor(Color.WHITE)
+            text = getString(R.string.action_check_solution)
+            setBackgroundColor(accent)
+            setTextColor(palette.buttonText)
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 .apply { marginEnd = dp(4) }
             setOnClickListener { checkSolution() }
         })
         actions.addView(Button(this).apply {
-            text = "Reset"
-            setBackgroundColor(Color.parseColor("#0F3460"))
-            setTextColor(Color.WHITE)
+            text = getString(R.string.reset)
+            setBackgroundColor(palette.button)
+            setTextColor(palette.buttonText)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 .apply { marginStart = dp(4) }
             setOnClickListener { resetMarks() }
@@ -141,9 +146,10 @@ class LogicGridGameActivity : AppCompatActivity() {
     }
 
     private fun buildCluesCard(): View {
+        val palette = ThemeManager.currentPalette(this)
         val card = CardView(this).apply {
             radius = dp(8).toFloat()
-            setCardBackgroundColor(Color.parseColor("#16213E"))
+            setCardBackgroundColor(palette.surface)
             cardElevation = 2f
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -156,15 +162,15 @@ class LogicGridGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(12))
         }
         box.addView(TextView(this).apply {
-            text = "Clues"
-            setTextColor(Color.parseColor("#FFD93D"))
+            text = getString(R.string.clues)
+            setTextColor(palette.warning)
             setTypeface(null, Typeface.BOLD)
             textSize = 14f
         })
         for (clue in puzzle.clues) {
             box.addView(TextView(this).apply {
                 text = clue
-                setTextColor(Color.WHITE)
+                setTextColor(palette.textPrimary)
                 textSize = 13f
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -178,9 +184,11 @@ class LogicGridGameActivity : AppCompatActivity() {
     }
 
     private fun buildPairGrid(catA: Int, catB: Int): View {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_LOGIC_GRID)
         val card = CardView(this).apply {
             radius = dp(8).toFloat()
-            setCardBackgroundColor(Color.parseColor("#16213E"))
+            setCardBackgroundColor(palette.surface)
             cardElevation = 2f
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -195,8 +203,8 @@ class LogicGridGameActivity : AppCompatActivity() {
         }
 
         box.addView(TextView(this).apply {
-            text = "${puzzle.categories[catA]} ↔ ${puzzle.categories[catB]}"
-            setTextColor(Color.parseColor("#A855F7"))
+            text = getString(R.string.logic_grid_pair_header, puzzle.categories[catA], puzzle.categories[catB])
+            setTextColor(accent)
             setTypeface(null, Typeface.BOLD)
             textSize = 13f
             setPadding(dp(4), 0, 0, dp(8))
@@ -221,7 +229,7 @@ class LogicGridGameActivity : AppCompatActivity() {
         for (j in 0 until n) {
             headerRow.addView(TextView(this).apply {
                 text = itemsB[j]
-                setTextColor(Color.WHITE)
+                setTextColor(palette.textPrimary)
                 textSize = 11f
                 gravity = Gravity.CENTER
                 setTypeface(null, Typeface.BOLD)
@@ -237,7 +245,7 @@ class LogicGridGameActivity : AppCompatActivity() {
             }
             row.addView(TextView(this).apply {
                 text = itemsA[i]
-                setTextColor(Color.WHITE)
+                setTextColor(palette.textPrimary)
                 textSize = 11f
                 setTypeface(null, Typeface.BOLD)
                 gravity = Gravity.CENTER_VERTICAL
@@ -249,7 +257,7 @@ class LogicGridGameActivity : AppCompatActivity() {
                     gravity = Gravity.CENTER
                     textSize = 18f
                     setTypeface(null, Typeface.BOLD)
-                    setBackgroundColor(Color.parseColor("#0F3460"))
+                    setBackgroundColor(palette.surfaceStrong)
                     layoutParams = LinearLayout.LayoutParams(cellSize, cellSize)
                         .apply { setMargins(1, 1, 1, 1) }
                     setOnClickListener { cycleMark(catA, i, catB, j) }
@@ -278,6 +286,7 @@ class LogicGridGameActivity : AppCompatActivity() {
     }
 
     private fun repaintAll() {
+        val palette = ThemeManager.currentPalette(this)
         for (mc in markCells) {
             val v = marks[mc.catA][mc.itemA][mc.catB][mc.itemB]
             mc.view.text = when (v) {
@@ -286,9 +295,9 @@ class LogicGridGameActivity : AppCompatActivity() {
                 else -> ""
             }
             mc.view.setTextColor(when (v) {
-                1 -> Color.parseColor("#6BCB77")
-                -1 -> Color.parseColor("#E94560")
-                else -> Color.WHITE
+                1 -> palette.success
+                -1 -> palette.danger
+                else -> palette.textPrimary
             })
         }
     }
@@ -320,15 +329,14 @@ class LogicGridGameActivity : AppCompatActivity() {
         }
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_LOGIC_GRID, difficulty, puzzleIndex)
-        AlertDialog.Builder(this)
-            .setTitle("Solved!")
-            .setMessage("Logic grid solved.")
-            .setPositiveButton("Back to Menu") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
+        CompletionDialogs.showSolved(
+            this,
+            "Solved!",
+            "Logic grid solved.",
+            MainActivity.TYPE_LOGIC_GRID,
+            difficulty,
+            puzzleIndex,
+            LogicGridGameActivity::class.java
+        )
     }
 }

@@ -1,6 +1,5 @@
 package com.logicpuzzles.skyscraper
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -11,11 +10,14 @@ import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.numberText
+import com.logicpuzzles.utils.puzzleHeader
 
 class SkyscraperGameActivity : AppCompatActivity() {
 
@@ -35,7 +37,8 @@ class SkyscraperGameActivity : AppCompatActivity() {
 
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
-        puzzle = SkyscraperPuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_SKYSCRAPER, difficulty, puzzleIndex)
+        puzzle = SkyscraperPuzzles.get(difficulty, catalogIndex)
 
         val n = puzzle.size
         values = Array(n) { puzzle.initial[it].copyOf() }
@@ -47,8 +50,11 @@ class SkyscraperGameActivity : AppCompatActivity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SKYSCRAPER)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -64,22 +70,22 @@ class SkyscraperGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
         header.addView(TextView(this).apply {
-            text = "Skyscraper • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE); textSize = 18f
+            text = puzzleHeader(R.string.puzzle_skyscraper, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary); textSize = 18f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(Button(this).apply {
-            text = "Check"; textSize = 12f
-            setBackgroundColor(Color.parseColor("#3B82F6"))
-            setTextColor(Color.WHITE)
+            text = getString(R.string.action_check); textSize = 12f
+            setBackgroundColor(accent)
+            setTextColor(palette.buttonText)
             setOnClickListener { checkSolution() }
         })
         main.addView(header)
 
         main.addView(TextView(this).apply {
-            text = "Place 1–${puzzle.size} per row & column. Outside numbers = visible buildings from that side."
-            setTextColor(Color.parseColor("#A0A0C0"))
+            text = getString(R.string.instruction_skyscraper, puzzle.size)
+            setTextColor(palette.textSecondary)
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
@@ -95,7 +101,7 @@ class SkyscraperGameActivity : AppCompatActivity() {
         val numpad = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            setBackgroundColor(Color.parseColor("#16213E"))
+            setBackgroundColor(palette.surface)
             setPadding(dp(8), dp(8), dp(8), dp(8))
         }
         for (n in 1..puzzle.size) numpad.addView(numBtn(n.toString()) { setValue(n) })
@@ -106,11 +112,12 @@ class SkyscraperGameActivity : AppCompatActivity() {
     }
 
     private fun numBtn(label: String, onClick: () -> Unit): View {
+        val palette = ThemeManager.currentPalette(this)
         return Button(this).apply {
             text = label; textSize = 16f
             setTypeface(null, Typeface.BOLD)
-            setTextColor(Color.WHITE)
-            setBackgroundColor(Color.parseColor("#0F3460"))
+            setTextColor(palette.buttonText)
+            setBackgroundColor(palette.button)
             layoutParams = LinearLayout.LayoutParams(dp(40), dp(48)).apply {
                 setMargins(dp(2), 0, dp(2), 0)
             }
@@ -178,9 +185,10 @@ class SkyscraperGameActivity : AppCompatActivity() {
     }
 
     private fun clueText(value: Int): TextView {
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SKYSCRAPER)
         return TextView(this).apply {
-            text = if (value > 0) value.toString() else ""
-            setTextColor(Color.parseColor("#3B82F6"))
+            text = if (value > 0) numberText(value) else ""
+            setTextColor(accent)
             textSize = 14f
             gravity = Gravity.CENTER
             setTypeface(null, Typeface.BOLD)
@@ -202,17 +210,22 @@ class SkyscraperGameActivity : AppCompatActivity() {
     }
 
     private fun paintCell(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
         val tv = cellViews[r][c]
         val v = values[r][c]
         val isSelected = (r == selectedRow && c == selectedCol)
         val isFixed = fixed[r][c]
-        tv.text = if (v == 0) "" else v.toString()
+        tv.text = if (v == 0) "" else numberText(v)
         tv.setBackgroundColor(when {
-            isSelected -> Color.parseColor("#FFE066")
-            isFixed -> Color.parseColor("#0D2747")
-            else -> Color.WHITE
+            isSelected -> palette.cellSelected
+            isFixed -> palette.cellFixed
+            else -> palette.cellEmpty
         })
-        tv.setTextColor(if (isFixed) Color.parseColor("#3B82F6") else Color.BLACK)
+        tv.setTextColor(when {
+            isSelected -> palette.cellSelectedText
+            isFixed -> palette.cellFixedText
+            else -> palette.cellText
+        })
     }
 
     private fun visibility(line: IntArray): Int {
@@ -265,15 +278,14 @@ class SkyscraperGameActivity : AppCompatActivity() {
         }
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_SKYSCRAPER, difficulty, puzzleIndex)
-        AlertDialog.Builder(this)
-            .setTitle("Solved!")
-            .setMessage("Skyscraper complete.")
-            .setPositiveButton("Back to Menu") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
+        CompletionDialogs.showSolved(
+            this,
+            "Solved!",
+            "Skyscraper complete.",
+            MainActivity.TYPE_SKYSCRAPER,
+            difficulty,
+            puzzleIndex,
+            SkyscraperGameActivity::class.java
+        )
     }
 }

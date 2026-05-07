@@ -1,6 +1,5 @@
 package com.logicpuzzles.lightsout
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -11,11 +10,13 @@ import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.puzzleHeader
 
 class LightsOutGameActivity : AppCompatActivity() {
 
@@ -36,7 +37,8 @@ class LightsOutGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
 
-        val puzzle = LightsOutPuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_LIGHTS_OUT, difficulty, puzzleIndex)
+        val puzzle = LightsOutPuzzles.get(difficulty, catalogIndex)
         size = puzzle.size
         initial = Array(size) { puzzle.initial[it].copyOf() }
         grid = Array(size) { initial[it].copyOf() }
@@ -47,8 +49,11 @@ class LightsOutGameActivity : AppCompatActivity() {
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_LIGHTS_OUT)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -64,15 +69,15 @@ class LightsOutGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
         header.addView(TextView(this).apply {
-            text = "Lights Out • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE)
+            text = puzzleHeader(R.string.puzzle_lights_out, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary)
             textSize = 18f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         movesText = TextView(this).apply {
-            text = "Moves: 0"
-            setTextColor(Color.parseColor("#FFD93D"))
+            text = getString(R.string.moves_count, 0)
+            setTextColor(accent)
             textSize = 14f
             setTypeface(null, Typeface.BOLD)
         }
@@ -80,8 +85,8 @@ class LightsOutGameActivity : AppCompatActivity() {
         main.addView(header)
 
         main.addView(TextView(this).apply {
-            text = "Tap a light to toggle it and its neighbors. Turn all OFF!"
-            setTextColor(Color.parseColor("#A0A0C0"))
+            text = getString(R.string.instruction_lights_out)
+            setTextColor(palette.textSecondary)
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
@@ -95,9 +100,9 @@ class LightsOutGameActivity : AppCompatActivity() {
         main.addView(boardWrap)
 
         main.addView(Button(this).apply {
-            text = "Reset Puzzle"
-            setBackgroundColor(Color.parseColor("#0F3460"))
-            setTextColor(Color.WHITE)
+            text = getString(R.string.action_reset_puzzle)
+            setBackgroundColor(palette.button)
+            setTextColor(palette.buttonText)
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { setMargins(dp(8), dp(4), dp(8), dp(8)) }
@@ -145,12 +150,14 @@ class LightsOutGameActivity : AppCompatActivity() {
     }
 
     private fun paintCell(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_LIGHTS_OUT)
         val on = grid[r][c]
         val drawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = dp(8).toFloat()
-            setColor(if (on) Color.parseColor("#FFD93D") else Color.parseColor("#1A2040"))
-            setStroke(2, if (on) Color.parseColor("#FFE066") else Color.parseColor("#2A3560"))
+            setColor(if (on) accent else palette.shadedCell)
+            setStroke(2, if (on) palette.warning else palette.gridLine)
         }
         cellViews[r][c].background = drawable
     }
@@ -159,17 +166,20 @@ class LightsOutGameActivity : AppCompatActivity() {
         if (solved) return
         toggle(r, c)
         moves++
-        movesText.text = "Moves: $moves"
+        movesText.text = getString(R.string.moves_count, moves)
         for (rr in 0 until size) for (cc in 0 until size) paintCell(rr, cc)
         if (isSolved()) {
             solved = true
             PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_LIGHTS_OUT, difficulty, puzzleIndex)
-            AlertDialog.Builder(this)
-                .setTitle("All Lights Out!")
-                .setMessage("Cleared in $moves moves.")
-                .setPositiveButton("Back to Menu") { _, _ -> finish() }
-                .setCancelable(false)
-                .show()
+            CompletionDialogs.showSolved(
+                this,
+                "All Lights Out!",
+                "Cleared in $moves moves.",
+                MainActivity.TYPE_LIGHTS_OUT,
+                difficulty,
+                puzzleIndex,
+                LightsOutGameActivity::class.java
+            )
         }
     }
 
@@ -187,11 +197,7 @@ class LightsOutGameActivity : AppCompatActivity() {
         if (solved) return
         grid = Array(size) { initial[it].copyOf() }
         moves = 0
-        movesText.text = "Moves: 0"
+        movesText.text = getString(R.string.moves_count, 0)
         for (r in 0 until size) for (c in 0 until size) paintCell(r, c)
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
     }
 }

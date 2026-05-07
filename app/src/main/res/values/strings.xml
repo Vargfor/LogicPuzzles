@@ -1,4 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Logic Puzzles</string>
+    <string name="support_button_with_icon">&#9749; Support</string>
+    <string name="support">Support</string>
+    <string name="settings">Settings</string>
+    <string name="close">Close</string>
+    <string name="choose_puzzle_type">Choose a puzzle type</string>
+    <string name="ad_label">Ad</string>
+    <string name="ad_promo">Try our other puzzle apps &#8212; coming soon!</string>
+    <string name="color_theme">Color theme</string>
+    <string name="theme_selected">%1$s selected</string>
+    <string name="reset_progress_shuffle">Reset progress and shuffle levels</string>
+    <string name="reset_all_progress_title">Reset all progress?</string>
+    <string name="reset_all_progress_message">This will clear every completed puzzle and reshuffle levels within each difficulty group. This cannot be undone.</string>
+    <string name="reset">Reset</string>
+    <string name="cancel">Cancel</string>
+    <string name="verifying_puzzles">Verifying puzzles&#8230; check logcat (tag: PuzzleVerifier)</string>
+
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
+    <string name="difficulty_expert">Expert</string>
+
+    <string name="puzzle_nonogram">Nonogram</string>
+    <string name="puzzle_mastermind">Mastermind</string>
+    <string name="puzzle_lights_out">Lights Out</string>
+    <string name="puzzle_kakuro">Kakuro</string>
+    <string name="puzzle_logic_grid">Logic Grid</string>
+    <string name="puzzle_slitherlink">Slitherlink</string>
+    <string name="puzzle_nurikabe">Nurikabe</string>
+    <string name="puzzle_hidato">Hidato</string>
+    <string name="puzzle_futoshiki">Futoshiki</string>
+    <string name="puzzle_skyscraper">Skyscraper</string>
+
+    <string name="desc_nonogram">Fill the grid using number clues</string>
+    <string name="desc_mastermind">Crack the secret color code</string>
+    <string name="desc_lights_out">Toggle lights to turn them all off</string>
+    <string name="desc_kakuro">Fill digits so each run hits its sum</string>
+    <string name="desc_logic_grid">Match clues to find who owns what</string>
+    <string name="desc_slitherlink">Draw a single closed loop using clues</string>
+    <string name="desc_nurikabe">Shade cells to form islands &amp; a river</string>
+    <string name="desc_hidato">Fill consecutive numbers along a path</string>
+    <string name="desc_futoshiki">Sudoku-style with &lt; and &gt; inequalities</string>
+    <string name="desc_skyscraper">Place buildings using visibility clues</string>
+
+    <string name="menu_desc_nonogram">Tap to fill, long-press to mark</string>
+    <string name="menu_desc_mastermind">Guess the hidden color sequence</string>
+    <string name="menu_desc_lights_out">Toggle lights until all are off</string>
+    <string name="menu_desc_kakuro">Fill digits so every run matches its clue sum</string>
+    <string name="menu_desc_logic_grid">Use the clues to find the unique solution</string>
+    <string name="menu_desc_slitherlink">Draw a single closed loop using number clues</string>
+    <string name="menu_desc_nurikabe">Shade cells into one connected river around islands</string>
+    <string name="menu_desc_hidato">Fill consecutive numbers (1&#8211;50) in adjacent cells</string>
+    <string name="menu_desc_futoshiki">Like Sudoku but with &lt; and &gt; between cells</string>
+    <string name="menu_desc_skyscraper">Place 1&#8211;N so visibility clues match</string>
+    <string name="puzzle_completion_title">%1$s  &#9733;%2$d/%3$d</string>
+    <string name="completed_star">&#9733;</string>
+
+    <string name="puzzle_header">%1$s &#8226; %2$s #%3$d</string>
+    <string name="number_value">%1$d</string>
+    <string name="action_check">Check</string>
+    <string name="action_check_solution">Check Solution</string>
+    <string name="action_reset_puzzle">Reset Puzzle</string>
+    <string name="action_submit_guess">Submit Guess</string>
+    <string name="clues">Clues</string>
+    <string name="moves_count">Moves: %1$d</string>
+    <string name="guesses_count">Guesses: %1$d</string>
+    <string name="logic_grid_pair_header">%1$s &#8596; %2$s</string>
+    <string name="mastermind_feedback">%1$d&#9679; %2$d&#9675;</string>
+
+    <string name="instruction_futoshiki">Each row &amp; column must contain 1&#8211;%1$d. Honor the &lt; &gt; inequalities.</string>
+    <string name="instruction_hidato">Fill 1&#8211;%1$d. Each next number must touch the previous (incl. diagonals).</string>
+    <string name="instruction_kakuro">Tap a white cell, then a digit. Runs must sum to the clue with no repeats.</string>
+    <string name="instruction_lights_out">Tap a light to toggle it and its neighbors. Turn all OFF!</string>
+    <string name="instruction_mastermind">Tap a slot then a color. &#9679; = right color &amp; spot, &#9675; = right color, wrong spot.</string>
+    <string name="instruction_nonogram">Tap = fill &#9632;   Long-press = mark &#10005;</string>
+    <string name="instruction_nurikabe">Tap to shade. Each number forms a white island of exactly that size. All shaded cells must connect. No 2&#215;2 shaded.</string>
+    <string name="instruction_skyscraper">Use numbers 1&#8211;%1$d. Each row &amp; column must contain every number. Outside numbers = visible buildings from that side.</string>
+    <string name="instruction_slitherlink">Tap an edge to toggle. Numbers = edges around that cell. All edges form one closed loop.</string>
 </resources>

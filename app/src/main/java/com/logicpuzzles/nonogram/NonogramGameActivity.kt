@@ -1,12 +1,8 @@
 package com.logicpuzzles.nonogram
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
@@ -14,11 +10,14 @@ import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.numberText
+import com.logicpuzzles.utils.puzzleHeader
 
 class NonogramGameActivity : AppCompatActivity() {
 
@@ -38,7 +37,8 @@ class NonogramGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
 
-        solution = NonogramPuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_NONOGRAM, difficulty, puzzleIndex)
+        solution = NonogramPuzzles.get(difficulty, catalogIndex)
         rows = solution.size
         cols = solution[0].size
         grid = Array(rows) { IntArray(cols) }
@@ -49,8 +49,10 @@ class NonogramGameActivity : AppCompatActivity() {
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -66,22 +68,24 @@ class NonogramGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
         header.addView(TextView(this).apply {
-            text = "Nonogram • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE)
+            text = puzzleHeader(R.string.puzzle_nonogram, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary)
             textSize = 18f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(Button(this).apply {
-            text = "Reset"
+            text = getString(R.string.reset)
             textSize = 12f
+            setBackgroundColor(palette.button)
+            setTextColor(palette.buttonText)
             setOnClickListener { resetGrid() }
         })
         main.addView(header)
 
         main.addView(TextView(this).apply {
-            text = "Tap = fill ■   Long-press = mark ✕"
-            setTextColor(Color.parseColor("#A0A0C0"))
+            text = getString(R.string.instruction_nonogram)
+            setTextColor(palette.textSecondary)
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
@@ -98,6 +102,7 @@ class NonogramGameActivity : AppCompatActivity() {
     }
 
     private fun buildBoard(): View {
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_NONOGRAM)
         val rowClues = Array(rows) { r ->
             val clues = mutableListOf<Int>()
             var run = 0
@@ -150,8 +155,8 @@ class NonogramGameActivity : AppCompatActivity() {
             val padding = maxColClues - clues.size
             for (i in 0 until maxColClues) {
                 val tv = TextView(this).apply {
-                    if (i >= padding) text = clues[i - padding].toString()
-                    setTextColor(Color.parseColor("#4ECDC4"))
+                    if (i >= padding) text = numberText(clues[i - padding])
+                    setTextColor(accent)
                     textSize = 11f
                     gravity = Gravity.CENTER
                     setTypeface(null, Typeface.BOLD)
@@ -172,8 +177,8 @@ class NonogramGameActivity : AppCompatActivity() {
             val padding = maxRowClues - clues.size
             for (i in 0 until maxRowClues) {
                 val tv = TextView(this).apply {
-                    if (i >= padding) text = clues[i - padding].toString()
-                    setTextColor(Color.parseColor("#4ECDC4"))
+                    if (i >= padding) text = numberText(clues[i - padding])
+                    setTextColor(accent)
                     textSize = 11f
                     gravity = Gravity.CENTER
                     setTypeface(null, Typeface.BOLD)
@@ -225,55 +230,40 @@ class NonogramGameActivity : AppCompatActivity() {
     }
 
     private fun attachCellHandlers(cell: TextView, r: Int, c: Int) {
-        val handler = Handler(Looper.getMainLooper())
-        var longPressed = false
-        val longRunnable = Runnable {
+        cell.setOnClickListener {
             if (!solved) {
-                longPressed = true
+                grid[r][c] = if (grid[r][c] == 1) 0 else 1
+                paintCell(r, c)
+                checkWin()
+            }
+        }
+        cell.setOnLongClickListener {
+            if (!solved) {
                 grid[r][c] = if (grid[r][c] == 2) 0 else 2
                 paintCell(r, c)
             }
-        }
-        cell.setOnTouchListener { _, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    longPressed = false
-                    handler.postDelayed(longRunnable, 400)
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    handler.removeCallbacks(longRunnable)
-                    if (!longPressed && !solved) {
-                        grid[r][c] = if (grid[r][c] == 1) 0 else 1
-                        paintCell(r, c)
-                        checkWin()
-                    }
-                    true
-                }
-                MotionEvent.ACTION_CANCEL -> {
-                    handler.removeCallbacks(longRunnable)
-                    true
-                }
-                else -> false
-            }
+            true
         }
     }
 
     private fun paintCell(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
         val cell = cellViews[r][c]
         when (grid[r][c]) {
             0 -> {
-                cell.setBackgroundColor(Color.parseColor("#FAFAFA"))
+                cell.setBackgroundColor(palette.cellEmpty)
+                cell.setTextColor(palette.cellText)
                 cell.text = ""
             }
             1 -> {
-                cell.setBackgroundColor(Color.parseColor("#1A1A2E"))
+                cell.setBackgroundColor(palette.cellFilled)
+                cell.setTextColor(palette.cellFilledText)
                 cell.text = ""
             }
             2 -> {
-                cell.setBackgroundColor(Color.parseColor("#FAFAFA"))
+                cell.setBackgroundColor(palette.cellEmpty)
                 cell.text = "✕"
-                cell.setTextColor(Color.parseColor("#E94560"))
+                cell.setTextColor(palette.danger)
             }
         }
     }
@@ -294,15 +284,14 @@ class NonogramGameActivity : AppCompatActivity() {
         }
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_NONOGRAM, difficulty, puzzleIndex)
-        AlertDialog.Builder(this)
-            .setTitle("Solved!")
-            .setMessage("Nonogram complete.")
-            .setPositiveButton("Back to Menu") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
+        CompletionDialogs.showSolved(
+            this,
+            "Solved!",
+            "Nonogram complete.",
+            MainActivity.TYPE_NONOGRAM,
+            difficulty,
+            puzzleIndex,
+            NonogramGameActivity::class.java
+        )
     }
 }

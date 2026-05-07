@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
     android:orientation="vertical">
 
     <ScrollView
@@ -26,10 +26,11 @@
                 android:layout_marginBottom="4dp">
 
                 <TextView
+                    android:id="@+id/main_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Logic Puzzles"
+                    android:text="@string/app_name"
                     android:textColor="@color/colorText"
                     android:textSize="28sp"
                     android:textStyle="bold"/>
@@ -39,7 +40,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
-                    android:text="☕ Support"
+                    android:text="@string/support_button_with_icon"
                     android:textSize="11sp"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -51,10 +52,10 @@
                     android:textColor="#1A1A1A"/>
 
                 <Button
-                    android:id="@+id/btn_reset_progress"
+                    android:id="@+id/btn_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reset"
+                    android:text="@string/settings"
                     android:textSize="11sp"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -67,9 +68,10 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/main_subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Choose a puzzle type"
+                android:text="@string/choose_puzzle_type"
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="14sp"
                 android:layout_marginBottom="20dp"/>
@@ -100,9 +102,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start|center_vertical"
             android:layout_marginStart="12dp"
-            android:text="Ad"
+            android:text="@string/ad_label"
             android:textColor="#6B7280"
-            android:textSize="10sp"
+            android:textSize="11sp"
             android:textStyle="bold"
             android:background="#1F2937"
             android:paddingStart="6dp"
@@ -116,7 +118,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Try our other puzzle apps — coming soon!"
+            android:text="@string/ad_promo"
             android:textColor="#A0A0C0"
             android:textSize="13sp"
             android:paddingStart="48dp"

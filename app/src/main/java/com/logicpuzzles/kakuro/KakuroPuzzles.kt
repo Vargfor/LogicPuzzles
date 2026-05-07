@@ -84,6 +84,48 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=16),   w(),     w(),     w()),
             arrayOf<KCell>(c(r=14),   w(),     w(),     w())
         ))
+    ) + listOf(
+        // 11-15: 3x3 white areas (+1 size step from Easy base)
+        // 11: Rows (6,15,24) Cols (12,15,18)  grid 1,2,3/4,5,6/7,8,9
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=12), c(d=15), c(d=18)),
+            arrayOf<KCell>(c(r=6),    w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w())
+        )),
+        // 12: Rows (9,15,21) Cols (11,13,21)  grid 1,3,5/2,6,7/8,4,9
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=11), c(d=13), c(d=21)),
+            arrayOf<KCell>(c(r=9),    w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w())
+        )),
+        // 13: Rows (12,18,15) Cols (10,12,23)  grid 2,4,6/3,7,8/5,1,9
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=10), c(d=12), c(d=23)),
+            arrayOf<KCell>(c(r=12),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=18),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w())
+        )),
+        // 14: Rows (12,16,17) Cols (14,14,17)  grid 3,1,8/5,9,2/6,4,7
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=14), c(d=14), c(d=17)),
+            arrayOf<KCell>(c(r=12),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w())
+        )),
+        // 15: Rows (15,15,15) Cols (6,19,20) with anchor  grid 1,5,9/2,6,7/3,8,4
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=6),  c(d=19), c(d=20)),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w())
+        ), initial = arrayOf(
+            intArrayOf(0, 0, 0, 0),
+            intArrayOf(0, 1, 0, 0),
+            intArrayOf(0, 2, 0, 0),
+            intArrayOf(0, 3, 0, 0)
+        ))
     )
 
     // MEDIUM — 3x3 Latin squares with various sums.
@@ -171,6 +213,48 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=21),   w(),     w(),     w()),
             arrayOf<KCell>(c(r=21),   w(),     w(),     w())
         ))
+    ) + listOf(
+        // 11-15: 4x4 white areas (+1 size step from Medium base)
+        // 11: Rows (10,26,10,27) Cols (17,19,17,20)  grid 1,2,3,4/5,6,7,8/2,4,1,3/9,7,6,5
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=17), c(d=19), c(d=17), c(d=20)),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w())
+        )),
+        // 12: Rows (10,26,10,28) Cols (19,19,18,18)  grid 2,1,4,3/6,5,8,7/3,4,1,2/8,9,5,6
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=19), c(d=19), c(d=18), c(d=18)),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w())
+        )),
+        // 13: Rows (16,20,24,20) Cols (10,18,26,26)  grid 1,3,5,7/2,4,6,8/3,5,7,9/4,6,8,2
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=10), c(d=18), c(d=26), c(d=26)),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w())
+        )),
+        // 14: Rows (10,26,10,23) Cols (19,17,20,13)  grid 4,3,2,1/8,7,6,5/1,2,3,4/6,5,9,3
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=19), c(d=17), c(d=20), c(d=13)),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w())
+        )),
+        // 15: Rows (16,21,22,20) Cols (18,22,19,20)  grid 3,7,1,5/6,4,9,2/8,2,5,7/1,9,4,6
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=18), c(d=22), c(d=19), c(d=20)),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w())
+        ))
     )
 
     // HARD — 4x4 Latin squares (rows/cols sum to a constant per puzzle)
@@ -254,6 +338,53 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w())
+        ))
+    ) + listOf(
+        // 11-15: 5x5 white areas (+1 size step from Hard base)
+        // 11: all sums = 15 ({1,2,3,4,5})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=15), c(d=15), c(d=15), c(d=15), c(d=15)),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 12: all sums = 35 ({5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=35), c(d=35), c(d=35), c(d=35), c(d=35)),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 13: all sums = 20 ({2,3,4,5,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=20), c(d=20), c(d=20), c(d=20), c(d=20)),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 14: all sums = 30 ({4,5,6,7,8} or {3,5,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=30), c(d=30), c(d=30), c(d=30), c(d=30)),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 15: all sums = 25 ({3,4,5,6,7} or {1,3,5,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=25), c(d=25), c(d=25), c(d=25), c(d=25)),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w())
         ))
     )
 
@@ -348,6 +479,58 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w())
+        ))
+    ) + listOf(
+        // 11-15: 6x6 white areas (+1 size step from Expert base)
+        // 11: all sums = 21 ({1,2,3,4,5,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=21), c(d=21), c(d=21), c(d=21), c(d=21), c(d=21)),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 12: all sums = 39 ({4,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 13: all sums = 27 ({1,2,3,5,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=27), c(d=27), c(d=27), c(d=27), c(d=27), c(d=27)),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 14: all sums = 33 ({3,4,5,6,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=33), c(d=33), c(d=33), c(d=33), c(d=33), c(d=33)),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 15: all sums = 30 ({1,3,5,6,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=30), c(d=30), c(d=30), c(d=30), c(d=30), c(d=30)),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w())
         ))
     )
 

@@ -21,11 +21,16 @@ import com.logicpuzzles.nurikabe.NurikabeGameActivity
 import com.logicpuzzles.skyscraper.SkyscraperGameActivity
 import com.logicpuzzles.slitherlink.SlitherlinkGameActivity
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
 
 class PuzzleMenuActivity : AppCompatActivity() {
 
-    private val diffNames = listOf("Easy", "Medium", "Hard", "Expert")
-    private val diffColors = listOf("#4CAF50", "#FF9800", "#F44336", "#9C27B0")
+    private val diffNameResIds = listOf(
+        R.string.difficulty_easy,
+        R.string.difficulty_medium,
+        R.string.difficulty_hard,
+        R.string.difficulty_expert
+    )
     private var puzzleType = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,20 +40,20 @@ class PuzzleMenuActivity : AppCompatActivity() {
         puzzleType = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_TYPE, 0)
 
         val (typeName, typeDesc) = when (puzzleType) {
-            MainActivity.TYPE_NONOGRAM    -> "Nonogram" to "Tap to fill, long-press to mark"
-            MainActivity.TYPE_MASTERMIND  -> "Mastermind" to "Guess the hidden color sequence"
-            MainActivity.TYPE_LIGHTS_OUT  -> "Lights Out" to "Toggle lights until all are off"
-            MainActivity.TYPE_KAKURO      -> "Kakuro" to "Fill digits so every run matches its clue sum"
-            MainActivity.TYPE_LOGIC_GRID  -> "Logic Grid" to "Use the clues to find the unique solution"
-            MainActivity.TYPE_SLITHERLINK -> "Slitherlink" to "Draw a single closed loop using number clues"
-            MainActivity.TYPE_NURIKABE    -> "Nurikabe" to "Shade cells into one connected river around islands"
-            MainActivity.TYPE_HIDATO      -> "Hidato" to "Fill consecutive numbers(1-50) in adjacent cells"
-            MainActivity.TYPE_FUTOSHIKI   -> "Futoshiki" to "Like Sudoku but with < and > between cells"
-            else                          -> "Skyscraper" to "Place 1–N so visibility clues match"
+            MainActivity.TYPE_NONOGRAM -> R.string.puzzle_nonogram to R.string.menu_desc_nonogram
+            MainActivity.TYPE_MASTERMIND -> R.string.puzzle_mastermind to R.string.menu_desc_mastermind
+            MainActivity.TYPE_LIGHTS_OUT -> R.string.puzzle_lights_out to R.string.menu_desc_lights_out
+            MainActivity.TYPE_KAKURO -> R.string.puzzle_kakuro to R.string.menu_desc_kakuro
+            MainActivity.TYPE_LOGIC_GRID -> R.string.puzzle_logic_grid to R.string.menu_desc_logic_grid
+            MainActivity.TYPE_SLITHERLINK -> R.string.puzzle_slitherlink to R.string.menu_desc_slitherlink
+            MainActivity.TYPE_NURIKABE -> R.string.puzzle_nurikabe to R.string.menu_desc_nurikabe
+            MainActivity.TYPE_HIDATO -> R.string.puzzle_hidato to R.string.menu_desc_hidato
+            MainActivity.TYPE_FUTOSHIKI -> R.string.puzzle_futoshiki to R.string.menu_desc_futoshiki
+            else -> R.string.puzzle_skyscraper to R.string.menu_desc_skyscraper
         }
 
-        findViewById<TextView>(R.id.menu_title).text = typeName
-        findViewById<TextView>(R.id.menu_subtitle).text = typeDesc
+        findViewById<TextView>(R.id.menu_title).setText(typeName)
+        findViewById<TextView>(R.id.menu_subtitle).setText(typeDesc)
     }
 
     override fun onResume() {
@@ -57,19 +62,23 @@ class PuzzleMenuActivity : AppCompatActivity() {
     }
 
     private fun buildPuzzleCards() {
+        val palette = ThemeManager.currentPalette(this)
         val prefs = PrefsManager(this)
         val container = findViewById<LinearLayout>(R.id.difficulty_container)
         container.removeAllViews()
+        findViewById<android.view.View>(R.id.puzzle_menu_root).setBackgroundColor(palette.background)
+        findViewById<TextView>(R.id.menu_title).setTextColor(palette.textPrimary)
+        findViewById<TextView>(R.id.menu_subtitle).setTextColor(palette.textSecondary)
 
         val density = resources.displayMetrics.density
         fun dp(v: Int) = (v * density).toInt()
 
-        for ((diffIndex, diffName) in diffNames.withIndex()) {
+        for ((diffIndex, diffNameResId) in diffNameResIds.withIndex()) {
             val header = TextView(this).apply {
-                text = diffName
+                text = getString(diffNameResId)
                 textSize = 16f
                 setTypeface(null, Typeface.BOLD)
-                setTextColor(Color.parseColor(diffColors[diffIndex]))
+                setTextColor(ThemeManager.difficultyAccent(this@PuzzleMenuActivity, diffIndex))
                 setPadding(0, dp(16), 0, dp(8))
             }
             container.addView(header)
@@ -99,13 +108,10 @@ class PuzzleMenuActivity : AppCompatActivity() {
                         continue
                     }
                     val isCompleted = prefs.isPuzzleCompleted(puzzleType, diffIndex, puzzleIndex)
+                    val difficultyUnlocked = prefs.isDifficultyUnlocked(puzzleType, diffIndex)
                     val prevDone = puzzleIndex == 0 ||
                             prefs.isPuzzleCompleted(puzzleType, diffIndex, puzzleIndex - 1)
-                    val firstOfDiff = puzzleIndex == 0
-                    val prevDiffDone = diffIndex == 0 ||
-                            prefs.getCompletedCount(puzzleType, diffIndex - 1) >=
-                            PrefsManager.getUnlockThreshold(puzzleType, diffIndex - 1)
-                    val isUnlocked = (firstOfDiff && prevDiffDone) || (!firstOfDiff && prevDone)
+                    val isUnlocked = difficultyUnlocked && prevDone
 
                     val card = CardView(this).apply {
                         radius = 12f * density
@@ -115,22 +121,26 @@ class PuzzleMenuActivity : AppCompatActivity() {
                         }
                         layoutParams = lp
                         setCardBackgroundColor(when {
-                            isCompleted -> Color.parseColor(diffColors[diffIndex])
-                            isUnlocked  -> Color.parseColor("#16213E")
-                            else        -> Color.parseColor("#0A0A1A")
+                            isCompleted -> ThemeManager.difficultyAccent(this@PuzzleMenuActivity, diffIndex)
+                            isUnlocked  -> palette.surface
+                            else        -> palette.locked
                         })
                         cardElevation = if (isUnlocked) 4f * density else 0f
                     }
 
                     val tv = TextView(this).apply {
-                        text = if (isCompleted) "★" else "${puzzleIndex + 1}"
+                        text = if (isCompleted) {
+                            getString(R.string.completed_star)
+                        } else {
+                            getString(R.string.number_value, puzzleIndex + 1)
+                        }
                         textSize = 16f
                         gravity = Gravity.CENTER
                         setTypeface(null, Typeface.BOLD)
                         setTextColor(when {
                             isCompleted -> Color.WHITE
-                            isUnlocked  -> Color.WHITE
-                            else        -> Color.parseColor("#444466")
+                            isUnlocked  -> palette.textPrimary
+                            else        -> palette.lockedText
                         })
                         layoutParams = FrameLayout.LayoutParams(
                             FrameLayout.LayoutParams.MATCH_PARENT,

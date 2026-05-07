@@ -1,6 +1,5 @@
 package com.logicpuzzles.slitherlink
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -14,11 +13,14 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.numberText
+import com.logicpuzzles.utils.puzzleHeader
 import java.util.ArrayDeque
 
 class SlitherlinkGameActivity : AppCompatActivity() {
@@ -40,7 +42,8 @@ class SlitherlinkGameActivity : AppCompatActivity() {
 
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
-        puzzle = SlitherlinkPuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_SLITHERLINK, difficulty, puzzleIndex)
+        puzzle = SlitherlinkPuzzles.get(difficulty, catalogIndex)
 
         hEdges = Array(puzzle.rows + 1) { BooleanArray(puzzle.cols) }
         vEdges = Array(puzzle.rows) { BooleanArray(puzzle.cols + 1) }
@@ -54,8 +57,11 @@ class SlitherlinkGameActivity : AppCompatActivity() {
     private fun dp(v: Float) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SLITHERLINK)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -71,8 +77,8 @@ class SlitherlinkGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
         header.addView(TextView(this).apply {
-            text = "Slitherlink • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE); textSize = 16f
+            text = puzzleHeader(R.string.puzzle_slitherlink, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary); textSize = 16f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
@@ -85,9 +91,9 @@ class SlitherlinkGameActivity : AppCompatActivity() {
             refreshBoard()
         })
         header.addView(Button(this).apply {
-            text = "Check"; textSize = 11f
-            setBackgroundColor(Color.parseColor("#F59E0B"))
-            setTextColor(Color.BLACK)
+            text = getString(R.string.action_check); textSize = 11f
+            setBackgroundColor(accent)
+            setTextColor(palette.accentText)
             setOnClickListener { checkSolution() }
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -97,8 +103,8 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         main.addView(header)
 
         main.addView(TextView(this).apply {
-            text = "Tap an edge to toggle. Numbers = edges around that cell. All edges form one closed loop."
-            setTextColor(Color.parseColor("#A0A0C0"))
+            text = getString(R.string.instruction_slitherlink)
+            setTextColor(palette.textSecondary)
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
@@ -130,12 +136,13 @@ class SlitherlinkGameActivity : AppCompatActivity() {
     }
 
     private fun zoomButton(label: String, onClick: () -> Unit): View {
+        val palette = ThemeManager.currentPalette(this)
         return Button(this).apply {
             text = label
             textSize = 16f
             setTypeface(null, Typeface.BOLD)
-            setBackgroundColor(Color.parseColor("#1F2937"))
-            setTextColor(Color.WHITE)
+            setBackgroundColor(palette.button)
+            setTextColor(palette.buttonText)
             minWidth = dp(36)
             minHeight = dp(36)
             setPadding(dp(8), 0, dp(8), 0)
@@ -156,6 +163,7 @@ class SlitherlinkGameActivity : AppCompatActivity() {
     }
 
     private fun buildBoard(): View {
+        val palette = ThemeManager.currentPalette(this)
         val rows = puzzle.rows; val cols = puzzle.cols
         val displayW = resources.displayMetrics.widthPixels
         val pad = dp(16)
@@ -177,7 +185,7 @@ class SlitherlinkGameActivity : AppCompatActivity() {
             )
             layoutParams = lp
             setPadding(dp(8), dp(8), dp(8), dp(8))
-            setBackgroundColor(Color.parseColor("#FAFAFA"))
+            setBackgroundColor(palette.cellEmpty)
         }
 
         for (gr in 0 until 2 * rows + 1) {
@@ -186,7 +194,7 @@ class SlitherlinkGameActivity : AppCompatActivity() {
                 val h = if (gr % 2 == 0) edgeSize else cellSize
                 val view: View = when {
                     gr % 2 == 0 && gc % 2 == 0 -> {
-                        View(this).apply { setBackgroundColor(Color.parseColor("#1F2937")) }
+                        View(this).apply { setBackgroundColor(palette.cellFilled) }
                     }
                     gr % 2 == 0 && gc % 2 == 1 -> {
                         val r = gr / 2; val c = gc / 2
@@ -214,14 +222,14 @@ class SlitherlinkGameActivity : AppCompatActivity() {
                         val r = gr / 2; val c = gc / 2
                         val clue = puzzle.clues[r][c]
                         TextView(this).apply {
-                            text = if (clue >= 0) clue.toString() else ""
-                            setTextColor(Color.parseColor("#1F2937"))
+                            text = if (clue >= 0) numberText(clue) else ""
+                            setTextColor(palette.cellText)
                             textSize = (cellSize / resources.displayMetrics.density / 3.5f)
                                 .coerceAtLeast(12f)
                                 .coerceAtMost(22f)
                             setTypeface(null, Typeface.BOLD)
                             gravity = Gravity.CENTER
-                            setBackgroundColor(Color.WHITE)
+                            setBackgroundColor(palette.cellEmpty)
                         }
                     }
                 }
@@ -242,14 +250,18 @@ class SlitherlinkGameActivity : AppCompatActivity() {
     }
 
     private fun paintHEdge(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SLITHERLINK)
         hEdgeViews[r][c]?.setBackgroundColor(
-            if (hEdges[r][c]) Color.parseColor("#F59E0B") else Color.parseColor("#D1D5DB")
+            if (hEdges[r][c]) accent else palette.gridLine
         )
     }
 
     private fun paintVEdge(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SLITHERLINK)
         vEdgeViews[r][c]?.setBackgroundColor(
-            if (vEdges[r][c]) Color.parseColor("#F59E0B") else Color.parseColor("#D1D5DB")
+            if (vEdges[r][c]) accent else palette.gridLine
         )
     }
 
@@ -329,15 +341,14 @@ class SlitherlinkGameActivity : AppCompatActivity() {
 
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_SLITHERLINK, difficulty, puzzleIndex)
-        AlertDialog.Builder(this)
-            .setTitle("Solved!")
-            .setMessage("Slitherlink complete.")
-            .setPositiveButton("Back to Menu") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
+        CompletionDialogs.showSolved(
+            this,
+            "Solved!",
+            "Slitherlink complete.",
+            MainActivity.TYPE_SLITHERLINK,
+            difficulty,
+            puzzleIndex,
+            SlitherlinkGameActivity::class.java
+        )
     }
 }

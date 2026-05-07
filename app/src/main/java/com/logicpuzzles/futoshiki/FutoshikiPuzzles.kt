@@ -1,165 +1,113 @@
 package com.logicpuzzles.futoshiki
 
+import kotlin.random.Random
+
 // hConstraints[r][c] = constraint between cell (r,c) and (r,c+1): 0=none, 1=<, 2=>
 // vConstraints[r][c] = constraint between cell (r,c) and (r+1,c): 0=none, 1=top<bottom, 2=top>bottom
 data class FutoshikiPuzzle(
     val size: Int,
     val initial: Array<IntArray>,
     val hConstraints: Array<IntArray>,
-    val vConstraints: Array<IntArray>
+    val vConstraints: Array<IntArray>,
+    val solution: Array<IntArray>? = null
 )
 
 object FutoshikiPuzzles {
 
-    /**
-     * @param initial size rows of size chars; '.' = empty, digit = pre-filled
-     * @param h size rows of (size-1) chars; '.' < or >
-     * @param v (size-1) rows of size chars; '.' v (top<bot) or ^ (top>bot)
-     */
-    private fun build(size: Int, initial: String, h: String, v: String): FutoshikiPuzzle {
-        val rowsI = initial.split("/")
-        val initArr = Array(size) { r ->
+    private fun latinSolution(size: Int, variant: Int): Array<IntArray> {
+        val random = Random(10_000 + size * 97 + variant * 313)
+        val rowOrder = (0 until size).toList().shuffled(random)
+        val colOrder = (0 until size).toList().shuffled(random)
+        val digitOrder = (1..size).toList().shuffled(random)
+        val step = coprimeSteps(size)[variant % coprimeSteps(size).size]
+        return Array(size) { r ->
             IntArray(size) { c ->
-                val ch = rowsI[r][c]
-                if (ch == '.') 0 else ch.digitToInt()
+                val base = (rowOrder[r] + colOrder[c] * step) % size
+                digitOrder[base]
             }
         }
-        val rowsH = h.split("/")
-        val hArr = Array(size) { r ->
-            IntArray(size - 1) { c ->
-                when (rowsH[r][c]) { '<' -> 1; '>' -> 2; else -> 0 }
-            }
-        }
-        val rowsV = v.split("/")
-        val vArr = Array(size - 1) { r ->
-            IntArray(size) { c ->
-                when (rowsV[r][c]) { 'v' -> 1; '^' -> 2; else -> 0 }
-            }
-        }
-        return FutoshikiPuzzle(size, initArr, hArr, vArr)
     }
 
-    // Easy 4x4 — based on Latin square 1234/3412/2143/4321 with ~50% cells revealed.
-    // With many anchors, these are nearly always uniquely solvable.
-    private val EASY = listOf(
-        build(4, "1..4/3..2/.1.3/4..1", ".../.../.../...", "..../..../...."),
-        build(4, "..34/3..2/2..3/43..", ".../.../.../...", "..../..../...."),
-        build(4, "1.3./.4.2/.1.3/.3.1", ".../.../.../...", "..../..../...."),
-        build(4, "12../34../21../43..", ".../.../.../...", "..../..../...."),
-        build(4, "..12/..34/..21/..43", ".../.../.../...", "..../..../...."),
-        build(4, "1.2./.3.4/3.4./.1.2", ".../.../.../...", "..../..../...."),
-        build(4, "..21/2..3/3..2/12..", ".../.../.../...", "..../..../...."),
-        build(4, "4..1/.34./..43/1..4", ".../.../.../...", "..../..../...."),
-        build(4, "1234/...1/...2/...3", ".../.../.../...", "..../..../...."),
-        build(4, "1..2/..3./.4../...1", ".../.../.../...", "..../..../....")
-    )
+    private fun coprimeSteps(size: Int): IntArray = when (size) {
+        4 -> intArrayOf(1, 3)
+        5 -> intArrayOf(1, 2, 3, 4)
+        else -> intArrayOf(1)
+    }
 
-    // Medium 5x5 — based on Latin square 12345/23451/34512/45123/51234 with ~40% revealed
-    private val MEDIUM = listOf(
-        build(5, "1...5/2...1/3...2/4...3/5...4", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "12.../23.../34.../45.../51...", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "...45/...51/...12/...23/...34", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "1.3.5/2.4.1/3.5.2/4.1.3/5.2.4", "..../..../..../..../....", "...../...../...../....."),
-        build(5, ".2.4./..4../...../..2../.4.2.", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "1234./....1/3...2/...23/...34", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "12345/...../...../...../.....", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "..3../..3../..3../..3../..3..", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "1..../...../..3../...../....5", "..../..../..../..../....", "...../...../...../....."),
-        build(5, "13.4./24.5./35.1./41.2./52.3.", "..../..../..../..../....", "...../...../...../.....")
-    )
+    private fun build(size: Int, difficulty: Int, index: Int): FutoshikiPuzzle {
+        val variant = difficulty * 31 + index
+        val random = Random(20_000 + variant * 431 + size * 19)
+        val solution = latinSolution(size, variant)
+        val initial = Array(size) { IntArray(size) }
+        val hConstraints = Array(size) { IntArray(size - 1) }
+        val vConstraints = Array(size - 1) { IntArray(size) }
 
-    // Hard 5x5 — fewer pre-fills, many inequalities to constrain solution
-    private val HARD = listOf(
-        build(5,
-            "...../...../...../...../.....",
-            "<.<./<.<./<.<./<.<./<.<.",
-            "vvvvv/vvvvv/vvvvv/vvvvv"),
-        build(5,
-            "1..../...../...../...../....5",
-            "<.../..../..../..../....",
-            "v..../...../...../....."),
-        build(5,
-            "...../...../..3../...../.....",
-            "<<../..../..../..../..>>",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "..../..../..../..../....",
-            "v.v.v/^.^.^/v.v.v/^.^.^"),
-        build(5,
-            "5..../...../...../...../....1",
-            ">.../..../..../..../....",
-            "^..../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<.../..../..../..../...>",
-            "vv.../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "..../<.../..../>.../....",
-            "...../...../...../....."),
-        build(5,
-            "...../.1.../...../...3./.....",
-            "..../..../..../..../....",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<.<./..../>.>./..../<.<.",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "..../..../..../..../....",
-            "v...^/...../v...^/.....")
-    )
+        val revealCount = when (difficulty) {
+            0 -> if (size == 4) 7 else 8
+            1 -> 6
+            2 -> 5
+            else -> 4
+        }
+        for (pos in revealPattern(size, revealCount, random)) {
+            val r = pos / size
+            val c = pos % size
+            initial[r][c] = solution[r][c]
+        }
 
-    // Expert 5x5 — minimal pre-fills, dense inequalities
-    private val EXPERT = listOf(
-        build(5,
-            "...../...../..3../...../.....",
-            "..../..../..../..../....",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<.>./..../..>./..../<.>.",
-            "v...^/...../v...^/....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<<.>/..../<.>./..../>.<.",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<.<./..../>.>./..../<.<.",
-            "...../...../...../....."),
-        build(5,
-            "1..../...../...../...../....5",
-            "..../..../..../..../....",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<<.>/..../<.>./..../>.<.",
-            "v...^/...../v...^/....."),
-        build(5,
-            "...../...../...../...../.....",
-            "..../..../..../..../....",
-            "v.v.v/^.^.^/v.v.v/^.^.^"),
-        build(5,
-            "...../...../...../...../.....",
-            "<.../..../<.../..../<...",
-            "...../...../...../....."),
-        build(5,
-            "...../...../...../...../.....",
-            "<.<./..../>.>./..../<.<.",
-            "v...^/...../v...^/....."),
-        build(5,
-            "...../...../...../...../.....",
-            ">.>./..../<.<./..../>.>.",
-            "...../...../...../.....")
-    )
+        val constraintCount = when (difficulty) {
+            0 -> if (size == 4) 3 else 5
+            1 -> 8
+            2 -> 11
+            else -> 14
+        }
+        val edges = mutableListOf<Edge>()
+        for (r in 0 until size) {
+            for (c in 0 until size - 1) {
+                edges.add(Edge(horizontal = true, r = r, c = c))
+            }
+        }
+        for (r in 0 until size - 1) {
+            for (c in 0 until size) {
+                edges.add(Edge(horizontal = false, r = r, c = c))
+            }
+        }
+        for (edge in edges.shuffled(random).take(constraintCount.coerceAtMost(edges.size))) {
+            if (edge.horizontal) {
+                hConstraints[edge.r][edge.c] =
+                    if (solution[edge.r][edge.c] < solution[edge.r][edge.c + 1]) 1 else 2
+            } else {
+                vConstraints[edge.r][edge.c] =
+                    if (solution[edge.r][edge.c] < solution[edge.r + 1][edge.c]) 1 else 2
+            }
+        }
+
+        return FutoshikiPuzzle(size, initial, hConstraints, vConstraints, solution.map { it.copyOf() }.toTypedArray())
+    }
+
+    private data class Edge(val horizontal: Boolean, val r: Int, val c: Int)
+
+    private fun revealPattern(size: Int, count: Int, random: Random): Set<Int> {
+        val selected = LinkedHashSet<Int>()
+        val rows = (0 until size).toList().shuffled(random)
+        for (r in rows.take(count.coerceAtMost(size))) {
+            selected.add(r * size + random.nextInt(size))
+        }
+
+        val all = (0 until size * size).toMutableList()
+        all.shuffle(random)
+        for (pos in all) {
+            if (selected.size >= count) break
+            selected.add(pos)
+        }
+        return selected
+    }
 
     fun get(difficulty: Int, index: Int): FutoshikiPuzzle {
-        val pool = when (difficulty) {
-            0 -> EASY; 1 -> MEDIUM; 2 -> HARD; else -> EXPERT
+        val safeIndex = index.coerceIn(0, 14)
+        val size = when (difficulty) {
+            0 -> 4
+            else -> 5
         }
-        return pool[index.coerceIn(0, pool.size - 1)]
+        return build(size, difficulty.coerceIn(0, 3), safeIndex)
     }
 }

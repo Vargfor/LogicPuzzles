@@ -1,106 +1,134 @@
 package com.logicpuzzles.hidato
 
+import kotlin.math.roundToInt
+import kotlin.random.Random
+
 // initial[r][c]: 0 = empty, -1 = blocked (no cell), >0 = pre-filled
 data class HidatoPuzzle(
     val rows: Int,
     val cols: Int,
     val initial: Array<IntArray>,
-    val maxNumber: Int
+    val maxNumber: Int,
+    val solution: Array<IntArray>? = null
 )
 
 object HidatoPuzzles {
 
-    /**
-     * Encoding: rows separated by '/'. Each row uses comma-separated tokens.
-     * '.' = empty, '#' = blocked, integer = pre-filled.
-     */
-    private fun build(text: String): HidatoPuzzle {
-        val rowsStr = text.split("/")
-        val rows = rowsStr.size
-        val cols = rowsStr[0].split(",").size
-        val grid = Array(rows) { r ->
-            val tokens = rowsStr[r].split(",")
-            IntArray(cols) { c ->
-                when (val t = tokens[c].trim()) {
-                    "." -> 0
-                    "#" -> -1
-                    else -> t.toInt()
-                }
-            }
+    private fun build(rows: Int, cols: Int, difficulty: Int, index: Int): HidatoPuzzle {
+        val random = Random(30_000 + difficulty * 997 + index * 131)
+        val path = randomPath(rows, cols, random)
+        val maxNumber = path.size
+        val initial = Array(rows) { IntArray(cols) }
+
+        val revealCount = when (difficulty) {
+            0 -> (maxNumber * 0.62f).roundToInt()
+            1 -> (maxNumber * 0.44f).roundToInt()
+            2 -> (maxNumber * 0.34f).roundToInt()
+            else -> (maxNumber * 0.28f).roundToInt()
+        }.coerceIn(4, maxNumber)
+
+        val solution = Array(rows) { IntArray(cols) }
+        for ((position, cell) in path.withIndex()) {
+            solution[cell.first][cell.second] = position + 1
         }
-        var maxNum = 0
-        for (r in 0 until rows) for (c in 0 until cols) {
-            if (grid[r][c] != -1) maxNum++
+
+        for (number in anchorPattern(maxNumber, revealCount, random)) {
+            val cell = path[number - 1]
+            initial[cell.first][cell.second] = number
         }
-        return HidatoPuzzle(rows, cols, grid, maxNum)
+        return HidatoPuzzle(rows, cols, initial, maxNumber, solution)
     }
 
-    // Easy 3x3 — only 5 puzzles since 3x3 Hidato is genuinely trivial.
-    // Verified unique by hand using "corners + center" anchor pattern (1 at corner, 9 at center).
-    // Each odd-anchor pair has exactly one connecting empty cell, forcing the path.
-    private val EASY = listOf(
-        build("1,.,3/.,9,./7,.,5"),
-        build("3,.,1/.,9,./5,.,7"),
-        build("3,.,5/.,9,./1,.,7"),
-        build("5,.,7/.,9,./3,.,1"),
-        build("1,.,7/.,9,./3,.,5")
-    )
+    private fun randomPath(rows: Int, cols: Int, random: Random): List<Pair<Int, Int>> {
+        repeat(80) { attempt ->
+            val attemptRandom = Random(random.nextInt() + attempt * 7_919)
+            val visited = Array(rows) { BooleanArray(cols) }
+            val path = ArrayList<Pair<Int, Int>>(rows * cols)
+            val start = attemptRandom.nextInt(rows) to attemptRandom.nextInt(cols)
 
-    // Medium 4x4 — dense anchor patterns derived from a snake path.
-    // Snake: 1,2,3,4 / 8,7,6,5 / 9,10,11,12 / 16,15,14,13
-    // We anchor row corners + a middle cell to constrain the path tightly.
-    private val MEDIUM = listOf(
-        build("1,.,.,4/8,.,.,5/9,.,.,12/16,.,.,13"),
-        build("1,2,.,4/.,7,.,5/9,10,.,12/16,.,.,13"),
-        build("1,.,3,4/8,.,6,5/9,.,11,12/16,.,14,13"),
-        build("1,.,.,16/2,.,.,15/3,.,.,14/4,.,.,13"),
-        build("16,.,.,1/.,.,.,2/.,.,.,3/13,.,.,4"),
-        build("1,2,3,4/.,.,.,5/.,.,.,12/16,.,.,13"),
-        build("1,.,.,4/.,.,.,5/9,.,.,12/16,15,14,13"),
-        build("1,.,.,4/.,7,6,./.,.,.,./16,15,.,13"),
-        build("1,.,3,./8,.,.,5/.,10,.,12/16,.,14,."),
-        build("1,2,.,./.,.,.,5/9,.,.,./16,15,14,.")
-    )
+            fun onwardCount(r: Int, c: Int): Int {
+                var count = 0
+                for (dr in -1..1) for (dc in -1..1) {
+                    if (dr == 0 && dc == 0) continue
+                    val nr = r + dr
+                    val nc = c + dc
+                    if (nr in 0 until rows && nc in 0 until cols && !visited[nr][nc]) {
+                        count++
+                    }
+                }
+                return count
+            }
 
-    // Hard 5x5 — full 25-cell paths with many anchors. 15 puzzles to compensate for fewer easies.
-    // Snake-style reference: 1,2,3,4,5 / 10,9,8,7,6 / 11,12,13,14,15 / 20,19,18,17,16 / 21,22,23,24,25
-    private val HARD = listOf(
-        build("1,.,.,.,5/.,.,.,.,6/11,.,.,.,15/.,.,.,.,16/21,.,.,.,25"),
-        build("1,2,.,.,5/.,.,.,.,6/11,.,13,.,15/.,.,.,.,16/21,.,.,.,25"),
-        build("1,.,.,.,5/10,.,.,.,6/11,.,.,.,15/20,.,.,.,16/21,.,.,.,25"),
-        build("1,.,.,.,25/.,.,.,.,./.,.,13,.,./.,.,.,.,./5,.,.,.,21"),
-        build("1,.,3,.,5/.,9,.,7,./11,.,13,.,15/.,19,.,17,./21,.,23,.,25"),
-        build("25,.,.,.,1/.,.,.,.,./.,.,13,.,./.,.,.,.,./5,.,.,.,21"),
-        build("1,2,3,4,5/10,.,.,.,6/11,.,.,.,15/20,.,.,.,16/21,22,23,24,25"),
-        build("1,.,.,.,5/.,.,8,.,./.,12,13,14,./.,.,18,.,./21,.,.,.,25"),
-        build("1,.,.,.,./.,9,.,.,./.,.,13,.,./.,.,.,17,./.,.,.,.,25"),
-        build("1,.,.,.,5/10,.,.,.,6/.,.,13,.,./20,.,.,.,16/21,.,.,.,25"),
-        // Five additional puzzles to balance the reduced Easy count.
-        build("1,.,.,.,./.,.,.,.,./.,.,13,.,./.,.,.,.,./.,.,.,.,25"),
-        build("1,.,.,.,5/6,.,.,.,10/11,.,.,.,15/16,.,.,.,20/21,.,.,.,25"),
-        build("1,.,3,.,5/.,.,.,.,./11,.,13,.,15/.,.,.,.,./21,.,23,.,25"),
-        build("1,.,.,.,./.,9,10,.,./.,.,.,.,./.,.,17,18,./.,.,.,.,25"),
-        build(".,.,.,.,1/.,.,.,.,./.,.,13,.,./.,.,.,.,./25,.,.,.,.")
-    )
+            fun dfs(r: Int, c: Int): Boolean {
+                visited[r][c] = true
+                path.add(r to c)
+                if (path.size == rows * cols) return true
 
-    // Expert 5x5 with blocked cells (~21 cells used). Path 1..21 anchors.
-    private val EXPERT = listOf(
-        build("1,.,.,.,./.,.,#,.,./.,.,.,.,./.,.,#,.,./.,.,.,.,21"),
-        build("1,.,.,.,./.,#,.,#,./.,.,.,.,./.,#,.,#,./.,.,.,.,21"),
-        build(".,.,1,.,./.,.,.,.,./.,.,.,.,./.,.,.,.,./.,.,21,.,."),
-        build("1,.,#,.,./.,.,.,.,./#,.,.,.,#/.,.,.,.,./.,.,#,.,21"),
-        build(".,.,.,.,./.,1,#,.,./.,.,.,.,./.,.,#,21,./.,.,.,.,."),
-        build("1,2,.,.,./.,#,.,#,./.,.,.,.,./.,#,.,#,./.,.,.,.,21"),
-        build("21,.,.,.,1/.,.,#,.,./.,.,.,.,./.,.,#,.,./.,.,.,.,."),
-        build("1,.,.,.,./.,#,.,#,./.,.,21,.,./.,#,.,#,./.,.,.,.,."),
-        build(".,.,.,.,21/.,.,#,.,./.,.,.,.,./.,.,#,.,./1,.,.,.,."),
-        build("1,.,.,.,./.,.,.,.,./#,.,#,.,#/.,.,.,.,./.,.,.,.,21")
-    )
+                val candidates = ArrayList<Pair<Pair<Int, Int>, Int>>()
+                for (dr in -1..1) for (dc in -1..1) {
+                    if (dr == 0 && dc == 0) continue
+                    val nr = r + dr
+                    val nc = c + dc
+                    if (nr in 0 until rows && nc in 0 until cols && !visited[nr][nc]) {
+                        candidates.add((nr to nc) to attemptRandom.nextInt(1_000))
+                    }
+                }
+                candidates.sortWith(
+                    compareBy<Pair<Pair<Int, Int>, Int>> { onwardCount(it.first.first, it.first.second) }
+                        .thenBy { it.second }
+                )
+
+                for ((cell, _) in candidates) {
+                    if (dfs(cell.first, cell.second)) return true
+                }
+
+                path.removeAt(path.lastIndex)
+                visited[r][c] = false
+                return false
+            }
+
+            if (dfs(start.first, start.second)) return path
+        }
+
+        return snakeFallback(rows, cols)
+    }
+
+    private fun anchorPattern(maxNumber: Int, revealCount: Int, random: Random): Set<Int> {
+        val anchors = linkedSetOf(1, maxNumber)
+        val interiorCount = revealCount - anchors.size
+        val spacing = maxNumber.toFloat() / (interiorCount + 1)
+        for (i in 1..interiorCount) {
+            val center = (i * spacing).roundToInt().coerceIn(2, maxNumber - 1)
+            val jitter = random.nextInt(-2, 3)
+            anchors.add((center + jitter).coerceIn(2, maxNumber - 1))
+        }
+
+        val remaining = (2 until maxNumber).toMutableList()
+        remaining.shuffle(random)
+        for (number in remaining) {
+            if (anchors.size >= revealCount) break
+            anchors.add(number)
+        }
+        return anchors
+    }
+
+    private fun snakeFallback(rows: Int, cols: Int): List<Pair<Int, Int>> {
+        val path = ArrayList<Pair<Int, Int>>(rows * cols)
+        for (r in 0 until rows) {
+            val range = if (r % 2 == 0) 0 until cols else cols - 1 downTo 0
+            for (c in range) path.add(r to c)
+        }
+        return path
+    }
 
     fun get(difficulty: Int, index: Int): HidatoPuzzle {
-        val pool = when (difficulty) {
-            0 -> EASY; 1 -> MEDIUM; 2 -> HARD; else -> EXPERT
+        val safeDifficulty = difficulty.coerceIn(0, 3)
+        val safeIndex = index.coerceIn(0, 14)
+        val size = when (safeDifficulty) {
+            0 -> 3
+            1 -> 4
+            else -> 5
         }
-        return pool[index.coerceIn(0, pool.size - 1)]
+        return build(size, size, safeDifficulty, safeIndex)
     }
 }

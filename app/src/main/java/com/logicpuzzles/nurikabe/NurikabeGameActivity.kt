@@ -1,6 +1,5 @@
 package com.logicpuzzles.nurikabe
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -11,11 +10,14 @@ import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.numberText
+import com.logicpuzzles.utils.puzzleHeader
 import java.util.ArrayDeque
 
 class NurikabeGameActivity : AppCompatActivity() {
@@ -33,7 +35,8 @@ class NurikabeGameActivity : AppCompatActivity() {
 
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
-        puzzle = NurikabePuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_NURIKABE, difficulty, puzzleIndex)
+        puzzle = NurikabePuzzles.get(difficulty, catalogIndex)
         shaded = Array(puzzle.rows) { BooleanArray(puzzle.cols) }
 
         buildUi()
@@ -42,8 +45,11 @@ class NurikabeGameActivity : AppCompatActivity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_NURIKABE)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -59,22 +65,22 @@ class NurikabeGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
         header.addView(TextView(this).apply {
-            text = "Nurikabe • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE); textSize = 18f
+            text = puzzleHeader(R.string.puzzle_nurikabe, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary); textSize = 18f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(Button(this).apply {
-            text = "Check"; textSize = 12f
-            setBackgroundColor(Color.parseColor("#06B6D4"))
-            setTextColor(Color.WHITE)
+            text = getString(R.string.action_check); textSize = 12f
+            setBackgroundColor(accent)
+            setTextColor(palette.buttonText)
             setOnClickListener { checkSolution() }
         })
         main.addView(header)
 
         main.addView(TextView(this).apply {
-            text = "Tap to shade. Each number forms a white island of exactly that size. All shaded cells must connect. No 2×2 shaded."
-            setTextColor(Color.parseColor("#A0A0C0"))
+            text = getString(R.string.instruction_nurikabe)
+            setTextColor(palette.textSecondary)
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
@@ -137,18 +143,19 @@ class NurikabeGameActivity : AppCompatActivity() {
     }
 
     private fun paintCell(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
         val tv = cellViews[r][c]
         val n = puzzle.numbers[r][c]
         if (n > 0) {
-            tv.text = n.toString()
-            tv.setBackgroundColor(Color.WHITE)
-            tv.setTextColor(Color.parseColor("#0E7490"))
+            tv.text = numberText(n)
+            tv.setBackgroundColor(palette.cellFixed)
+            tv.setTextColor(palette.cellFixedText)
         } else if (shaded[r][c]) {
             tv.text = ""
-            tv.setBackgroundColor(Color.parseColor("#1A1A2E"))
+            tv.setBackgroundColor(palette.shadedCell)
         } else {
             tv.text = ""
-            tv.setBackgroundColor(Color.WHITE)
+            tv.setBackgroundColor(palette.cellEmpty)
         }
     }
 
@@ -162,8 +169,7 @@ class NurikabeGameActivity : AppCompatActivity() {
                 return
             }
         }
-        // Each numbered cell's white island must have the correct size and contain no other number.
-        // Unnumbered white regions are allowed.
+        // Each white island must have exactly one clue, and that island must match the clue size.
         val visited = Array(rows) { BooleanArray(cols) }
         for (r in 0 until rows) for (c in 0 until cols) {
             if (!white[r][c] || visited[r][c] || puzzle.numbers[r][c] == 0) continue
@@ -188,6 +194,12 @@ class NurikabeGameActivity : AppCompatActivity() {
             }
             if (region.size != number) {
                 Toast.makeText(this, "Island $number has wrong size (got ${region.size}, need $number).", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+        for (r in 0 until rows) for (c in 0 until cols) {
+            if (white[r][c] && !visited[r][c]) {
+                Toast.makeText(this, "Every white island needs a number.", Toast.LENGTH_SHORT).show()
                 return
             }
         }
@@ -219,15 +231,14 @@ class NurikabeGameActivity : AppCompatActivity() {
         }
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_NURIKABE, difficulty, puzzleIndex)
-        AlertDialog.Builder(this)
-            .setTitle("Solved!")
-            .setMessage("Nurikabe complete.")
-            .setPositiveButton("Back to Menu") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
+        CompletionDialogs.showSolved(
+            this,
+            "Solved!",
+            "Nurikabe complete.",
+            MainActivity.TYPE_NURIKABE,
+            difficulty,
+            puzzleIndex,
+            NurikabeGameActivity::class.java
+        )
     }
 }

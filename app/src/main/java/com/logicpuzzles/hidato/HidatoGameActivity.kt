@@ -1,6 +1,5 @@
 package com.logicpuzzles.hidato
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -11,11 +10,14 @@ import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
 import com.logicpuzzles.R
+import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.numberText
+import com.logicpuzzles.utils.puzzleHeader
 import kotlin.math.abs
 
 class HidatoGameActivity : AppCompatActivity() {
@@ -36,7 +38,8 @@ class HidatoGameActivity : AppCompatActivity() {
 
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
-        puzzle = HidatoPuzzles.get(difficulty, puzzleIndex)
+        val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_HIDATO, difficulty, puzzleIndex)
+        puzzle = HidatoPuzzles.get(difficulty, catalogIndex)
 
         values = Array(puzzle.rows) { puzzle.initial[it].copyOf() }
         fixed = Array(puzzle.rows) { r ->
@@ -50,8 +53,11 @@ class HidatoGameActivity : AppCompatActivity() {
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_HIDATO)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
+        root.setBackgroundColor(palette.background)
 
         val main = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -67,22 +73,22 @@ class HidatoGameActivity : AppCompatActivity() {
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
         header.addView(TextView(this).apply {
-            text = "Hidato • ${diffName(difficulty)} #${puzzleIndex + 1}"
-            setTextColor(Color.WHITE); textSize = 18f
+            text = puzzleHeader(R.string.puzzle_hidato, difficulty, puzzleIndex)
+            setTextColor(palette.textPrimary); textSize = 18f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         header.addView(Button(this).apply {
-            text = "Check"; textSize = 12f
-            setBackgroundColor(Color.parseColor("#EC4899"))
-            setTextColor(Color.WHITE)
+            text = getString(R.string.action_check); textSize = 12f
+            setBackgroundColor(accent)
+            setTextColor(palette.buttonText)
             setOnClickListener { checkSolution() }
         })
         main.addView(header)
 
         main.addView(TextView(this).apply {
-            text = "Fill 1–${puzzle.maxNumber}. Each next number must touch the previous (incl. diagonals)."
-            setTextColor(Color.parseColor("#A0A0C0"))
+            text = getString(R.string.instruction_hidato, puzzle.maxNumber)
+            setTextColor(palette.textSecondary)
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
@@ -102,6 +108,7 @@ class HidatoGameActivity : AppCompatActivity() {
     }
 
     private fun buildBoard(): View {
+        val palette = ThemeManager.currentPalette(this)
         val displayW = resources.displayMetrics.widthPixels
         val pad = dp(16)
         val cellSize = ((displayW - 2 * pad) / puzzle.cols).coerceAtMost(dp(56)).coerceAtLeast(dp(28))
@@ -120,7 +127,7 @@ class HidatoGameActivity : AppCompatActivity() {
             for (c in 0 until puzzle.cols) {
                 val initial = puzzle.initial[r][c]
                 val cell: View = if (initial == -1) {
-                    View(this).apply { setBackgroundColor(Color.BLACK) }
+                    View(this).apply { setBackgroundColor(palette.locked) }
                 } else {
                     TextView(this).apply {
                         gravity = Gravity.CENTER
@@ -144,9 +151,10 @@ class HidatoGameActivity : AppCompatActivity() {
     }
 
     private fun buildNumpad(): View {
+        val palette = ThemeManager.currentPalette(this)
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.parseColor("#16213E"))
+            setBackgroundColor(palette.surface)
             setPadding(dp(8), dp(8), dp(8), dp(8))
         }
 
@@ -178,11 +186,12 @@ class HidatoGameActivity : AppCompatActivity() {
     }
 
     private fun numpadBtn(label: String, accent: Boolean, onClick: () -> Unit): View {
+        val palette = ThemeManager.currentPalette(this)
         return Button(this).apply {
             text = label; textSize = 16f
             setTypeface(null, Typeface.BOLD)
-            setTextColor(if (accent) Color.WHITE else Color.WHITE)
-            setBackgroundColor(if (accent) Color.parseColor("#EC4899") else Color.parseColor("#0F3460"))
+            setTextColor(palette.buttonText)
+            setBackgroundColor(if (accent) ThemeManager.puzzleAccent(this@HidatoGameActivity, MainActivity.TYPE_HIDATO) else palette.button)
             layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
                 setMargins(dp(2), 0, dp(2), 0)
             }
@@ -229,17 +238,22 @@ class HidatoGameActivity : AppCompatActivity() {
     }
 
     private fun paintCell(r: Int, c: Int) {
+        val palette = ThemeManager.currentPalette(this)
         val tv = cellViews[r][c] ?: return
         val v = values[r][c]
         val isFixed = fixed[r][c]
         val isSelected = (r == selectedRow && c == selectedCol)
-        tv.text = if (v == 0) "" else v.toString()
+        tv.text = if (v == 0) "" else numberText(v)
         tv.setBackgroundColor(when {
-            isSelected -> Color.parseColor("#FCE7F3")
-            isFixed -> Color.parseColor("#FBCFE8")
-            else -> Color.WHITE
+            isSelected -> palette.cellSelected
+            isFixed -> palette.cellFixed
+            else -> palette.cellEmpty
         })
-        tv.setTextColor(if (isFixed) Color.parseColor("#9D174D") else Color.BLACK)
+        tv.setTextColor(when {
+            isSelected -> palette.cellSelectedText
+            isFixed -> palette.cellFixedText
+            else -> palette.cellText
+        })
     }
 
     private fun checkSolution() {
@@ -267,15 +281,14 @@ class HidatoGameActivity : AppCompatActivity() {
         }
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_HIDATO, difficulty, puzzleIndex)
-        AlertDialog.Builder(this)
-            .setTitle("Solved!")
-            .setMessage("Hidato complete.")
-            .setPositiveButton("Back to Menu") { _, _ -> finish() }
-            .setCancelable(false)
-            .show()
-    }
-
-    private fun diffName(d: Int) = when (d) {
-        0 -> "Easy"; 1 -> "Medium"; 2 -> "Hard"; else -> "Expert"
+        CompletionDialogs.showSolved(
+            this,
+            "Solved!",
+            "Hidato complete.",
+            MainActivity.TYPE_HIDATO,
+            difficulty,
+            puzzleIndex,
+            HidatoGameActivity::class.java
+        )
     }
 }
