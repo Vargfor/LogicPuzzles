@@ -9,6 +9,8 @@
     <string name="ad_label">Ad</string>
     <string name="ad_promo">Try our other puzzle apps &#8212; coming soon!</string>
     <string name="color_theme">Color theme</string>
+    <string name="normal_themes">Normal themes</string>
+    <string name="colorblind_themes">Colorblind themes</string>
     <string name="theme_selected">%1$s selected</string>
     <string name="reset_progress_shuffle">Reset progress and shuffle levels</string>
     <string name="reset_all_progress_title">Reset all progress?</string>

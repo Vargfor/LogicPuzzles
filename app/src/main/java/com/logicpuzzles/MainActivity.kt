@@ -9,12 +9,15 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.net.toUri
+import com.cyberhub.logicgames.R
+import com.logicpuzzles.utils.AppPalette
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.PuzzleVerifier
 import com.logicpuzzles.utils.ThemeManager
@@ -84,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         val palette = ThemeManager.currentPalette(this)
         val density = resources.displayMetrics.density
         fun dp(v: Int) = (v * density).toInt()
+        val selectedThemeId = ThemeManager.selectedThemeId(this)
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -99,39 +103,26 @@ class MainActivity : AppCompatActivity() {
         })
 
         var dialog: AlertDialog? = null
-        for (option in ThemeManager.palettes) {
-            val selected = option.id == ThemeManager.selectedThemeId(this)
-            val row = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(dp(12), dp(10), dp(12), dp(10))
-                background = roundedDrawable(
-                    if (selected) palette.surfaceStrong else palette.surface,
-                    palette.gridLine,
-                    dp(8).toFloat()
-                )
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { bottomMargin = dp(8) }
-                setOnClickListener {
-                    ThemeManager.setTheme(this@MainActivity, option.id)
-                    dialog?.dismiss()
-                    buildCards()
-                }
-            }
-            row.addView(View(this).apply {
-                background = roundedDrawable(option.accent, option.gridLine, dp(12).toFloat())
-                layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(10) }
-            })
-            row.addView(TextView(this).apply {
-                text = if (selected) getString(R.string.theme_selected, option.name) else option.name
-                textSize = 14f
-                setTextColor(palette.textPrimary)
-                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            })
-            content.addView(row)
-        }
+        val normalSelected = ThemeManager.normalPalettes.any { it.id == selectedThemeId }
+        val colorblindSelected = ThemeManager.colorblindPalettes.any { it.id == selectedThemeId }
+        content.addView(themeMenuRow(
+            title = getString(R.string.normal_themes),
+            previewColor = if (normalSelected) palette.accent else ThemeManager.normalPalettes.first().accent,
+            selected = normalSelected,
+            palette = palette
+        ) {
+            dialog?.dismiss()
+            showThemeMenu(R.string.normal_themes, ThemeManager.normalPalettes)
+        })
+        content.addView(themeMenuRow(
+            title = getString(R.string.colorblind_themes),
+            previewColor = if (colorblindSelected) palette.accent else ThemeManager.colorblindPalettes.first().accent,
+            selected = colorblindSelected,
+            palette = palette
+        ) {
+            dialog?.dismiss()
+            showThemeMenu(R.string.colorblind_themes, ThemeManager.colorblindPalettes)
+        })
 
         content.addView(Button(this).apply {
             text = getString(R.string.reset_progress_shuffle)
@@ -146,10 +137,82 @@ class MainActivity : AppCompatActivity() {
 
         dialog = AlertDialog.Builder(this)
             .setTitle(R.string.settings)
-            .setView(content)
+            .setView(ScrollView(this).apply { addView(content) })
             .setNegativeButton(R.string.close, null)
             .create()
         dialog.show()
+    }
+
+    private fun showThemeMenu(@StringRes titleResId: Int, options: List<AppPalette>) {
+        val palette = ThemeManager.currentPalette(this)
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(8), dp(18), dp(4))
+        }
+
+        var dialog: AlertDialog? = null
+        for (option in options) {
+            val selected = option.id == ThemeManager.selectedThemeId(this)
+            content.addView(themeMenuRow(
+                title = if (selected) getString(R.string.theme_selected, option.name) else option.name,
+                previewColor = option.accent,
+                selected = selected,
+                palette = palette
+            ) {
+                ThemeManager.setTheme(this@MainActivity, option.id)
+                dialog?.dismiss()
+                buildCards()
+            })
+        }
+
+        dialog = AlertDialog.Builder(this)
+            .setTitle(titleResId)
+            .setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton(R.string.close, null)
+            .create()
+        dialog.show()
+    }
+
+    private fun themeMenuRow(
+        title: String,
+        previewColor: Int,
+        selected: Boolean,
+        palette: AppPalette,
+        onClick: () -> Unit
+    ): View {
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            background = roundedDrawable(
+                if (selected) palette.surfaceStrong else palette.surface,
+                palette.gridLine,
+                dp(8).toFloat()
+            )
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(8) }
+            setOnClickListener { onClick() }
+
+            addView(View(this@MainActivity).apply {
+                background = roundedDrawable(previewColor, palette.gridLine, dp(12).toFloat())
+                layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(10) }
+            })
+            addView(TextView(this@MainActivity).apply {
+                text = title
+                textSize = 14f
+                setTextColor(palette.textPrimary)
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+        }
     }
 
     private fun roundedDrawable(fill: Int, stroke: Int, radius: Float): GradientDrawable =

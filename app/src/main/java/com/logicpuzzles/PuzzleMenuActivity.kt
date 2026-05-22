@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.cyberhub.logicgames.R
 import com.logicpuzzles.futoshiki.FutoshikiGameActivity
 import com.logicpuzzles.hidato.HidatoGameActivity
 import com.logicpuzzles.kakuro.KakuroGameActivity

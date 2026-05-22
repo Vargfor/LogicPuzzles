@@ -7,28 +7,39 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.GridLayout
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
-import com.logicpuzzles.R
+import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import kotlin.math.roundToInt
 
 class NonogramGameActivity : AppCompatActivity() {
+
+    companion object {
+        private const val MIN_ZOOM = 0.75f
+        private const val MAX_ZOOM = 2.5f
+        private const val ZOOM_STEP = 0.25f
+    }
 
     private var difficulty = 0
     private var puzzleIndex = 0
     private lateinit var solution: Array<IntArray>
     private lateinit var grid: Array<IntArray>  // 0=empty, 1=filled, 2=marked
     private lateinit var cellViews: Array<Array<TextView>>
+    private lateinit var boardContainer: FrameLayout
+    private lateinit var zoomResetButton: Button
     private var rows = 5
     private var cols = 5
     private var solved = false
+    private var zoomLevel = 1f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,16 +101,86 @@ class NonogramGameActivity : AppCompatActivity() {
             setPadding(dp(12), 0, dp(12), dp(8))
         })
 
+        main.addView(buildZoomControls())
+
         val scroll = ScrollView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
             )
+            isFillViewport = true
         }
-        scroll.addView(buildBoard())
+        boardContainer = FrameLayout(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+            addView(buildBoard())
+        }
+        val horizontalScroll = HorizontalScrollView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+            isFillViewport = true
+            addView(boardContainer)
+        }
+        scroll.addView(horizontalScroll)
         main.addView(scroll)
 
         root.addView(main)
     }
+
+    private fun buildZoomControls(): View {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(dp(12), 0, dp(12), dp(8))
+
+            addView(zoomButton("-", "Zoom out") { changeZoom(-ZOOM_STEP) })
+            zoomResetButton = zoomButton(zoomText(), "Reset zoom") { setZoom(1f) }
+            addView(zoomResetButton)
+            addView(zoomButton("+", "Zoom in") { changeZoom(ZOOM_STEP) })
+        }
+    }
+
+    private fun zoomButton(label: String, description: String, onClick: () -> Unit): Button {
+        val palette = ThemeManager.currentPalette(this)
+        return Button(this).apply {
+            text = label
+            contentDescription = description
+            textSize = 12f
+            setBackgroundColor(palette.button)
+            setTextColor(palette.buttonText)
+            minWidth = dp(44)
+            minimumWidth = dp(44)
+            minHeight = dp(36)
+            minimumHeight = dp(36)
+            setPadding(dp(8), 0, dp(8), 0)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginStart = dp(3)
+                marginEnd = dp(3)
+            }
+            setOnClickListener { onClick() }
+        }
+    }
+
+    private fun changeZoom(delta: Float) {
+        setZoom(zoomLevel + delta)
+    }
+
+    private fun setZoom(value: Float) {
+        zoomLevel = value.coerceIn(MIN_ZOOM, MAX_ZOOM)
+        if (::zoomResetButton.isInitialized) zoomResetButton.text = zoomText()
+        if (::boardContainer.isInitialized) {
+            boardContainer.removeAllViews()
+            boardContainer.addView(buildBoard())
+        }
+    }
+
+    private fun zoomText(): String = "${(zoomLevel * 100).roundToInt()}%"
 
     private fun buildBoard(): View {
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_NONOGRAM)
@@ -132,12 +213,19 @@ class NonogramGameActivity : AppCompatActivity() {
         val displayW = resources.displayMetrics.widthPixels
         val pad = dp(8)
         val totalCols = maxRowClues + cols
-        val cellSize = ((displayW - pad * 2) / totalCols).coerceAtMost(dp(48)).coerceAtLeast(dp(18))
+        val fittedCellSize = ((displayW - pad * 2) / totalCols).coerceAtMost(dp(48)).coerceAtLeast(dp(18))
+        val cellSize = (fittedCellSize * zoomLevel).roundToInt().coerceIn(dp(12), dp(120))
+        val clueTextSize = scaledTextSize(11f)
+        val markTextSize = scaledTextSize(14f)
 
         val gridLayout = GridLayout(this).apply {
             rowCount = maxColClues + rows
             columnCount = maxRowClues + cols
             setPadding(pad, pad, pad, pad)
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
         }
 
         cellViews = Array(rows) { Array(cols) { TextView(this) } }
@@ -157,7 +245,7 @@ class NonogramGameActivity : AppCompatActivity() {
                 val tv = TextView(this).apply {
                     if (i >= padding) text = numberText(clues[i - padding])
                     setTextColor(accent)
-                    textSize = 11f
+                    textSize = clueTextSize
                     gravity = Gravity.CENTER
                     setTypeface(null, Typeface.BOLD)
                 }
@@ -179,7 +267,7 @@ class NonogramGameActivity : AppCompatActivity() {
                 val tv = TextView(this).apply {
                     if (i >= padding) text = numberText(clues[i - padding])
                     setTextColor(accent)
-                    textSize = 11f
+                    textSize = clueTextSize
                     gravity = Gravity.CENTER
                     setTypeface(null, Typeface.BOLD)
                 }
@@ -198,7 +286,7 @@ class NonogramGameActivity : AppCompatActivity() {
             for (c in 0 until cols) {
                 val cell = TextView(this).apply {
                     gravity = Gravity.CENTER
-                    textSize = 14f
+                    textSize = markTextSize
                     setTypeface(null, Typeface.BOLD)
                 }
                 cell.layoutParams = GridLayout.LayoutParams().apply {
@@ -216,6 +304,10 @@ class NonogramGameActivity : AppCompatActivity() {
         }
 
         return gridLayout
+    }
+
+    private fun scaledTextSize(baseSp: Float): Float {
+        return (baseSp * zoomLevel).coerceIn(9f, 28f)
     }
 
     private fun blankCell(row: Int, col: Int, size: Int): View {
@@ -262,7 +354,7 @@ class NonogramGameActivity : AppCompatActivity() {
             }
             2 -> {
                 cell.setBackgroundColor(palette.cellEmpty)
-                cell.text = "✕"
+                cell.text = "X"
                 cell.setTextColor(palette.danger)
             }
         }

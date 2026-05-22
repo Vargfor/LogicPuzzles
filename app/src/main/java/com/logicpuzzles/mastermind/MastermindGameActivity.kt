@@ -14,7 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.logicpuzzles.MainActivity
-import com.logicpuzzles.R
+import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
@@ -28,16 +28,16 @@ class MastermindGameActivity : AppCompatActivity() {
     }
 
     private val colorValues = listOf(
-        0xFFE94560.toInt(), // Red
-        0xFF4ECDC4.toInt(), // Teal
-        0xFFFFD93D.toInt(), // Yellow
-        0xFF6BCB77.toInt(), // Green
-        0xFFA855F7.toInt(), // Purple
-        0xFFFF6B35.toInt(), // Orange
-        0xFF00B4D8.toInt(), // Blue
-        0xFFFF8FAB.toInt()  // Pink
+        0xFF0072B2.toInt(), // Blue
+        0xFFE69F00.toInt(), // Orange
+        0xFF009E73.toInt(), // Teal
+        0xFFF0E442.toInt(), // Yellow
+        0xFFCC79A7.toInt(), // Purple
+        0xFF6E6E6E.toInt(), // Gray
+        0xFFD55E00.toInt(), // Vermilion
+        0xFF56B4E9.toInt()  // Sky blue
     )
-    private val colorNames = listOf("Red", "Teal", "Yellow", "Green", "Purple", "Orange", "Blue", "Pink")
+    private val colorNames = listOf("Blue", "Orange", "Teal", "Yellow", "Purple", "Gray", "Vermilion", "Sky Blue")
 
     private var difficulty = 0
     private var puzzleIndex = 0
@@ -185,6 +185,7 @@ class MastermindGameActivity : AppCompatActivity() {
                 layoutParams = LinearLayout.LayoutParams(size, size).apply {
                     marginStart = margin; marginEnd = margin
                 }
+                contentDescription = colorNames[i]
                 background = circleDrawable(colorValues[i], false)
                 setOnClickListener { selectColor(i) }
             }
@@ -226,6 +227,7 @@ class MastermindGameActivity : AppCompatActivity() {
                 }
                 background = emptySlotDrawable(i == selectedSlot)
                 tag = i
+                contentDescription = "Slot ${i + 1}: empty"
                 setOnClickListener { selectSlot(i) }
             }
             slotViews.add(slot)
@@ -261,8 +263,10 @@ class MastermindGameActivity : AppCompatActivity() {
         for (i in slotViews.indices) {
             val color = currentGuess[i]
             slotViews[i].background = if (color == UNSET) {
+                slotViews[i].contentDescription = "Slot ${i + 1}: empty"
                 emptySlotDrawable(i == selectedSlot)
             } else {
+                slotViews[i].contentDescription = "Slot ${i + 1}: ${colorNames[color]}"
                 circleDrawable(colorValues[color], i == selectedSlot)
             }
         }

@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.logicpuzzles.MainActivity
-import com.logicpuzzles.R
+import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager

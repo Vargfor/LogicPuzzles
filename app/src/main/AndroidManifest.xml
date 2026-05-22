@@ -8,23 +8,23 @@
         android:theme="@style/Theme.LogicPuzzles">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.logicpuzzles.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PuzzleMenuActivity"/>
-        <activity android:name=".nonogram.NonogramGameActivity"/>
-        <activity android:name=".mastermind.MastermindGameActivity"/>
-        <activity android:name=".lightsout.LightsOutGameActivity"/>
-        <activity android:name=".kakuro.KakuroGameActivity"/>
-        <activity android:name=".logicgrid.LogicGridGameActivity"/>
-        <activity android:name=".slitherlink.SlitherlinkGameActivity"/>
-        <activity android:name=".nurikabe.NurikabeGameActivity"/>
-        <activity android:name=".hidato.HidatoGameActivity"/>
-        <activity android:name=".futoshiki.FutoshikiGameActivity"/>
-        <activity android:name=".skyscraper.SkyscraperGameActivity"/>
+        <activity android:name="com.logicpuzzles.PuzzleMenuActivity"/>
+        <activity android:name="com.logicpuzzles.nonogram.NonogramGameActivity"/>
+        <activity android:name="com.logicpuzzles.mastermind.MastermindGameActivity"/>
+        <activity android:name="com.logicpuzzles.lightsout.LightsOutGameActivity"/>
+        <activity android:name="com.logicpuzzles.kakuro.KakuroGameActivity"/>
+        <activity android:name="com.logicpuzzles.logicgrid.LogicGridGameActivity"/>
+        <activity android:name="com.logicpuzzles.slitherlink.SlitherlinkGameActivity"/>
+        <activity android:name="com.logicpuzzles.nurikabe.NurikabeGameActivity"/>
+        <activity android:name="com.logicpuzzles.hidato.HidatoGameActivity"/>
+        <activity android:name="com.logicpuzzles.futoshiki.FutoshikiGameActivity"/>
+        <activity android:name="com.logicpuzzles.skyscraper.SkyscraperGameActivity"/>
     </application>
 </manifest>
