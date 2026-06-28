@@ -20,7 +20,8 @@ object SlitherlinkPuzzles {
             0 -> 0.34f
             1 -> 0.42f
             2 -> 0.50f
-            else -> 0.56f
+            3 -> 0.56f
+            else -> 0.62f
         }
         val inside = randomShape(rows, cols, (rows * cols * fillRatio).roundToInt(), random)
 
@@ -147,7 +148,8 @@ object SlitherlinkPuzzles {
             0 -> 0.82f
             1 -> 0.70f
             2 -> 0.60f
-            else -> 0.52f
+            3 -> 0.52f
+            else -> 0.44f
         }
         val cells = mutableListOf<Pair<Int, Int>>()
         for (r in 0 until rows) for (c in 0 until cols) cells.add(r to c)
@@ -167,13 +169,11 @@ object SlitherlinkPuzzles {
     private val ORTHOGONAL = arrayOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)
 
     fun get(difficulty: Int, index: Int): SlitherlinkPuzzle {
-        val safeDifficulty = difficulty.coerceIn(0, 3)
-        val safeIndex = index.coerceIn(0, 14)
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
+        val safeIndex = index.coerceIn(0, maxIndex)
         val size = when (safeDifficulty) {
-            0 -> 5
-            1 -> 6
-            2 -> 7
-            else -> 8
+            0 -> 5; 1 -> 6; 2 -> 7; 3 -> 8; else -> 9
         }
         return build(size, size, safeDifficulty, safeIndex)
     }

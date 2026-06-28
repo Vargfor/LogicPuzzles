@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.net.toUri
 import com.cyberhub.logicgames.R
+import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.AppPalette
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.PuzzleVerifier
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        findViewById<View>(R.id.main_root).applySystemBarInsets()
 
         findViewById<Button>(R.id.btn_support).setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, "https://buymeacoffee.com/vargfor".toUri()))

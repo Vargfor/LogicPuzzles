@@ -37,7 +37,12 @@ object NurikabePuzzles {
         0 -> if (index >= 10) 3 else 2
         1 -> if (index >= 10) 4 else 3
         2 -> if (index >= 10) 6 else 5
-        else -> if (Random(122_000 + index * 97).nextBoolean()) 8 else 9
+        3 -> if (Random(122_000 + index * 97).nextBoolean()) 8 else 9
+        else -> when {
+            index >= 25 -> 12
+            index >= 10 -> 11
+            else        -> 10
+        }
     }
 
     private fun matchesIslandSizeProfile(islandIds: Array<IntArray>, difficulty: Int, index: Int): Boolean {
@@ -83,7 +88,8 @@ object NurikabePuzzles {
             0 -> 0.38f
             1 -> 0.32f
             2 -> 0.27f
-            else -> 0.23f
+            3 -> 0.23f
+            else -> 0.19f
         }).toInt() + (index % 3) - 1
 
         val cells = mutableListOf<Pair<Int, Int>>()
@@ -109,7 +115,8 @@ object NurikabePuzzles {
             0 -> if (index >= 10) 0.14f else 0.10f
             1 -> if (index >= 10) 0.22f else 0.16f
             2 -> if (index >= 10) 0.34f else 0.28f
-            else -> 0.42f
+            3 -> 0.42f
+            else -> 0.48f
         }).toInt()
 
         var added = 0
@@ -144,7 +151,8 @@ object NurikabePuzzles {
             0 -> if (index >= 10) rows else 2
             1 -> if (index >= 10) rows + cols else rows
             2 -> if (index >= 10) rows + cols + 8 else rows + cols + 4
-            else -> rows * cols
+            3 -> rows * cols
+            else -> rows * cols + rows * cols / 2
         }
 
         repeat(steps) {
@@ -190,10 +198,7 @@ object NurikabePuzzles {
 
     private fun removeSmallIslands(islandIds: Array<IntArray>, difficulty: Int, random: Random) {
         val removals = when (difficulty) {
-            0 -> 0
-            1 -> 1
-            2 -> 2
-            else -> 3
+            0 -> 0; 1 -> 1; 2 -> 2; 3 -> 3; else -> 4
         }
         repeat(removals) {
             val singletons = islandCells(islandIds)
@@ -428,13 +433,11 @@ object NurikabePuzzles {
     private val cache = mutableMapOf<Pair<Int, Int>, NurikabePuzzle>()
 
     fun get(difficulty: Int, index: Int): NurikabePuzzle {
-        val safeDifficulty = difficulty.coerceIn(0, 3)
-        val safeIndex = index.coerceIn(0, 14)
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
+        val safeIndex = index.coerceIn(0, maxIndex)
         val size = when (safeDifficulty) {
-            0 -> 5
-            1 -> 6
-            2 -> 7
-            else -> 8
+            0 -> 5; 1 -> 6; 2 -> 7; 3 -> 8; else -> 9
         }
         return cache.getOrPut(safeDifficulty to safeIndex) {
             build(size, size, safeDifficulty, safeIndex)

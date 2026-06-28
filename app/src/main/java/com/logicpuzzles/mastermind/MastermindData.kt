@@ -19,8 +19,8 @@ object MastermindData {
     )
 
     fun levelFor(difficulty: Int, index: Int): MastermindLevel {
-        val safeDifficulty = difficulty.coerceIn(0, 3)
-        val safeIndex = index.coerceIn(0, 14)
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val safeIndex = index.coerceIn(0, 54)
         val config = configFor(safeDifficulty, safeIndex)
         return MastermindLevel(
             positions = config.positions,
@@ -49,10 +49,23 @@ object MastermindData {
                 1 -> LevelConfig(positions = 5, numColors = 8, maxGuesses = 8, allowDuplicates = true)
                 else -> LevelConfig(positions = 6, numColors = 8, maxGuesses = 7, allowDuplicates = true)
             }
-            else -> when (group) {
+            3 -> when (group) {
                 0 -> LevelConfig(positions = 6, numColors = 8, maxGuesses = 7, allowDuplicates = true)
                 1 -> LevelConfig(positions = 6, numColors = 8, maxGuesses = 6, allowDuplicates = true)
                 else -> LevelConfig(positions = 6, numColors = 8, maxGuesses = 5, allowDuplicates = true)
+            }
+            else -> when (group) {
+                0    -> LevelConfig(positions = 6, numColors = 8, maxGuesses = 6, allowDuplicates = true)
+                1    -> LevelConfig(positions = 6, numColors = 9, maxGuesses = 6, allowDuplicates = true)
+                2    -> LevelConfig(positions = 7, numColors = 9, maxGuesses = 6, allowDuplicates = true)
+                3    -> LevelConfig(positions = 7, numColors = 9, maxGuesses = 5, allowDuplicates = true)
+                4    -> LevelConfig(positions = 7, numColors = 9, maxGuesses = 5, allowDuplicates = true)
+                5    -> LevelConfig(positions = 7, numColors = 10, maxGuesses = 5, allowDuplicates = true)
+                6    -> LevelConfig(positions = 7, numColors = 10, maxGuesses = 5, allowDuplicates = true)
+                7    -> LevelConfig(positions = 8, numColors = 10, maxGuesses = 5, allowDuplicates = true)
+                8    -> LevelConfig(positions = 8, numColors = 10, maxGuesses = 4, allowDuplicates = true)
+                9    -> LevelConfig(positions = 8, numColors = 10, maxGuesses = 4, allowDuplicates = true)
+                else -> LevelConfig(positions = 8, numColors = 10, maxGuesses = 4, allowDuplicates = true)
             }
         }
     }

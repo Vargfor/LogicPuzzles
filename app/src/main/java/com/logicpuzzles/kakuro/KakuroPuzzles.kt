@@ -255,6 +255,88 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w())
         ))
+    ) + listOf(
+        // 16-25: more 4x4 white areas
+        // 16: sum 10 ({1,2,3,4})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=10), c(d=10), c(d=10), c(d=10)),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=10),   w(),     w(),     w(),     w())
+        )),
+        // 17: sum 16 ({1,2,4,9} or {1,3,4,8} etc.)
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=16), c(d=16), c(d=16), c(d=16)),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w())
+        )),
+        // 18: sum 28 ({4,7,8,9} or {5,6,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28)),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w())
+        )),
+        // 19: sum 13 ({1,2,3,7} or {1,2,4,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=13), c(d=13), c(d=13), c(d=13)),
+            arrayOf<KCell>(c(r=13),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=13),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=13),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=13),   w(),     w(),     w(),     w())
+        )),
+        // 20: sum 27 ({3,7,8,9} or {4,6,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=27), c(d=27), c(d=27), c(d=27)),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w())
+        )),
+        // 21: sum 11 ({1,2,3,5})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=11), c(d=11), c(d=11), c(d=11)),
+            arrayOf<KCell>(c(r=11),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=11),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=11),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=11),   w(),     w(),     w(),     w())
+        )),
+        // 22: sum 29 ({5,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=29), c(d=29), c(d=29), c(d=29)),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w())
+        )),
+        // 23: sum 17 ({1,2,5,9} or {1,3,4,9} or {2,3,4,8} etc.)
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=17), c(d=17), c(d=17), c(d=17)),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w())
+        )),
+        // 24: sum 23 ({2,4,8,9} or {3,5,6,9} etc.)
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=23), c(d=23), c(d=23), c(d=23)),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w())
+        )),
+        // 25: sum 26 ({5,6,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=26), c(d=26), c(d=26), c(d=26)),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w())
+        ))
     )
 
     // HARD — 4x4 Latin squares (rows/cols sum to a constant per puzzle)
@@ -385,6 +467,188 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w())
+        ))
+    ) + listOf(
+        // 16-35: more 5x5 white areas
+        // 16: sum 16 ({1,2,3,4,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=16), c(d=16), c(d=16), c(d=16), c(d=16)),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=16),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 17: sum 34 ({4,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=34), c(d=34), c(d=34), c(d=34), c(d=34)),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 18: sum 17 ({1,2,3,4,7} or {1,2,3,5,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=17), c(d=17), c(d=17), c(d=17), c(d=17)),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=17),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 19: sum 33 ({3,6,7,8,9} or {4,5,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=33), c(d=33), c(d=33), c(d=33), c(d=33)),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 20: sum 18 ({1,2,3,4,8} or {1,2,3,5,7})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=18), c(d=18), c(d=18), c(d=18), c(d=18)),
+            arrayOf<KCell>(c(r=18),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=18),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=18),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=18),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=18),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 21: sum 32 ({3,5,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=32), c(d=32), c(d=32), c(d=32), c(d=32)),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 22: sum 19 ({1,2,3,4,9} or {1,2,3,6,7})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=19), c(d=19), c(d=19), c(d=19), c(d=19)),
+            arrayOf<KCell>(c(r=19),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=19),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=19),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=19),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=19),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 23: sum 31 ({3,4,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=31), c(d=31), c(d=31), c(d=31), c(d=31)),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 24: sum 21 ({1,2,3,6,9} or {1,2,4,5,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=21), c(d=21), c(d=21), c(d=21), c(d=21)),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 25: sum 29 ({2,5,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=29), c(d=29), c(d=29), c(d=29), c(d=29)),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 26: sum 22 ({1,2,4,6,9} or {1,2,4,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=22), c(d=22), c(d=22), c(d=22), c(d=22)),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 27: sum 28 ({1,4,6,8,9} or {2,4,5,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28), c(d=28)),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 28: sum 23 ({1,2,4,7,9} or {1,2,5,6,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=23), c(d=23), c(d=23), c(d=23), c(d=23)),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 29: sum 27 ({1,3,6,8,9} or {2,3,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=27), c(d=27), c(d=27), c(d=27), c(d=27)),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 30: sum 24 ({1,2,4,8,9} or {1,3,4,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=24), c(d=24), c(d=24), c(d=24), c(d=24)),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 31: sum 26 ({1,3,5,8,9} or {2,4,5,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=26), c(d=26), c(d=26), c(d=26), c(d=26)),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 32: sum 15 ({1,2,3,4,5})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=15), c(d=15), c(d=15), c(d=15), c(d=15)),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=15),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 33: sum 35 ({5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=35), c(d=35), c(d=35), c(d=35), c(d=35)),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 34: sum 20 ({2,3,4,5,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=20), c(d=20), c(d=20), c(d=20), c(d=20)),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=20),   w(),     w(),     w(),     w(),     w())
+        )),
+        // 35: sum 30 ({4,5,6,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=30), c(d=30), c(d=30), c(d=30), c(d=30)),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w())
         ))
     )
 
@@ -532,11 +796,901 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w())
         ))
+    ) + listOf(
+        // 16-45: more 6x6 white areas
+        // 16: sum 22 ({1,2,3,4,5,7})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=22), c(d=22), c(d=22), c(d=22), c(d=22), c(d=22)),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 17: sum 38 ({3,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38)),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 18: sum 24 ({1,2,3,4,5,9} or {1,2,3,4,6,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=24), c(d=24), c(d=24), c(d=24), c(d=24), c(d=24)),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 19: sum 36 ({1,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 20: sum 25 ({1,2,3,4,6,9} or {1,2,3,5,6,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=25), c(d=25), c(d=25), c(d=25), c(d=25), c(d=25)),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 21: sum 35 ({1,4,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=35), c(d=35), c(d=35), c(d=35), c(d=35), c(d=35)),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 22: sum 26 ({1,2,3,4,7,9} or {1,2,4,5,6,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=26), c(d=26), c(d=26), c(d=26), c(d=26), c(d=26)),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 23: sum 34 ({1,4,5,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=34), c(d=34), c(d=34), c(d=34), c(d=34), c(d=34)),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 24: sum 28 ({1,2,4,5,7,9} or {1,2,3,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28)),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 25: sum 32 ({2,3,5,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=32), c(d=32), c(d=32), c(d=32), c(d=32), c(d=32)),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 26: sum 21 ({1,2,3,4,5,6})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=21), c(d=21), c(d=21), c(d=21), c(d=21), c(d=21)),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=21),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 27: sum 39 ({4,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 28: sum 29 ({1,2,4,5,8,9} or {1,3,4,5,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=29), c(d=29), c(d=29), c(d=29), c(d=29), c(d=29)),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 29: sum 31 ({2,3,4,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=31), c(d=31), c(d=31), c(d=31), c(d=31), c(d=31)),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 30: sum 30 ({1,3,5,6,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=30), c(d=30), c(d=30), c(d=30), c(d=30), c(d=30)),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 31: sum 23 ({1,2,3,4,5,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=23), c(d=23), c(d=23), c(d=23), c(d=23), c(d=23)),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=23),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 32: sum 37 ({2,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37)),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 33: sum 27 ({2,3,4,5,6,7})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=27), c(d=27), c(d=27), c(d=27), c(d=27), c(d=27)),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=27),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 34: sum 33 ({3,4,5,6,7,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=33), c(d=33), c(d=33), c(d=33), c(d=33), c(d=33)),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 35: sum 22 ({1,2,3,4,5,7})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=22), c(d=22), c(d=22), c(d=22), c(d=22), c(d=22)),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=22),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 36: sum 38 ({3,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38)),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 37: sum 24 ({1,2,3,4,5,9} or {1,2,3,4,6,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=24), c(d=24), c(d=24), c(d=24), c(d=24), c(d=24)),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=24),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 38: sum 36 ({1,5,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 39: sum 25 ({1,2,3,4,6,9} or {1,2,3,5,6,8})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=25), c(d=25), c(d=25), c(d=25), c(d=25), c(d=25)),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=25),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 40: sum 35 ({1,4,6,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=35), c(d=35), c(d=35), c(d=35), c(d=35), c(d=35)),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 41: sum 26 ({1,2,3,4,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=26), c(d=26), c(d=26), c(d=26), c(d=26), c(d=26)),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 42: sum 34 ({1,4,5,7,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=34), c(d=34), c(d=34), c(d=34), c(d=34), c(d=34)),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 43: sum 28 ({1,2,4,5,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28)),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 44: sum 32 ({2,3,5,6,7,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=32), c(d=32), c(d=32), c(d=32), c(d=32), c(d=32)),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 45: sum 29 ({1,2,4,5,8,9})
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=29), c(d=29), c(d=29), c(d=29), c(d=29), c(d=29)),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w())
+        ))
+    )
+
+    // MASTER: levels 1-25 = 7x7, levels 26-55 = 8x8
+    private val MASTER = listOf(
+        // 1-25: 7x7 white areas
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28)),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42)),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=35), c(d=35), c(d=35), c(d=35), c(d=35), c(d=35), c(d=35)),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=30), c(d=30), c(d=30), c(d=30), c(d=30), c(d=30), c(d=30)),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40)),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=29), c(d=29), c(d=29), c(d=29), c(d=29), c(d=29), c(d=29)),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41)),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=31), c(d=31), c(d=31), c(d=31), c(d=31), c(d=31), c(d=31)),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=32), c(d=32), c(d=32), c(d=32), c(d=32), c(d=32), c(d=32)),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38)),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=33), c(d=33), c(d=33), c(d=33), c(d=33), c(d=33), c(d=33)),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=33),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37)),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=34), c(d=34), c(d=34), c(d=34), c(d=34), c(d=34), c(d=34)),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=34),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28)),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=28),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42)),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=35), c(d=35), c(d=35), c(d=35), c(d=35), c(d=35), c(d=35)),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=35),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=30), c(d=30), c(d=30), c(d=30), c(d=30), c(d=30), c(d=30)),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40)),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=31), c(d=31), c(d=31), c(d=31), c(d=31), c(d=31), c(d=31)),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=31),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=32), c(d=32), c(d=32), c(d=32), c(d=32), c(d=32), c(d=32)),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=32),   w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        // 26-55: 8x8 white areas
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44)),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40)),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37)),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43)),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38)),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42)),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41)),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44)),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40)),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37)),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43)),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38)),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42)),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41)),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44)),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40)),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37)),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43)),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38), c(d=38)),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=38),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42), c(d=42)),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=42),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39), c(d=39)),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=39),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41), c(d=41)),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=41),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36), c(d=36)),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=36),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44), c(d=44)),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=44),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40), c(d=40)),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=40),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43), c(d=43)),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=43),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        )),
+        KakuroPuzzle(arrayOf(
+            arrayOf<KCell>(b(),       c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37), c(d=37)),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
+            arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
+        ))
     )
 
     fun get(difficulty: Int, index: Int): KakuroPuzzle {
         val pool = when (difficulty) {
-            0 -> EASY; 1 -> MEDIUM; 2 -> HARD; else -> EXPERT
+            0 -> EASY; 1 -> MEDIUM; 2 -> HARD; 3 -> EXPERT; else -> MASTER
         }
         return pool[index.coerceIn(0, pool.size - 1)]
     }

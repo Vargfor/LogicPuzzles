@@ -5,15 +5,18 @@ import kotlin.random.Random
 data class LightsOutPuzzle(val size: Int, val initial: Array<BooleanArray>)
 
 object LightsOutPuzzles {
-    private const val LEVELS = 15
-
-    private val EASY by lazy { buildLevels(0) }
+    private val EASY   by lazy { buildLevels(0) }
     private val MEDIUM by lazy { buildLevels(1) }
-    private val HARD by lazy { buildLevels(2) }
+    private val HARD   by lazy { buildLevels(2) }
     private val EXPERT by lazy { buildLevels(3) }
+    private val MASTER by lazy { buildLevels(4) }
+
+    private fun levelsForDifficulty(difficulty: Int): Int = when (difficulty) {
+        0 -> 15; 1 -> 25; 2 -> 35; 3 -> 45; else -> 55
+    }
 
     private fun buildLevels(difficulty: Int): List<LightsOutPuzzle> =
-        List(LEVELS) { index ->
+        List(levelsForDifficulty(difficulty)) { index ->
             val size = sizeFor(difficulty, index)
             val pressCount = targetPressCount(difficulty, index)
             buildFromPresses(size, pressCells(size, pressCount, difficulty, index))
@@ -23,14 +26,20 @@ object LightsOutPuzzles {
         0 -> 5
         1 -> if (index < 10) 5 else 6
         2 -> if (index < 10) 6 else 7
-        else -> if (index < 10) 7 else 8
+        3 -> if (index < 10) 7 else 8
+        else -> when {
+            index < 10 -> 8
+            index < 30 -> 9
+            else       -> 10
+        }
     }
 
     private fun targetPressCount(difficulty: Int, index: Int): Int = when (difficulty) {
         0 -> 1 + (index % 3) + if (index >= 10) 1 else 0
         1 -> 5 + (index % 4) + if (index >= 10) 1 else 0
         2 -> 9 + (index % 5) + if (index >= 10) 2 else 0
-        else -> 14 + (index % 7) + if (index >= 10) 4 else 0
+        3 -> 14 + (index % 7) + if (index >= 10) 4 else 0
+        else -> 20 + (index % 9) + if (index >= 10) 5 else 0
     }
 
     private fun pressCells(size: Int, count: Int, difficulty: Int, index: Int): List<Pair<Int, Int>> {
@@ -58,7 +67,8 @@ object LightsOutPuzzles {
             0 -> EASY
             1 -> MEDIUM
             2 -> HARD
-            else -> EXPERT
+            3 -> EXPERT
+            else -> MASTER
         }
         return pool[index.coerceIn(0, pool.size - 1)]
     }

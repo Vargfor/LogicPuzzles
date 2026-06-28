@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -21,6 +22,7 @@ import com.logicpuzzles.nonogram.NonogramGameActivity
 import com.logicpuzzles.nurikabe.NurikabeGameActivity
 import com.logicpuzzles.skyscraper.SkyscraperGameActivity
 import com.logicpuzzles.slitherlink.SlitherlinkGameActivity
+import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 
@@ -30,13 +32,15 @@ class PuzzleMenuActivity : AppCompatActivity() {
         R.string.difficulty_easy,
         R.string.difficulty_medium,
         R.string.difficulty_hard,
-        R.string.difficulty_expert
+        R.string.difficulty_expert,
+        R.string.difficulty_master
     )
     private var puzzleType = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_puzzle_menu)
+        findViewById<View>(R.id.puzzle_menu_root).applySystemBarInsets()
 
         puzzleType = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_TYPE, 0)
 

@@ -31,6 +31,7 @@ object FutoshikiPuzzles {
     private fun coprimeSteps(size: Int): IntArray = when (size) {
         4 -> intArrayOf(1, 3)
         5 -> intArrayOf(1, 2, 3, 4)
+        6 -> intArrayOf(1, 5)
         else -> intArrayOf(1)
     }
 
@@ -46,7 +47,8 @@ object FutoshikiPuzzles {
             0 -> if (size == 4) 7 else 8
             1 -> 6
             2 -> 5
-            else -> 4
+            3 -> 4
+            else -> 5  // Master 6×6: slightly more givens relative to grid size
         }
         for (pos in revealPattern(size, revealCount, random)) {
             val r = pos / size
@@ -58,7 +60,8 @@ object FutoshikiPuzzles {
             0 -> if (size == 4) 3 else 5
             1 -> 8
             2 -> 11
-            else -> 14
+            3 -> 14
+            else -> 18  // Master 6×6: denser constraints
         }
         val edges = mutableListOf<Edge>()
         for (r in 0 until size) {
@@ -103,11 +106,12 @@ object FutoshikiPuzzles {
     }
 
     fun get(difficulty: Int, index: Int): FutoshikiPuzzle {
-        val safeIndex = index.coerceIn(0, 14)
-        val size = when (difficulty) {
-            0 -> 4
-            else -> 5
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
+        val safeIndex = index.coerceIn(0, maxIndex)
+        val size = when (safeDifficulty) {
+            0 -> 4; 1, 2, 3 -> 5; else -> 6
         }
-        return build(size, difficulty.coerceIn(0, 3), safeIndex)
+        return build(size, safeDifficulty, safeIndex)
     }
 }

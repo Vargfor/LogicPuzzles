@@ -23,6 +23,7 @@
     <string name="difficulty_medium">Medium</string>
     <string name="difficulty_hard">Hard</string>
     <string name="difficulty_expert">Expert</string>
+    <string name="difficulty_master">Master</string>
 
     <string name="puzzle_nonogram">Nonogram</string>
     <string name="puzzle_mastermind">Mastermind</string>

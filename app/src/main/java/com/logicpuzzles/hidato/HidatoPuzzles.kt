@@ -24,7 +24,8 @@ object HidatoPuzzles {
             0 -> (maxNumber * 0.62f).roundToInt()
             1 -> (maxNumber * 0.44f).roundToInt()
             2 -> (maxNumber * 0.34f).roundToInt()
-            else -> (maxNumber * 0.28f).roundToInt()
+            3 -> (maxNumber * 0.28f).roundToInt()
+            else -> (maxNumber * 0.22f).roundToInt()
         }.coerceIn(4, maxNumber)
 
         val solution = Array(rows) { IntArray(cols) }
@@ -122,12 +123,11 @@ object HidatoPuzzles {
     }
 
     fun get(difficulty: Int, index: Int): HidatoPuzzle {
-        val safeDifficulty = difficulty.coerceIn(0, 3)
-        val safeIndex = index.coerceIn(0, 14)
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
+        val safeIndex = index.coerceIn(0, maxIndex)
         val size = when (safeDifficulty) {
-            0 -> 3
-            1 -> 4
-            else -> 5
+            0 -> 3; 1 -> 4; 2, 3 -> 5; else -> 6
         }
         return build(size, size, safeDifficulty, safeIndex)
     }

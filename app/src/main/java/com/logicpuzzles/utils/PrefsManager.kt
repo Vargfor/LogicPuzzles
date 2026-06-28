@@ -67,30 +67,31 @@ class PrefsManager(context: Context) {
     }
 
     companion object {
-        const val DIFFICULTIES = 4
+        const val DIFFICULTIES = 5
         const val PUZZLE_TYPES = 10
-        const val PUZZLES_PER_TYPE = 60 // total per puzzle type: 15 per difficulty x 4 difficulties
+        const val PUZZLES_PER_TYPE = 175 // 15+25+35+45+55 across 5 difficulties
         const val EXPERT_UNLOCK_HARD_COMPLETIONS = 10
+        const val MASTER_UNLOCK_EXPERT_COMPLETIONS = 10
         private const val SUB_DIFFICULTY_GROUP_SIZE = 5
 
-        /**
-         * How many puzzles a given (puzzle type, difficulty) combination has.
-         * All types use 15 per difficulty. Within each difficulty the first 5 levels use the
-         * base size/config, levels 6-10 step up by 1 unit, and levels 11-15 step up by 2 units.
-         * Difficulty jumps add 2 more units, giving a smooth overall curve.
-         */
         @Suppress("UNUSED_PARAMETER")
-        fun getPuzzleCount(type: Int, difficulty: Int): Int = 15
+        fun getPuzzleCount(type: Int, difficulty: Int): Int = when (difficulty) {
+            0 -> 15; 1 -> 25; 2 -> 35; 3 -> 45; else -> 55
+        }
 
-        /** Number of Hard completions required to unlock Expert. */
         @Suppress("UNUSED_PARAMETER")
-        fun getUnlockThreshold(type: Int, difficulty: Int): Int =
-            if (difficulty == 2) EXPERT_UNLOCK_HARD_COMPLETIONS else 0
+        fun getUnlockThreshold(type: Int, difficulty: Int): Int = when (difficulty) {
+            3 -> EXPERT_UNLOCK_HARD_COMPLETIONS
+            4 -> MASTER_UNLOCK_EXPERT_COMPLETIONS
+            else -> 0
+        }
     }
 
-    fun isDifficultyUnlocked(type: Int, difficulty: Int): Boolean {
-        return difficulty < 3 ||
-                getCompletedCount(type, 2) >= EXPERT_UNLOCK_HARD_COMPLETIONS
+    fun isDifficultyUnlocked(type: Int, difficulty: Int): Boolean = when {
+        difficulty < 3 -> true
+        difficulty == 3 -> getCompletedCount(type, 2) >= EXPERT_UNLOCK_HARD_COMPLETIONS
+        difficulty == 4 -> getCompletedCount(type, 3) >= MASTER_UNLOCK_EXPERT_COMPLETIONS
+        else -> true
     }
 
     private fun identityOrder(type: Int, difficulty: Int): List<Int> =
