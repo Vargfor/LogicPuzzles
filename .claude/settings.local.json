@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python3 -c ' *)",
-      "Bash(python -c ' *)",
-      "Bash(powershell -Command \"\\(Get-Content 'C:/Users/Henrik/Android Projects/LogicPuzzlesApp/app/src/main/java/com/logicpuzzles/futoshiki/FutoshikiPuzzles.kt' | Select-String '1.3.5'\\) | Format-List\")"
-    ]
-  }
-}
