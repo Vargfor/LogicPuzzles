@@ -317,14 +317,30 @@ class LogicGridGameActivity : AppCompatActivity() {
     private fun checkSolution() {
         // For each pair (catA < catB), each entry in solution must have YES at the right cell
         val nCats = puzzle.categories.size
+        val expectedMatches = HashSet<String>()
         for (entry in puzzle.solution) {
             for (a in 0 until nCats) {
                 for (b in a + 1 until nCats) {
                     val itemA = entry[a]
                     val itemB = entry[b]
+                    expectedMatches.add(matchKey(a, itemA, b, itemB))
                     if (marks[a][itemA][b][itemB] != 1) {
                         Toast.makeText(this, "Not all matches marked yet.", Toast.LENGTH_SHORT).show()
                         return
+                    }
+                }
+            }
+        }
+        for (a in 0 until nCats) {
+            for (b in a + 1 until nCats) {
+                for (itemA in puzzle.items[a].indices) {
+                    for (itemB in puzzle.items[b].indices) {
+                        if (marks[a][itemA][b][itemB] == 1 &&
+                            matchKey(a, itemA, b, itemB) !in expectedMatches
+                        ) {
+                            Toast.makeText(this, "Some marked matches are incorrect.", Toast.LENGTH_SHORT).show()
+                            return
+                        }
                     }
                 }
             }
@@ -341,4 +357,7 @@ class LogicGridGameActivity : AppCompatActivity() {
             LogicGridGameActivity::class.java
         )
     }
+
+    private fun matchKey(catA: Int, itemA: Int, catB: Int, itemB: Int): String =
+        "$catA:$itemA:$catB:$itemB"
 }

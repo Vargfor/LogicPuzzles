@@ -13,7 +13,8 @@ data class LogicGridPuzzle(
 object LogicGridPuzzles {
 
     // EASY: 3 categories x 3 items, many direct clues
-    private val EASY = listOf(
+    private val EASY by lazy {
+        listOf(
         LogicGridPuzzle(
             title = "Pets and Houses",
             description = "Three friends each own one pet and live in a house of one color.",
@@ -135,10 +136,12 @@ object LogicGridPuzzles {
             clues = listOf("1. The hockey player goes to Beta.","2. The cricket player goes to Gamma.","3. Quinn goes to Alpha.","4. Rosa does not play hockey."),
             solution = listOf(listOf(0,1,1), listOf(1,2,0), listOf(2,0,2))
         )
-    )
+        )
+    }
 
     // MEDIUM: 3 categories x 3 items, moderate inference chains
-    private val MEDIUM = listOf(
+    private val MEDIUM by lazy {
+        listOf(
         LogicGridPuzzle(
             title = "Gems and Years",
             description = "Three collectors each found a gem in a different year.",
@@ -341,10 +344,12 @@ object LogicGridPuzzles {
             clues = listOf("1. Cleo uses cumin.","2. Saffron has a floral flavor.","3. Dax does not use paprika.","4. Paprika has a smoky taste.","5. Cleo's spice is not floral."),
             solution = listOf(listOf(0,0,0), listOf(1,1,1), listOf(2,2,2))
         )
-    )
+        )
+    }
 
     // HARD: 4 categories x 3 items, requires more deductive steps
-    private val HARD = listOf(
+    private val HARD by lazy {
+        listOf(
         LogicGridPuzzle(
             title = "Pets, Colors, and Cities",
             description = "Three friends each have a pet, favorite color, and live in a city.",
@@ -627,10 +632,12 @@ object LogicGridPuzzles {
             clues = listOf("1. Gina hunts deer.","2. The deer hunter uses a rifle.","3. Hans hunts boar.","4. The boar hunter uses a bow.","5. Ida hunts on the plains.","6. The deer hunter hunts in the forest."),
             solution = listOf(listOf(0,0,0,0), listOf(1,1,1,1), listOf(2,2,2,2))
         )
-    )
+        )
+    }
 
     // EXPERT: 4 categories x 4 items, complex multi-step deduction
-    private val EXPERT = listOf(
+    private val EXPERT by lazy {
+        listOf(
         LogicGridPuzzle(
             title = "Colors, Pets, and Cities",
             description = "Four friends each have a favorite color, pet, and live in a city.",
@@ -993,10 +1000,12 @@ object LogicGridPuzzles {
             clues = listOf("1. Mona uses Hubble.","2. Hubble operates in Space.","3. Nate uses Keck.","4. Keck is in Hawaii.","5. Ona uses VLT.","6. VLT is in Chile.","7. Pete uses Chandra.","8. Chandra operates in Arizona.","9. Hubble studies dwarf stars.","10. Keck studies giant stars.","11. VLT studies supergiants.","12. Chandra studies neutron stars."),
             solution = listOf(listOf(0,0,3,0), listOf(1,1,0,1), listOf(2,2,1,2), listOf(3,3,2,3))
         )
-    )
+        )
+    }
 
     // MASTER: 5 categories x 4 items, very complex multi-step deduction
-    private val MASTER = listOf(
+    private val MASTER by lazy {
+        listOf(
         LogicGridPuzzle(
             title = "Jobs, Cities, Pets, and Hobbies",
             description = "Four friends each have a job, live in a city, own a pet, and have a hobby.",
@@ -1437,7 +1446,8 @@ object LogicGridPuzzles {
             clues = listOf("1. Iris is a soprano.","2. The soprano works with Wagner.","3. Jake is an alto.","4. The alto works with Mozart.","5. Kara is a tenor.","6. The tenor works with Bach.","7. Leo is a bass.","8. The bass works with Handel.","9. The soprano sings in Vienna.","10. The alto sings in Paris.","11. The tenor sings in Milan.","12. Iris sings at the opera."),
             solution = listOf(listOf(0,0,0,0,0), listOf(1,1,1,1,1), listOf(2,2,2,2,2), listOf(3,3,3,3,3))
         )
-    )
+        )
+    }
 
     fun get(difficulty: Int, index: Int): LogicGridPuzzle {
         val pool = when (difficulty) {

@@ -1,7 +1,8 @@
 package com.logicpuzzles.nonogram
 
 object NonogramPuzzles {
-    private val EASY = arrayOf(
+    private val EASY by lazy {
+        arrayOf(
         // 1: Heart
         arrayOf(
             intArrayOf(0,1,0,1,0),
@@ -127,9 +128,11 @@ object NonogramPuzzles {
             intArrayOf(0,0,0,1,1,1),
             intArrayOf(0,0,0,0,1,1)
         )
-    )
+        )
+    }
 
-    private val MEDIUM = arrayOf(
+    private val MEDIUM by lazy {
+        arrayOf(
         // 1: House
         arrayOf(
             intArrayOf(0,0,0,1,0,0,0),
@@ -396,9 +399,11 @@ object NonogramPuzzles {
             intArrayOf(0,1,1,1,1,1,1,0),
             intArrayOf(0,0,1,1,1,1,0,0)
         )
-    )
+        )
+    }
 
-    private val HARD = arrayOf(
+    private val HARD by lazy {
+        arrayOf(
         // 1: Cat
         arrayOf(
             intArrayOf(1,0,0,0,0,0,0,0,1),
@@ -845,9 +850,11 @@ object NonogramPuzzles {
             intArrayOf(0,0,1,0,0,0,0,1,0,0),
             intArrayOf(0,0,1,1,0,0,1,1,0,0)
         )
-    )
+        )
+    }
 
-    private val EXPERT = arrayOf(
+    private val EXPERT by lazy {
+        arrayOf(
         // 1: Ship
         arrayOf(
             intArrayOf(0,0,0,0,0,1,0,0,0,0,0),
@@ -1514,9 +1521,11 @@ object NonogramPuzzles {
             intArrayOf(0,0,0,0,1,1,1,0,0,0,0,0),
             intArrayOf(0,0,0,0,0,0,0,0,0,0,0,0)
         )
-    )
+        )
+    }
 
-    private val MASTER = arrayOf(
+    private val MASTER by lazy {
+        arrayOf(
         // 1: Maze 13x13
         arrayOf(
             intArrayOf(1,1,1,1,1,1,1,1,1,1,1,1,1),
@@ -2451,7 +2460,8 @@ object NonogramPuzzles {
             intArrayOf(0,1,0,0,0,0,1,1,1,0,0,0,0,1,0),
             intArrayOf(0,0,0,0,0,0,1,1,1,0,0,0,0,0,0)
         )
-    )
+        )
+    }
 
     fun get(difficulty: Int, index: Int): Array<IntArray> {
         val pool = when (difficulty) {

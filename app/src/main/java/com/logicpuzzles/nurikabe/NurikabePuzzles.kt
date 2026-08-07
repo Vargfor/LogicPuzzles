@@ -39,9 +39,8 @@ object NurikabePuzzles {
         2 -> if (index >= 10) 6 else 5
         3 -> if (Random(122_000 + index * 97).nextBoolean()) 8 else 9
         else -> when {
-            index >= 25 -> 12
-            index >= 10 -> 11
-            else        -> 10
+            index >= 25 -> 10
+            else        -> 9
         }
     }
 

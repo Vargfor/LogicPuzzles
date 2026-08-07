@@ -79,14 +79,38 @@ class PuzzleMenuActivity : AppCompatActivity() {
         fun dp(v: Int) = (v * density).toInt()
 
         for ((diffIndex, diffNameResId) in diffNameResIds.withIndex()) {
-            val header = TextView(this).apply {
+            val headerRow = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, dp(16), 0, dp(8))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+            headerRow.addView(TextView(this).apply {
                 text = getString(diffNameResId)
                 textSize = 16f
                 setTypeface(null, Typeface.BOLD)
                 setTextColor(ThemeManager.difficultyAccent(this@PuzzleMenuActivity, diffIndex))
-                setPadding(0, dp(16), 0, dp(8))
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            unlockRequirementText(prefs, diffIndex)?.let { requirement ->
+                headerRow.addView(TextView(this).apply {
+                    text = requirement
+                    textSize = 11f
+                    setTypeface(null, Typeface.BOLD)
+                    setTextColor(
+                        if (prefs.isDifficultyUnlocked(puzzleType, diffIndex)) {
+                            palette.textSecondary
+                        } else {
+                            palette.lockedText
+                        }
+                    )
+                    gravity = Gravity.END
+                })
             }
-            container.addView(header)
+            container.addView(headerRow)
 
             // Variable count per difficulty (e.g. Hidato has 5 easy / 15 hard).
             // Display as rows of 5 cards each; last row may be short.
@@ -181,5 +205,19 @@ class PuzzleMenuActivity : AppCompatActivity() {
                 container.addView(row)
             }
         }
+    }
+
+    private fun unlockRequirementText(prefs: PrefsManager, difficulty: Int): String? {
+        val threshold = PrefsManager.getUnlockThreshold(puzzleType, difficulty)
+        if (threshold <= 0) return null
+
+        val previousDifficulty = difficulty - 1
+        val completed = prefs.getCompletedCount(puzzleType, previousDifficulty).coerceAtMost(threshold)
+        return getString(
+            R.string.unlock_requirement_progress,
+            completed,
+            threshold,
+            getString(diffNameResIds[previousDifficulty])
+        )
     }
 }

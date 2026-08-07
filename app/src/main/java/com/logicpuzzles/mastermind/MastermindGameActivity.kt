@@ -36,9 +36,22 @@ class MastermindGameActivity : AppCompatActivity() {
         0xFFCC79A7.toInt(), // Purple
         0xFF6E6E6E.toInt(), // Gray
         0xFFD55E00.toInt(), // Vermilion
-        0xFF56B4E9.toInt()  // Sky blue
+        0xFF56B4E9.toInt(), // Sky blue
+        0xFF000000.toInt(), // Black
+        0xFF8B4513.toInt()  // Brown
     )
-    private val colorNames = listOf("Blue", "Orange", "Teal", "Yellow", "Purple", "Gray", "Vermilion", "Sky Blue")
+    private val colorNames = listOf(
+        "Blue",
+        "Orange",
+        "Teal",
+        "Yellow",
+        "Purple",
+        "Gray",
+        "Vermilion",
+        "Sky Blue",
+        "Black",
+        "Brown"
+    )
 
     private var difficulty = 0
     private var puzzleIndex = 0
@@ -180,8 +193,9 @@ class MastermindGameActivity : AppCompatActivity() {
 
     private fun buildColorPicker() {
         pickerContainer.removeAllViews()
-        val size = dp(40)
         val margin = dp(4)
+        val availableWidth = resources.displayMetrics.widthPixels - dp(16)
+        val size = ((availableWidth / numColors) - margin * 2).coerceIn(dp(28), dp(40))
         for (i in 0 until numColors) {
             val v = View(this).apply {
                 layoutParams = LinearLayout.LayoutParams(size, size).apply {
@@ -327,8 +341,8 @@ class MastermindGameActivity : AppCompatActivity() {
 
     private fun checkGuess(secret: List<Int>, guess: List<Int>): Pair<Int, Int> {
         var blacks = 0
-        val secretLeft = IntArray(colorValues.size)
-        val guessLeft = IntArray(colorValues.size)
+        val secretLeft = IntArray(numColors)
+        val guessLeft = IntArray(numColors)
         for (i in secret.indices) {
             if (secret[i] == guess[i]) blacks++
             else {
@@ -337,7 +351,7 @@ class MastermindGameActivity : AppCompatActivity() {
             }
         }
         var whites = 0
-        for (c in 0 until colorValues.size) whites += minOf(secretLeft[c], guessLeft[c])
+        for (c in 0 until numColors) whites += minOf(secretLeft[c], guessLeft[c])
         return blacks to whites
     }
 

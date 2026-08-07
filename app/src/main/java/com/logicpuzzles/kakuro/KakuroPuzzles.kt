@@ -21,7 +21,8 @@ object KakuroPuzzles {
     private fun w() = KCell.White
 
     // EASY — 2x2 / 2x3 / 3x2 white area
-    private val EASY = listOf(
+    private val EASY by lazy {
+        listOf(
         // 1: 2x2 Cols (4,6) Rows (7,3)
         KakuroPuzzle(arrayOf(
             arrayOf<KCell>(b(),       c(d=4),  c(d=6)),
@@ -126,13 +127,15 @@ object KakuroPuzzles {
             intArrayOf(0, 2, 0, 0),
             intArrayOf(0, 3, 0, 0)
         ))
-    )
+        )
+    }
 
     // MEDIUM — 3x3 Latin squares with various sums.
     // Latin-square-only Kakuros (all sums equal) have many solutions, so we add
     // anchor cells to force uniqueness. Anchors at (1,1)=1, (1,2)=2, (2,1)=2 force
     // a 3x3 of {1,2,3} into the unique square 1,2,3 / 2,3,1 / 3,1,2.
-    private val MEDIUM = listOf(
+    private val MEDIUM by lazy {
+        listOf(
         // 1: All sums = 6  ({1,2,3}) with 3 anchors
         KakuroPuzzle(arrayOf(
             arrayOf<KCell>(b(),       c(d=6),  c(d=6),  c(d=6)),
@@ -337,10 +340,12 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=26),   w(),     w(),     w(),     w())
         ))
-    )
+        )
+    }
 
     // HARD — 4x4 Latin squares (rows/cols sum to a constant per puzzle)
-    private val HARD = listOf(
+    private val HARD by lazy {
+        listOf(
         // 1: sum 10 ({1,2,3,4})
         KakuroPuzzle(arrayOf(
             arrayOf<KCell>(b(),       c(d=10), c(d=10), c(d=10), c(d=10)),
@@ -650,10 +655,12 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=30),   w(),     w(),     w(),     w(),     w())
         ))
-    )
+        )
+    }
 
     // EXPERT — 5x5 Latin squares (rows/cols sum to a constant per puzzle)
-    private val EXPERT = listOf(
+    private val EXPERT by lazy {
+        listOf(
         // 1: sum 15 ({1,2,3,4,5})
         KakuroPuzzle(arrayOf(
             arrayOf<KCell>(b(),       c(d=15), c(d=15), c(d=15), c(d=15), c(d=15)),
@@ -1098,10 +1105,12 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=29),   w(),     w(),     w(),     w(),     w(),     w())
         ))
-    )
+        )
+    }
 
     // MASTER: levels 1-25 = 7x7, levels 26-55 = 8x8
-    private val MASTER = listOf(
+    private val MASTER by lazy {
+        listOf(
         // 1-25: 7x7 white areas
         KakuroPuzzle(arrayOf(
             arrayOf<KCell>(b(),       c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28), c(d=28)),
@@ -1686,7 +1695,8 @@ object KakuroPuzzles {
             arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w()),
             arrayOf<KCell>(c(r=37),   w(),     w(),     w(),     w(),     w(),     w(),     w(),     w())
         ))
-    )
+        )
+    }
 
     fun get(difficulty: Int, index: Int): KakuroPuzzle {
         val pool = when (difficulty) {

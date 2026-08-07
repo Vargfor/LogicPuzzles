@@ -115,7 +115,8 @@ object SkyscraperPuzzles {
     private fun row(vararg v: Int): IntArray = v
 
     // EASY: levels 1-10 = 4x4, levels 11-15 = 5x5 bridge
-    private val EASY = listOf(
+    private val EASY by lazy {
+        listOf(
         build(grid(arrayOf(row(2,1,4,3), row(4,3,2,1), row(1,4,3,2), row(3,2,1,4)))),
         build(grid(arrayOf(row(1,2,3,4), row(2,1,4,3), row(3,4,1,2), row(4,3,2,1)))),
         build(grid(arrayOf(row(3,1,4,2), row(4,2,3,1), row(1,3,2,4), row(2,4,1,3)))),
@@ -132,10 +133,12 @@ object SkyscraperPuzzles {
         build(grid(arrayOf(row(1,5,4,3,2), row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4), row(2,1,5,4,3)))),
         build(grid(arrayOf(row(2,5,3,4,1), row(5,3,4,1,2), row(3,4,1,2,5), row(4,1,2,5,3), row(1,2,5,3,4)))),
         build(grid(arrayOf(row(3,5,1,4,2), row(5,1,4,2,3), row(1,4,2,3,5), row(4,2,3,5,1), row(2,3,5,1,4))))
-    )
+        )
+    }
 
     // MEDIUM: levels 1-10 = 4x4 (different grids from Easy), levels 11-15 = 5x5
-    private val MEDIUM = listOf(
+    private val MEDIUM by lazy {
+        listOf(
         build(grid(arrayOf(row(1,4,2,3), row(2,3,1,4), row(3,2,4,1), row(4,1,3,2)))),
         build(grid(arrayOf(row(2,3,4,1), row(1,4,3,2), row(4,1,2,3), row(3,2,1,4)))),
         build(grid(arrayOf(row(3,2,1,4), row(4,1,2,3), row(1,4,3,2), row(2,3,4,1)))),
@@ -164,10 +167,12 @@ object SkyscraperPuzzles {
         build(grid(arrayOf(row(4,5,1,3,2), row(5,1,3,2,4), row(1,3,2,4,5), row(3,2,4,5,1), row(2,4,5,1,3)))),
         build(grid(arrayOf(row(5,4,2,3,1), row(4,2,3,1,5), row(2,3,1,5,4), row(3,1,5,4,2), row(1,5,4,2,3)))),
         build(grid(arrayOf(row(1,2,4,5,3), row(2,4,5,3,1), row(4,5,3,1,2), row(5,3,1,2,4), row(3,1,2,4,5))))
-    )
+        )
+    }
 
     // HARD: levels 1-10 = 5x5, levels 11-15 = 6x6 bridge
-    private val HARD = listOf(
+    private val HARD by lazy {
+        listOf(
         build(grid(arrayOf(row(1,2,3,4,5), row(2,3,4,5,1), row(3,4,5,1,2), row(4,5,1,2,3), row(5,1,2,3,4)))),
         build(grid(arrayOf(row(2,3,4,5,1), row(3,4,5,1,2), row(4,5,1,2,3), row(5,1,2,3,4), row(1,2,3,4,5)))),
         build(grid(arrayOf(row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4), row(2,1,5,4,3), row(1,5,4,3,2)))),
@@ -207,10 +212,12 @@ object SkyscraperPuzzles {
         build(grid(arrayOf(row(2,5,6,3,4,1), row(5,6,3,4,1,2), row(6,3,4,1,2,5), row(3,4,1,2,5,6), row(4,1,2,5,6,3), row(1,2,5,6,3,4)))),
         build(grid(arrayOf(row(3,5,4,1,6,2), row(5,4,1,6,2,3), row(4,1,6,2,3,5), row(1,6,2,3,5,4), row(6,2,3,5,4,1), row(2,3,5,4,1,6)))),
         build(grid(arrayOf(row(4,5,6,1,3,2), row(5,6,1,3,2,4), row(6,1,3,2,4,5), row(1,3,2,4,5,6), row(3,2,4,5,6,1), row(2,4,5,6,1,3))))
-    )
+        )
+    }
 
     // EXPERT: levels 1-10 = 5x5 (different from Hard), levels 11-15 = 6x6
-    private val EXPERT = listOf(
+    private val EXPERT by lazy {
+        listOf(
         build(grid(arrayOf(row(1,3,5,4,2), row(3,5,4,2,1), row(5,4,2,1,3), row(4,2,1,3,5), row(2,1,3,5,4)))),
         build(grid(arrayOf(row(1,5,4,3,2), row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4), row(2,1,5,4,3)))),
         build(grid(arrayOf(row(2,5,3,4,1), row(5,3,4,1,2), row(3,4,1,2,5), row(4,1,2,5,3), row(1,2,5,3,4)))),
@@ -260,10 +267,12 @@ object SkyscraperPuzzles {
         build(grid(arrayOf(row(1,7,6,5,4,3,2), row(7,6,5,4,3,2,1), row(6,5,4,3,2,1,7), row(5,4,3,2,1,7,6), row(4,3,2,1,7,6,5), row(3,2,1,7,6,5,4), row(2,1,7,6,5,4,3)))),
         build(grid(arrayOf(row(2,1,7,6,5,4,3), row(1,7,6,5,4,3,2), row(7,6,5,4,3,2,1), row(6,5,4,3,2,1,7), row(5,4,3,2,1,7,6), row(4,3,2,1,7,6,5), row(3,2,1,7,6,5,4)))),
         build(grid(arrayOf(row(3,1,7,6,2,5,4), row(1,7,6,2,5,4,3), row(7,6,2,5,4,3,1), row(6,2,5,4,3,1,7), row(2,5,4,3,1,7,6), row(5,4,3,1,7,6,2), row(4,3,1,7,6,2,5))))
-    )
+        )
+    }
 
     // MASTER: levels 1-25 = 7x7, levels 26-55 = 8x8
-    private val MASTER = listOf(
+    private val MASTER by lazy {
+        listOf(
         build(grid(arrayOf(row(4,2,6,1,7,5,3), row(2,6,1,7,5,3,4), row(6,1,7,5,3,4,2), row(1,7,5,3,4,2,6), row(7,5,3,4,2,6,1), row(5,3,4,2,6,1,7), row(3,4,2,6,1,7,5)))),
         build(grid(arrayOf(row(5,3,7,2,6,4,1), row(3,7,2,6,4,1,5), row(7,2,6,4,1,5,3), row(2,6,4,1,5,3,7), row(6,4,1,5,3,7,2), row(4,1,5,3,7,2,6), row(1,5,3,7,2,6,4)))),
         build(grid(arrayOf(row(6,4,1,7,3,5,2), row(4,1,7,3,5,2,6), row(1,7,3,5,2,6,4), row(7,3,5,2,6,4,1), row(3,5,2,6,4,1,7), row(5,2,6,4,1,7,3), row(2,6,4,1,7,3,5)))),
@@ -318,7 +327,8 @@ object SkyscraperPuzzles {
         build(grid(arrayOf(row(7,8,3,5,2,6,1,4), row(8,3,5,2,6,1,4,7), row(3,5,2,6,1,4,7,8), row(5,2,6,1,4,7,8,3), row(2,6,1,4,7,8,3,5), row(6,1,4,7,8,3,5,2), row(1,4,7,8,3,5,2,6), row(4,7,8,3,5,2,6,1)))),
         build(grid(arrayOf(row(8,6,4,2,7,5,3,1), row(6,4,2,7,5,3,1,8), row(4,2,7,5,3,1,8,6), row(2,7,5,3,1,8,6,4), row(7,5,3,1,8,6,4,2), row(5,3,1,8,6,4,2,7), row(3,1,8,6,4,2,7,5), row(1,8,6,4,2,7,5,3)))),
         build(grid(arrayOf(row(8,5,2,7,4,1,6,3), row(5,2,7,4,1,6,3,8), row(2,7,4,1,6,3,8,5), row(7,4,1,6,3,8,5,2), row(4,1,6,3,8,5,2,7), row(1,6,3,8,5,2,7,4), row(6,3,8,5,2,7,4,1), row(3,8,5,2,7,4,1,6))))
-    )
+        )
+    }
 
     fun get(difficulty: Int, index: Int): SkyscraperPuzzle {
         val pool = when (difficulty) {
