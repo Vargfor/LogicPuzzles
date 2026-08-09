@@ -4,8 +4,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LogicPuzzles">
 
@@ -17,6 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.logicpuzzles.CustomThemeActivity"/>
         <activity android:name="com.logicpuzzles.PuzzleMenuActivity"/>
         <activity android:name="com.logicpuzzles.nonogram.NonogramGameActivity"/>
         <activity android:name="com.logicpuzzles.mastermind.MastermindGameActivity"/>

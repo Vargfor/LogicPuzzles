@@ -106,11 +106,14 @@ Fill a Latin-square-style grid while obeying inequality signs between neighborin
 
 Place building heights in the grid while matching visibility clues around the outside.
 
-- Every row and column must contain each height from **1 to N** exactly once.
+- Heights can use an extra value above the board size, so rows and columns do not simply contain **1 to N**.
+- The tallest value appears once in each row and column.
+- Filled heights cannot repeat within the same row or column.
+- Harder boards may include one empty lot per row and column.
 - Taller buildings hide shorter buildings behind them.
 - Outside clues tell you how many buildings are visible when looking from that direction.
 - Select an editable cell and enter a height using the number pad.
-- **Check** validates row/column uniqueness and every active visibility clue.
+- **Check** validates empty lots, repeated heights, and every active visibility clue.
 
 ## Core functionality
 

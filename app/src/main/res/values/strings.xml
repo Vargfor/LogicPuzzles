@@ -11,6 +11,28 @@
     <string name="color_theme">Color theme</string>
     <string name="normal_themes">Normal themes</string>
     <string name="colorblind_themes">Colorblind themes</string>
+    <string name="settings_options">Options</string>
+    <string name="settings_themes">Themes</string>
+    <string name="settings_reset">Reset</string>
+    <string name="default_themes">Default</string>
+    <string name="custom_themes">Custom</string>
+    <string name="custom_theme_create">Create custom theme</string>
+    <string name="custom_theme_default_name">Custom Theme</string>
+    <string name="custom_theme_empty">No custom themes saved yet.</string>
+    <string name="custom_theme_title">Custom theme</string>
+    <string name="custom_theme_name">Theme name</string>
+    <string name="custom_theme_edit">Edit</string>
+    <string name="custom_theme_save">Save</string>
+    <string name="custom_theme_override_title">Replace which theme?</string>
+    <string name="custom_theme_saved">Theme saved</string>
+    <string name="custom_theme_delete_title">Delete custom theme?</string>
+    <string name="custom_theme_delete_message">Delete %1$s? This cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="color_saturation">Saturation</string>
+    <string name="color_brightness">Brightness</string>
+    <string name="apply">Apply</string>
+    <string name="skyscraper_display_buildings">Use building icons in Skyscraper</string>
+    <string name="skyscraper_display_buildings_desc">Turn off to show numbers only.</string>
     <string name="theme_selected">%1$s selected</string>
     <string name="reset_progress_shuffle">Reset progress and shuffle levels</string>
     <string name="reset_all_progress_title">Reset all progress?</string>
@@ -46,7 +68,7 @@
     <string name="desc_nurikabe">Shade cells to form islands &amp; a river</string>
     <string name="desc_hidato">Fill consecutive numbers along a path</string>
     <string name="desc_futoshiki">Sudoku-style with &lt; and &gt; inequalities</string>
-    <string name="desc_skyscraper">Place buildings using visibility clues</string>
+    <string name="desc_skyscraper">Place varied-height buildings using visibility clues</string>
 
     <string name="menu_desc_nonogram">Tap to fill, long-press to mark</string>
     <string name="menu_desc_mastermind">Guess the hidden color sequence</string>
@@ -57,7 +79,7 @@
     <string name="menu_desc_nurikabe">Shade cells into one connected river around islands</string>
     <string name="menu_desc_hidato">Fill consecutive numbers (1&#8211;50) in adjacent cells</string>
     <string name="menu_desc_futoshiki">Like Sudoku but with &lt; and &gt; between cells</string>
-    <string name="menu_desc_skyscraper">Place 1&#8211;N so visibility clues match</string>
+    <string name="menu_desc_skyscraper">Use varied heights so visibility clues match</string>
     <string name="puzzle_completion_title">%1$s  &#9733;%2$d/%3$d</string>
     <string name="completed_star">&#9733;</string>
 
@@ -75,11 +97,12 @@
 
     <string name="instruction_futoshiki">Each row &amp; column must contain 1&#8211;%1$d. Honor the &lt; &gt; inequalities.</string>
     <string name="instruction_hidato">Fill 1&#8211;%1$d. Each next number must touch the previous (incl. diagonals).</string>
-    <string name="instruction_kakuro">Tap a white cell, then a digit. Runs must sum to the clue with no repeats.</string>
+    <string name="instruction_kakuro">Tap a cell, then a digit. Runs must sum to the clue with no repeats.</string>
     <string name="instruction_lights_out">Tap a light to toggle it and its neighbors. Turn all OFF!</string>
     <string name="instruction_mastermind">Tap a slot then a color. &#9679; = right color &amp; spot, &#9675; = right color, wrong spot.</string>
     <string name="instruction_nonogram">Tap = fill &#9632;   Long-press = mark &#10005;</string>
-    <string name="instruction_nurikabe">Tap to shade. Each number forms a white island of exactly that size. All shaded cells must connect. No 2&#215;2 shaded.</string>
-    <string name="instruction_skyscraper">Use numbers 1&#8211;%1$d. Each row &amp; column must contain every number. Outside numbers = visible buildings from that side.</string>
+    <string name="instruction_nurikabe">Tap or drag to shade. Each number forms an island of exactly that size. All shaded cells must connect. No 2&#215;2 shaded.</string>
+    <string name="instruction_skyscraper">Use numbers 1&#8211;%1$d. Each row &amp; column needs height %1$d once; lower heights may be skipped but not repeated. Outside numbers = visible buildings.</string>
+    <string name="instruction_skyscraper_with_empty_lots">Use numbers 1&#8211;%1$d and leave one empty lot per row &amp; column. Each line needs height %1$d once; filled heights cannot repeat.</string>
     <string name="instruction_slitherlink">Tap an edge to toggle. Numbers = edges around that cell. All edges form one closed loop.</string>
 </resources>

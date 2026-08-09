@@ -41,13 +41,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
                     android:text="@string/support_button_with_icon"
-                    android:textSize="11sp"
+                    android:textSize="10sp"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:backgroundTint="#FFDD00"
                     android:textColor="#1A1A1A"/>
 
@@ -56,13 +56,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings"
-                    android:textSize="11sp"
+                    android:textSize="14sp"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:backgroundTint="@color/colorSurface"
                     android:textColor="@color/colorText"/>
             </LinearLayout>
@@ -80,7 +80,7 @@
                 android:id="@+id/puzzle_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical" />
 
         </LinearLayout>
     </ScrollView>

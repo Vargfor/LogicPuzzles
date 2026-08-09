@@ -7,7 +7,9 @@ data class SkyscraperPuzzle(
     val cluesBottom: IntArray,
     val cluesLeft: IntArray,
     val cluesRight: IntArray,
-    val solution: Array<IntArray>? = null
+    val solution: Array<IntArray>? = null,
+    val maxHeight: Int = size,
+    val emptyLotsPerLine: Int = 0
 )
 
 object SkyscraperPuzzles {
@@ -21,14 +23,29 @@ object SkyscraperPuzzles {
         return count
     }
 
-    private fun build(solution: Array<IntArray>, initial: Array<IntArray>? = null): SkyscraperPuzzle {
+    private fun build(
+        solution: Array<IntArray>,
+        initial: Array<IntArray>? = null,
+        maxHeight: Int = solution.size,
+        emptyLotsPerLine: Int = 0
+    ): SkyscraperPuzzle {
         val n = solution.size
         val init = initial?.map { it.copyOf() }?.toTypedArray() ?: Array(n) { IntArray(n) }
         val cT = IntArray(n) { c -> visibility(IntArray(n) { r -> solution[r][c] }) }
         val cB = IntArray(n) { c -> visibility(IntArray(n) { r -> solution[n - 1 - r][c] }) }
         val cL = IntArray(n) { r -> visibility(solution[r]) }
         val cR = IntArray(n) { r -> visibility(solution[r].reversedArray()) }
-        return SkyscraperPuzzle(n, init, cT, cB, cL, cR, solution.map { it.copyOf() }.toTypedArray())
+        return SkyscraperPuzzle(
+            n,
+            init,
+            cT,
+            cB,
+            cL,
+            cR,
+            solution.map { it.copyOf() }.toTypedArray(),
+            maxHeight,
+            emptyLotsPerLine
+        )
     }
 
     private fun withDifficultyGivens(puzzle: SkyscraperPuzzle, difficulty: Int, index: Int): SkyscraperPuzzle {
@@ -40,15 +57,17 @@ object SkyscraperPuzzles {
             cluesBottom = puzzle.cluesBottom.copyOf(),
             cluesLeft = puzzle.cluesLeft.copyOf(),
             cluesRight = puzzle.cluesRight.copyOf(),
-            solution = solution.map { it.copyOf() }.toTypedArray()
+            solution = solution.map { it.copyOf() }.toTypedArray(),
+            maxHeight = puzzle.maxHeight,
+            emptyLotsPerLine = puzzle.emptyLotsPerLine
         )
     }
 
     private fun givenCountFor(difficulty: Int, size: Int): Int {
         val count = when (difficulty) {
             0 -> when (size) {
-                4 -> 10
-                5 -> 14
+                4 -> 12
+                5 -> 18
                 else -> size * size / 2
             }
             1 -> when (size) {
@@ -77,6 +96,7 @@ object SkyscraperPuzzles {
 
         fun addCell(r: Int, c: Int) {
             if (placed >= count) return
+            if (solution[r][c] <= 0) return
             val key = r * size + c
             if (selected.add(key)) {
                 initial[r][c] = solution[r][c]
@@ -109,6 +129,57 @@ object SkyscraperPuzzles {
             (r.toLong() + 1L) * 73_856_093L +
             (c.toLong() + 1L) * 19_349_663L
         return ((mixed xor (mixed ushr 32)) and 0x7fff_ffffL).toInt()
+    }
+
+    private fun skylineVariant(puzzle: SkyscraperPuzzle, difficulty: Int, index: Int): SkyscraperPuzzle {
+        val source = puzzle.solution ?: return puzzle
+        val size = puzzle.size
+        val maxHeight = size + 1
+        val rowOrder = seededPermutation(size, 10_000 + difficulty * 997 + index * 37)
+        val colOrder = seededPermutation(size, 20_000 + difficulty * 991 + index * 41)
+        val heightOrder = seededPermutation(size, 30_000 + difficulty * 983 + index * 43)
+        val heightMap = IntArray(size + 1)
+        for (height in 1..size) {
+            heightMap[height] = heightOrder[height - 1] + 1
+        }
+
+        val solution = Array(size) { r ->
+            IntArray(size) { c ->
+                heightMap[source[rowOrder[r]][colOrder[c]]]
+            }
+        }
+
+        val extraHeightCols = seededDerangedColumns(size, 40_000 + difficulty * 977 + index * 47)
+        for (r in 0 until size) {
+            solution[r][extraHeightCols[r]] = maxHeight
+        }
+
+        val emptyLots = emptyLotsForDifficulty(difficulty)
+        if (emptyLots > 0) {
+            val blankShift = 1 + positiveMod(50_000 + difficulty * 971 + index * 53, size - 1)
+            for (r in 0 until size) {
+                solution[r][positiveMod(extraHeightCols[r] + blankShift, size)] = 0
+            }
+        }
+
+        return build(solution, maxHeight = maxHeight, emptyLotsPerLine = emptyLots)
+    }
+
+    private fun emptyLotsForDifficulty(difficulty: Int): Int =
+        if (difficulty >= 2) 1 else 0
+
+    private fun seededPermutation(size: Int, seed: Int): IntArray =
+        (0 until size)
+            .sortedWith(compareBy<Int> { seededCellScore(it, seed, size) }.thenBy { it })
+            .toIntArray()
+
+    private fun seededDerangedColumns(size: Int, seed: Int): IntArray {
+        val base = seededPermutation(size, seed)
+        for (shift in 1 until size) {
+            val candidate = IntArray(size) { r -> positiveMod(base[r] + shift, size) }
+            if (candidate.indices.all { r -> candidate[r] != r }) return candidate
+        }
+        return IntArray(size) { r -> positiveMod(r + 1, size) }
     }
 
     private fun grid(rows: Array<IntArray>): Array<IntArray> = rows
@@ -334,6 +405,7 @@ object SkyscraperPuzzles {
         val pool = when (difficulty) {
             0 -> EASY; 1 -> MEDIUM; 2 -> HARD; 3 -> EXPERT; else -> MASTER
         }
-        return withDifficultyGivens(pool[index.coerceIn(0, pool.size - 1)], difficulty, index)
+        val poolIndex = index.coerceIn(0, pool.size - 1)
+        return withDifficultyGivens(skylineVariant(pool[poolIndex], difficulty, poolIndex), difficulty, poolIndex)
     }
 }

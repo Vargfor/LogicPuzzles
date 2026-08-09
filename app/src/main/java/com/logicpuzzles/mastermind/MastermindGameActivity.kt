@@ -21,6 +21,7 @@ import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 
 class MastermindGameActivity : AppCompatActivity() {
 
@@ -52,6 +53,7 @@ class MastermindGameActivity : AppCompatActivity() {
         "Black",
         "Brown"
     )
+    private data class SubmittedGuess(val colors: List<Int>, val blacks: Int, val whites: Int)
 
     private var difficulty = 0
     private var puzzleIndex = 0
@@ -65,12 +67,14 @@ class MastermindGameActivity : AppCompatActivity() {
     private var selectedSlot = 0
     private var guessesUsed = 0
     private var gameOver = false
+    private var themeSignature = 0
 
     private lateinit var rowsContainer: LinearLayout
     private lateinit var pickerContainer: LinearLayout
     private lateinit var guessesLeftText: TextView
     private lateinit var scrollView: ScrollView
     private val slotViews = mutableListOf<View>()
+    private val submittedGuesses = mutableListOf<SubmittedGuess>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +87,13 @@ class MastermindGameActivity : AppCompatActivity() {
         currentGuess = MutableList(positions) { UNSET }
 
         buildUi()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
     }
 
     private fun configureLevel() {
@@ -99,6 +110,7 @@ class MastermindGameActivity : AppCompatActivity() {
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_MASTERMIND)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
@@ -118,6 +130,7 @@ class MastermindGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { resetPuzzle() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_mastermind, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary)
@@ -177,6 +190,21 @@ class MastermindGameActivity : AppCompatActivity() {
 
         updateGuessesLeft()
         buildColorPicker()
+        slotViews.clear()
+        submittedGuesses.forEachIndexed { index, guess ->
+            buildSubmittedGuessRow(index, guess)
+        }
+        if (!gameOver) buildCurrentGuessRow()
+    }
+
+    private fun resetPuzzle() {
+        gameOver = false
+        guessesUsed = 0
+        selectedSlot = 0
+        currentGuess = MutableList(positions) { UNSET }
+        submittedGuesses.clear()
+        rowsContainer.removeAllViews()
+        updateGuessesLeft()
         buildCurrentGuessRow()
     }
 
@@ -262,6 +290,58 @@ class MastermindGameActivity : AppCompatActivity() {
         scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
     }
 
+    private fun buildSubmittedGuessRow(index: Int, submitted: SubmittedGuess) {
+        val palette = ThemeManager.currentPalette(this)
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(8) }
+            setBackgroundColor(palette.surfaceStrong)
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+        }
+
+        row.addView(TextView(this).apply {
+            text = numberText(index + 1)
+            textSize = 14f
+            setTextColor(palette.textSecondary)
+            layoutParams = LinearLayout.LayoutParams(dp(28), LinearLayout.LayoutParams.WRAP_CONTENT)
+            gravity = Gravity.CENTER
+        })
+
+        row.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            submitted.colors.forEach { color ->
+                addView(View(this@MastermindGameActivity).apply {
+                    layoutParams = LinearLayout.LayoutParams(dp(36), dp(36)).apply {
+                        marginStart = dp(3)
+                        marginEnd = dp(3)
+                    }
+                    background = circleDrawable(colorValues[color], false)
+                    contentDescription = colorNames[color]
+                })
+            }
+        })
+
+        row.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(dp(56), LinearLayout.LayoutParams.WRAP_CONTENT)
+            addView(TextView(this@MastermindGameActivity).apply {
+                text = getString(R.string.mastermind_feedback, submitted.blacks, submitted.whites)
+                textSize = 13f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(palette.textPrimary)
+            })
+        })
+
+        rowsContainer.addView(row)
+        scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
+    }
+
     private fun selectSlot(idx: Int) {
         if (gameOver) return
         selectedSlot = idx
@@ -295,19 +375,12 @@ class MastermindGameActivity : AppCompatActivity() {
             return
         }
         val (blacks, whites) = checkGuess(secret, currentGuess)
-        slotViews.forEach { it.setOnClickListener(null) }
-        // Replace placeholder feedback
-        val row = rowsContainer.getChildAt(rowsContainer.childCount - 1) as LinearLayout
-        val feedback = row.getChildAt(2) as LinearLayout
-        feedback.removeAllViews()
-        feedback.addView(TextView(this).apply {
-            text = getString(R.string.mastermind_feedback, blacks, whites)
-            textSize = 13f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(ThemeManager.currentPalette(this@MastermindGameActivity).textPrimary)
-        })
-
+        val submitted = SubmittedGuess(currentGuess.toList(), blacks, whites)
+        submittedGuesses.add(submitted)
+        if (rowsContainer.childCount > 0) rowsContainer.removeViewAt(rowsContainer.childCount - 1)
+        buildSubmittedGuessRow(guessesUsed, submitted)
         guessesUsed++
+        updateGuessesLeft()
         if (blacks == positions) {
             gameOver = true
             PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_MASTERMIND, difficulty, puzzleIndex)
@@ -335,7 +408,6 @@ class MastermindGameActivity : AppCompatActivity() {
         }
         currentGuess = MutableList(positions) { UNSET }
         selectedSlot = 0
-        updateGuessesLeft()
         buildCurrentGuessRow()
     }
 
@@ -360,7 +432,7 @@ class MastermindGameActivity : AppCompatActivity() {
         return GradientDrawable().apply {
             shape = GradientDrawable.OVAL
             setColor(color)
-            if (selected) setStroke(4, palette.textPrimary)
+            if (selected) setStroke(4, palette.cellSelected)
             else setStroke(2, palette.gridLine)
         }
     }
@@ -369,8 +441,8 @@ class MastermindGameActivity : AppCompatActivity() {
         val palette = ThemeManager.currentPalette(this)
         return GradientDrawable().apply {
             shape = GradientDrawable.OVAL
-            setColor(palette.surface)
-            if (selected) setStroke(3, palette.textPrimary)
+            setColor(palette.cellEmpty)
+            if (selected) setStroke(3, palette.cellSelected)
             else setStroke(1, palette.gridLine)
         }
     }

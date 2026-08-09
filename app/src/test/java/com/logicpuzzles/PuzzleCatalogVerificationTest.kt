@@ -288,14 +288,20 @@ class PuzzleCatalogVerificationTest {
 
     private fun assertSkyscraperSolutionValid(puzzle: SkyscraperPuzzle, difficulty: Int, index: Int) {
         val solution = puzzle.solution ?: missing("Skyscraper [d=$difficulty i=$index] has no stored solution")
-        assertLatinSquare(solution, puzzle.size, "Skyscraper [d=$difficulty i=$index]")
+        assertSkyscraperGrid(
+            solution,
+            puzzle.size,
+            puzzle.maxHeight,
+            puzzle.emptyLotsPerLine,
+            "Skyscraper [d=$difficulty i=$index]"
+        )
         assertEquals("Skyscraper [d=$difficulty i=$index] initial row count", puzzle.size, puzzle.initial.size)
         var givens = 0
         for (r in 0 until puzzle.size) {
             assertEquals("Skyscraper [d=$difficulty i=$index] initial row width", puzzle.size, puzzle.initial[r].size)
             for (c in 0 until puzzle.size) {
                 val given = puzzle.initial[r][c]
-                assertTrue("Skyscraper [d=$difficulty i=$index] given out of range", given in 0..puzzle.size)
+                assertTrue("Skyscraper [d=$difficulty i=$index] given out of range", given in 0..puzzle.maxHeight)
                 if (given > 0) {
                     givens++
                     assertEquals("Skyscraper [d=$difficulty i=$index] given mismatch", solution[r][c], given)
@@ -312,16 +318,28 @@ class PuzzleCatalogVerificationTest {
             assertEquals("Skyscraper [d=$difficulty i=$index] right clue", puzzle.cluesRight[r], visibility(solution[r].reversedArray()))
         }
         if (difficulty == 0) {
-            val minimumEasyGivens = if (puzzle.size == 4) 10 else 14
+            val minimumEasyGivens = if (puzzle.size == 4) 12 else 18
             assertTrue(
                 "Skyscraper Easy [i=$index] should have enough givens to be easy",
                 givens >= minimumEasyGivens
             )
-            assertEquals(
-                "Skyscraper Easy [i=$index] should be uniquely solvable",
-                1,
-                PuzzleVerifier.countSkyscraperSolutions(puzzle)
+            assertTrue(
+                "Skyscraper Easy [i=$index] should have a valid relaxed-rule solution",
+                PuzzleVerifier.countSkyscraperSolutions(puzzle) >= 1
             )
+        }
+        assertTrue(
+            "Skyscraper [d=$difficulty i=$index] should include the extra height",
+            solution.any { row -> row.any { it == puzzle.maxHeight } }
+        )
+        assertTrue(
+            "Skyscraper [d=$difficulty i=$index] should not put the extra height on the simple diagonal",
+            (0 until puzzle.size).any { r -> solution[r][r] != puzzle.maxHeight }
+        )
+        if (difficulty >= 2) {
+            assertEquals("Skyscraper [d=$difficulty i=$index] empty lots per line", 1, puzzle.emptyLotsPerLine)
+        } else {
+            assertEquals("Skyscraper [d=$difficulty i=$index] empty lots per line", 0, puzzle.emptyLotsPerLine)
         }
     }
 
@@ -686,6 +704,41 @@ class PuzzleCatalogVerificationTest {
         }
     }
 
+    private fun assertSkyscraperGrid(
+        grid: Array<IntArray>,
+        size: Int,
+        maxHeight: Int,
+        emptyLotsPerLine: Int,
+        label: String
+    ) {
+        assertEquals("$label row count", size, grid.size)
+        assertTrue("$label max height should allow an extra value", maxHeight > size)
+        for (r in 0 until size) {
+            assertEquals("$label row width", size, grid[r].size)
+            assertSkyscraperLine(grid[r], maxHeight, emptyLotsPerLine, "$label row $r")
+        }
+        for (c in 0 until size) {
+            assertSkyscraperLine(
+                IntArray(size) { r -> grid[r][c] },
+                maxHeight,
+                emptyLotsPerLine,
+                "$label column $c"
+            )
+        }
+    }
+
+    private fun assertSkyscraperLine(line: IntArray, maxHeight: Int, emptyLotsPerLine: Int, label: String) {
+        assertEquals("$label empty lots", emptyLotsPerLine, line.count { it == 0 })
+        assertEquals("$label tallest height", 1, line.count { it == maxHeight })
+        val seen = HashSet<Int>()
+        for (value in line) {
+            assertTrue("$label value out of range", value in 0..maxHeight)
+            if (value > 0) {
+                assertTrue("$label repeats height $value", seen.add(value))
+            }
+        }
+    }
+
     private fun visibility(line: IntArray): Int {
         var tallest = 0
         var count = 0
@@ -787,7 +840,7 @@ class PuzzleCatalogVerificationTest {
         "${puzzle.size}|${intGridSignature(puzzle.initial)}|${intGridSignature(puzzle.hConstraints)}|${intGridSignature(puzzle.vConstraints)}"
 
     private fun skyscraperSignature(puzzle: SkyscraperPuzzle): String =
-        "${puzzle.size}|${intGridSignature(puzzle.initial)}|${puzzle.cluesTop.joinToString(",")}|${puzzle.cluesBottom.joinToString(",")}|${puzzle.cluesLeft.joinToString(",")}|${puzzle.cluesRight.joinToString(",")}"
+        "${puzzle.size}:${puzzle.maxHeight}:${puzzle.emptyLotsPerLine}|${intGridSignature(puzzle.initial)}|${puzzle.cluesTop.joinToString(",")}|${puzzle.cluesBottom.joinToString(",")}|${puzzle.cluesLeft.joinToString(",")}|${puzzle.cluesRight.joinToString(",")}"
 
     private fun kakuroSignature(puzzle: KakuroPuzzle): String =
         puzzle.grid.joinToString("/") { row ->

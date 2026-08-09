@@ -1,8 +1,10 @@
 package com.logicpuzzles.nurikabe
 
 import android.graphics.Typeface
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
@@ -19,6 +21,7 @@ import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 import java.util.ArrayDeque
 
 class NurikabeGameActivity : AppCompatActivity() {
@@ -29,6 +32,9 @@ class NurikabeGameActivity : AppCompatActivity() {
     private lateinit var shaded: Array<BooleanArray>  // true = shaded (river)
     private lateinit var cellViews: Array<Array<TextView>>
     private var solved = false
+    private var themeSignature = 0
+    private val dragTouchedCells = mutableSetOf<Int>()
+    private val touchRect = Rect()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,10 +50,18 @@ class NurikabeGameActivity : AppCompatActivity() {
         buildUi()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
+    }
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_NURIKABE)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
@@ -66,6 +80,7 @@ class NurikabeGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { resetPuzzle() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_nurikabe, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary); textSize = 18f
@@ -120,7 +135,7 @@ class NurikabeGameActivity : AppCompatActivity() {
                     gravity = Gravity.CENTER
                     textSize = 16f
                     setTypeface(null, Typeface.BOLD)
-                    setOnClickListener { onCellClick(r, c) }
+                    setOnTouchListener { _, event -> handleCellTouch(event) }
                 }
                 tv.layoutParams = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(r)
@@ -137,11 +152,42 @@ class NurikabeGameActivity : AppCompatActivity() {
         return gl
     }
 
-    private fun onCellClick(r: Int, c: Int) {
-        if (solved) return
-        if (puzzle.numbers[r][c] > 0) return  // numbered cells stay white
-        shaded[r][c] = !shaded[r][c]
-        paintCell(r, c)
+    private fun handleCellTouch(event: MotionEvent): Boolean {
+        if (solved) return true
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                dragTouchedCells.clear()
+                invertCellAt(event.rawX.toInt(), event.rawY.toInt())
+                return true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                invertCellAt(event.rawX.toInt(), event.rawY.toInt())
+                return true
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                dragTouchedCells.clear()
+                return true
+            }
+        }
+        return true
+    }
+
+    private fun invertCellAt(rawX: Int, rawY: Int) {
+        for (r in 0 until puzzle.rows) {
+            for (c in 0 until puzzle.cols) {
+                if (puzzle.numbers[r][c] > 0) continue
+                val cell = cellViews[r][c]
+                cell.getGlobalVisibleRect(touchRect)
+                if (touchRect.contains(rawX, rawY)) {
+                    val key = r * puzzle.cols + c
+                    if (dragTouchedCells.add(key)) {
+                        shaded[r][c] = !shaded[r][c]
+                        paintCell(r, c)
+                    }
+                    return
+                }
+            }
+        }
     }
 
     private fun paintCell(r: Int, c: Int) {
@@ -159,6 +205,12 @@ class NurikabeGameActivity : AppCompatActivity() {
             tv.text = ""
             tv.setBackgroundColor(palette.cellEmpty)
         }
+    }
+
+    private fun resetPuzzle() {
+        solved = false
+        shaded = Array(puzzle.rows) { BooleanArray(puzzle.cols) }
+        for (r in 0 until puzzle.rows) for (c in 0 until puzzle.cols) paintCell(r, c)
     }
 
     private fun checkSolution() {

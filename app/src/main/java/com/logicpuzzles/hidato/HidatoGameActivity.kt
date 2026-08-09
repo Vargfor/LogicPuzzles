@@ -19,6 +19,7 @@ import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 import kotlin.math.abs
 
 class HidatoGameActivity : AppCompatActivity() {
@@ -32,6 +33,7 @@ class HidatoGameActivity : AppCompatActivity() {
     private var selectedRow = -1
     private var selectedCol = -1
     private var solved = false
+    private var themeSignature = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +54,18 @@ class HidatoGameActivity : AppCompatActivity() {
         buildUi()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
+    }
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_HIDATO)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
@@ -74,6 +84,7 @@ class HidatoGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { resetPuzzle() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_hidato, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary); textSize = 18f
@@ -237,6 +248,14 @@ class HidatoGameActivity : AppCompatActivity() {
         for (r in 0 until puzzle.rows) for (c in 0 until puzzle.cols) {
             if (puzzle.initial[r][c] != -1) paintCell(r, c)
         }
+    }
+
+    private fun resetPuzzle() {
+        solved = false
+        selectedRow = -1
+        selectedCol = -1
+        values = Array(puzzle.rows) { puzzle.initial[it].copyOf() }
+        repaintAll()
     }
 
     private fun paintCell(r: Int, c: Int) {

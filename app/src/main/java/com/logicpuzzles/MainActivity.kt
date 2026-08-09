@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -89,48 +90,47 @@ class MainActivity : AppCompatActivity() {
         val palette = ThemeManager.currentPalette(this)
         val density = resources.displayMetrics.density
         fun dp(v: Int) = (v * density).toInt()
-        val selectedThemeId = ThemeManager.selectedThemeId(this)
 
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(palette.background)
-            setPadding(dp(18), dp(8), dp(18), dp(4))
+            setPadding(dp(18), dp(10), dp(18), dp(8))
         }
-        content.addView(TextView(this).apply {
-            text = getString(R.string.color_theme)
-            textSize = 14f
-            setTypeface(null, Typeface.BOLD)
-            setTextColor(palette.textPrimary)
-            setPadding(0, 0, 0, dp(8))
-        })
 
         var dialog: AlertDialog? = null
-        val normalSelected = ThemeManager.normalPalettes.any { it.id == selectedThemeId }
-        val colorblindSelected = ThemeManager.colorblindPalettes.any { it.id == selectedThemeId }
         content.addView(themeMenuRow(
-            title = getString(R.string.normal_themes),
-            previewColor = if (normalSelected) palette.accent else ThemeManager.normalPalettes.first().accent,
-            selected = normalSelected,
+            title = getString(R.string.settings_options),
+            textColor = palette.accent,
+            selected = false,
             palette = palette
         ) {
             dialog?.dismiss()
-            showThemeMenu(R.string.normal_themes, ThemeManager.normalPalettes)
+            showOptionsMenu()
         })
         content.addView(themeMenuRow(
-            title = getString(R.string.colorblind_themes),
-            previewColor = if (colorblindSelected) palette.accent else ThemeManager.colorblindPalettes.first().accent,
-            selected = colorblindSelected,
+            title = getString(R.string.settings_themes),
+            textColor = palette.warning,
+            selected = false,
             palette = palette
         ) {
             dialog?.dismiss()
-            showThemeMenu(R.string.colorblind_themes, ThemeManager.colorblindPalettes)
+            showThemesMenu()
         })
 
         content.addView(Button(this).apply {
             text = getString(R.string.reset_progress_shuffle)
-            textSize = 13f
-            backgroundTintList = ColorStateList.valueOf(palette.danger)
-            setTextColor(palette.buttonText)
+            textSize = 14f
+            gravity = Gravity.CENTER
+            minimumHeight = dp(56)
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            backgroundTintList = ColorStateList.valueOf(palette.surface)
+            setTextColor(palette.danger)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dp(28)
+            }
             setOnClickListener {
                 dialog?.dismiss()
                 confirmReset()
@@ -139,6 +139,107 @@ class MainActivity : AppCompatActivity() {
 
         dialog = AlertDialog.Builder(this)
             .setTitle(R.string.settings)
+            .setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton(R.string.close, null)
+            .create()
+        dialog.show()
+    }
+
+    private fun showOptionsMenu() {
+        val palette = ThemeManager.currentPalette(this)
+        val prefs = PrefsManager(this)
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(10), dp(18), dp(8))
+        }
+
+        val toggle = CheckBox(this).apply {
+            isChecked = prefs.isSkyscraperBuildingsEnabled()
+            buttonTintList = ColorStateList.valueOf(palette.accent)
+            setOnCheckedChangeListener { _, checked ->
+                prefs.setSkyscraperBuildingsEnabled(checked)
+            }
+        }
+
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            minimumHeight = dp(58)
+            setPadding(dp(12), dp(12), dp(8), dp(12))
+            background = roundedDrawable(palette.surface, palette.gridLine, dp(8).toFloat())
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            setOnClickListener { toggle.isChecked = !toggle.isChecked }
+        }
+
+        row.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            addView(TextView(this@MainActivity).apply {
+                text = getString(R.string.skyscraper_display_buildings)
+                textSize = 14f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(palette.textPrimary)
+            })
+            addView(TextView(this@MainActivity).apply {
+                text = getString(R.string.skyscraper_display_buildings_desc)
+                textSize = 12f
+                setTextColor(palette.textSecondary)
+                setPadding(0, dp(4), 0, 0)
+            })
+        })
+        row.addView(toggle)
+        content.addView(row)
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.settings_options)
+            .setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton(R.string.close, null)
+            .show()
+    }
+
+    private fun showThemesMenu() {
+        val palette = ThemeManager.currentPalette(this)
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+        val selectedThemeId = ThemeManager.selectedThemeId(this)
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(10), dp(18), dp(8))
+        }
+
+        var dialog: AlertDialog? = null
+        val defaultSelected = ThemeManager.normalPalettes.any { it.id == selectedThemeId }
+        val customSelected = ThemeManager.customThemeSlots(this).any { it.palette.id == selectedThemeId }
+        content.addView(themeMenuRow(
+            title = getString(R.string.default_themes),
+            textColor = if (defaultSelected) palette.accent else ThemeManager.normalPalettes.first().accent,
+            selected = defaultSelected,
+            palette = palette
+        ) {
+            dialog?.dismiss()
+            showThemeMenu(R.string.default_themes, ThemeManager.normalPalettes)
+        })
+        content.addView(themeMenuRow(
+            title = getString(R.string.custom_themes),
+            textColor = if (customSelected) palette.accent else palette.success,
+            selected = customSelected,
+            palette = palette
+        ) {
+            dialog?.dismiss()
+            showCustomThemesMenu()
+        })
+
+        dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.settings_themes)
             .setView(ScrollView(this).apply { addView(content) })
             .setNegativeButton(R.string.close, null)
             .create()
@@ -161,7 +262,7 @@ class MainActivity : AppCompatActivity() {
             val selected = option.id == ThemeManager.selectedThemeId(this)
             content.addView(themeMenuRow(
                 title = if (selected) getString(R.string.theme_selected, option.name) else option.name,
-                previewColor = option.accent,
+                textColor = option.accent,
                 selected = selected,
                 palette = palette
             ) {
@@ -179,9 +280,93 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun showCustomThemesMenu() {
+        val palette = ThemeManager.currentPalette(this)
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(10), dp(18), dp(8))
+        }
+
+        var dialog: AlertDialog? = null
+        content.addView(Button(this).apply {
+            text = getString(R.string.custom_theme_create)
+            textSize = 15f
+            gravity = Gravity.CENTER
+            minimumHeight = dp(56)
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            backgroundTintList = ColorStateList.valueOf(palette.surface)
+            setTextColor(palette.success)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(10) }
+            setOnClickListener {
+                dialog?.dismiss()
+                startActivity(Intent(this@MainActivity, CustomThemeActivity::class.java))
+            }
+        })
+
+        val savedThemes = ThemeManager.customThemeSlots(this)
+        if (savedThemes.isEmpty()) {
+            content.addView(TextView(this).apply {
+                text = getString(R.string.custom_theme_empty)
+                textSize = 13f
+                setTextColor(palette.textSecondary)
+                setPadding(0, dp(14), 0, 0)
+            })
+        } else {
+            content.addView(TextView(this).apply {
+                text = getString(R.string.custom_themes)
+                textSize = 14f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(palette.textPrimary)
+                setPadding(0, dp(18), 0, dp(8))
+            })
+
+            for (slot in savedThemes) {
+                val selected = slot.palette.id == ThemeManager.selectedThemeId(this)
+                content.addView(customThemeRow(
+                    title = if (selected) getString(R.string.theme_selected, slot.palette.name) else slot.palette.name,
+                    textColor = slot.palette.accent,
+                    selected = selected,
+                    palette = palette,
+                    onSelect = {
+                        ThemeManager.setTheme(this@MainActivity, slot.palette.id)
+                        dialog?.dismiss()
+                        buildCards()
+                    },
+                    onDelete = {
+                        confirmDeleteCustomTheme(slot.slot, slot.palette.name) {
+                            dialog?.dismiss()
+                            buildCards()
+                            showCustomThemesMenu()
+                        }
+                    },
+                    onEdit = {
+                        dialog?.dismiss()
+                        startActivity(Intent(this@MainActivity, CustomThemeActivity::class.java).apply {
+                            putExtra(CustomThemeActivity.EXTRA_CUSTOM_THEME_SLOT, slot.slot)
+                        })
+                    }
+                ))
+            }
+        }
+
+        dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.custom_themes)
+            .setView(ScrollView(this).apply { addView(content) })
+            .setNegativeButton(R.string.close, null)
+            .create()
+        dialog.show()
+    }
+
     private fun themeMenuRow(
         title: String,
-        previewColor: Int,
+        textColor: Int,
         selected: Boolean,
         palette: AppPalette,
         onClick: () -> Unit
@@ -191,8 +376,9 @@ class MainActivity : AppCompatActivity() {
 
         return LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(10), dp(12), dp(10))
+            gravity = Gravity.CENTER
+            minimumHeight = dp(56)
+            setPadding(dp(12), dp(12), dp(12), dp(12))
             background = roundedDrawable(
                 if (selected) palette.surfaceStrong else palette.surface,
                 palette.gridLine,
@@ -201,19 +387,86 @@ class MainActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(8) }
+            ).apply { bottomMargin = dp(10) }
             setOnClickListener { onClick() }
 
-            addView(View(this@MainActivity).apply {
-                background = roundedDrawable(previewColor, palette.gridLine, dp(12).toFloat())
-                layoutParams = LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(10) }
+            addView(TextView(this@MainActivity).apply {
+                text = title
+                textSize = 15f
+                gravity = Gravity.CENTER
+                setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
+                setTextColor(textColor)
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+        }
+    }
+
+    private fun customThemeRow(
+        title: String,
+        textColor: Int,
+        selected: Boolean,
+        palette: AppPalette,
+        onSelect: () -> Unit,
+        onDelete: () -> Unit,
+        onEdit: () -> Unit
+    ): View {
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            minimumHeight = dp(56)
+            setPadding(dp(10), dp(10), dp(10), dp(10))
+            background = roundedDrawable(
+                if (selected) palette.surfaceStrong else palette.surface,
+                palette.gridLine,
+                dp(8).toFloat()
+            )
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(10) }
+
+            addView(Button(this@MainActivity).apply {
+                text = "X"
+                textSize = 13f
+                gravity = Gravity.CENTER
+                setTypeface(null, Typeface.BOLD)
+                minimumHeight = dp(44)
+                minWidth = dp(44)
+                setPadding(0, 0, 0, 0)
+                backgroundTintList = ColorStateList.valueOf(palette.surfaceStrong)
+                setTextColor(palette.danger)
+                layoutParams = LinearLayout.LayoutParams(dp(44), LinearLayout.LayoutParams.WRAP_CONTENT)
+                    .apply { marginEnd = dp(8) }
+                setOnClickListener { onDelete() }
             })
             addView(TextView(this@MainActivity).apply {
                 text = title
-                textSize = 14f
-                setTextColor(palette.textPrimary)
+                textSize = 15f
+                gravity = Gravity.CENTER
+                setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
+                setTextColor(textColor)
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                setOnClickListener { onSelect() }
             })
+            addView(Button(this@MainActivity).apply {
+                text = getString(R.string.custom_theme_edit)
+                textSize = 13f
+                gravity = Gravity.CENTER
+                minimumHeight = dp(44)
+                minWidth = dp(64)
+                setPadding(dp(10), 0, dp(10), 0)
+                backgroundTintList = ColorStateList.valueOf(palette.surfaceStrong)
+                setTextColor(palette.warning)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { marginStart = dp(8) }
+                setOnClickListener { onEdit() }
+            })
+            setOnClickListener { onSelect() }
         }
     }
 
@@ -232,6 +485,18 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(R.string.reset) { _, _ ->
                 PrefsManager(this).resetProgressAndShuffleLevels()
                 buildCards()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun confirmDeleteCustomTheme(slot: Int, themeName: String, onDeleted: () -> Unit) {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.custom_theme_delete_title)
+            .setMessage(getString(R.string.custom_theme_delete_message, themeName))
+            .setPositiveButton(R.string.delete) { _, _ ->
+                ThemeManager.deleteCustomTheme(this, slot)
+                onDeleted()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

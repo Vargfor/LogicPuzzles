@@ -35,9 +35,23 @@ data class AppPalette(
     val difficultyAccents: IntArray
 )
 
+data class ThemeColorSpec(
+    val key: String,
+    val label: String,
+    val group: String
+)
+
+data class CustomThemeSlot(
+    val slot: Int,
+    val palette: AppPalette
+)
+
 object ThemeManager {
     private const val PREF_NAME = "logic_puzzles_prefs"
     private const val KEY_THEME = "color_theme"
+    private const val KEY_CUSTOM_PREFIX = "custom_theme_"
+    const val CUSTOM_THEME_SLOTS = 3
+    const val CUSTOM_THEME_BASE_ID = 100
 
     private fun color(hex: String): Int = hex.toColorInt()
     private fun colors(vararg hex: String): IntArray = hex.map(::color).toIntArray()
@@ -57,30 +71,30 @@ object ThemeManager {
     ): AppPalette = AppPalette(
         id = id,
         name = name,
-        background = color("#020617"),
-        surface = color("#111827"),
-        surfaceStrong = color("#334155"),
-        textPrimary = color("#F8FAFC"),
-        textSecondary = color("#E2E8F0"),
+        background = color("#111116"),
+        surface = color("#171820"),
+        surfaceStrong = color("#25252E"),
+        textPrimary = color("#D8DEEA"),
+        textSecondary = color("#8F96A8"),
         accent = color(accent),
-        accentText = color("#07111F"),
+        accentText = color("#08101C"),
         button = color(button),
         buttonText = color("#FFFFFF"),
         success = color(success),
         warning = color(warning),
         danger = color(danger),
-        cellEmpty = color("#FFFFFF"),
-        cellText = color("#020617"),
+        cellEmpty = color("#171820"),
+        cellText = color("#79A9F2"),
         cellFilled = color(cellFilled),
-        cellFilledText = color("#FFFFFF"),
-        cellSelected = color("#FFD43B"),
-        cellSelectedText = color("#020617"),
+        cellFilledText = color("#EAF3FF"),
+        cellSelected = color("#074C86"),
+        cellSelectedText = color("#EAF3FF"),
         cellFixed = color(cellFixed),
-        cellFixedText = color("#07111F"),
+        cellFixedText = color("#9AA3B5"),
         shadedCell = color(cellFilled),
-        gridLine = color("#94A3B8"),
-        locked = color("#1E293B"),
-        lockedText = color("#CBD5E1"),
+        gridLine = color("#050509"),
+        locked = color("#0B0B10"),
+        lockedText = color("#6E7484"),
         puzzleAccents = puzzleAccents,
         difficultyAccents = difficultyAccents
     )
@@ -100,11 +114,11 @@ object ThemeManager {
     ): AppPalette = AppPalette(
         id = id,
         name = name,
-        background = color("#D8E2EE"),
+        background = color("#EDF3FA"),
         surface = color("#FFFFFF"),
-        surfaceStrong = color("#CBD5E1"),
-        textPrimary = color("#111827"),
-        textSecondary = color("#334155"),
+        surfaceStrong = color("#DDE7F3"),
+        textPrimary = color("#122033"),
+        textSecondary = color("#5A6678"),
         accent = color(accent),
         accentText = color("#FFFFFF"),
         button = color(button),
@@ -113,17 +127,17 @@ object ThemeManager {
         warning = color(warning),
         danger = color(danger),
         cellEmpty = color("#FFFFFF"),
-        cellText = color("#111827"),
+        cellText = color("#1A2B40"),
         cellFilled = color(cellFilled),
         cellFilledText = color("#FFFFFF"),
-        cellSelected = color("#FFD43B"),
-        cellSelectedText = color("#020617"),
+        cellSelected = color("#CFE4FF"),
+        cellSelectedText = color("#102033"),
         cellFixed = color(cellFixed),
-        cellFixedText = color("#020617"),
+        cellFixedText = color("#27364A"),
         shadedCell = color(cellFilled),
-        gridLine = color("#475569"),
-        locked = color("#CBD5E1"),
-        lockedText = color("#334155"),
+        gridLine = color("#7C8798"),
+        locked = color("#CFD8E5"),
+        lockedText = color("#5B6574"),
         puzzleAccents = puzzleAccents,
         difficultyAccents = difficultyAccents
     )
@@ -132,34 +146,34 @@ object ThemeManager {
         darkPalette(
             id = 0,
             name = "Dark",
-            accent = "#4EA3F1",
-            button = "#1C5FDB",
-            success = "#35C2B5",
-            warning = "#F2C94C",
-            danger = "#FF6B9A",
-            cellFilled = "#111827",
-            cellFixed = "#BFE6FF",
+            accent = "#79A9F2",
+            button = "#114D86",
+            success = "#48D6C1",
+            warning = "#F3C766",
+            danger = "#FF6B8A",
+            cellFilled = "#0F4F8F",
+            cellFixed = "#24242C",
             puzzleAccents = colors(
-                "#56B4E9", "#E69F00", "#40B0A6", "#CC79A7", "#F2C94C",
-                "#8EA4FF", "#FF8C42", "#B5A1FF", "#2EC4B6", "#FF6B9A"
+                "#79A9F2", "#9FC5FF", "#48D6C1", "#F3C766", "#7FB3FF",
+                "#B8A7FF", "#A0D1FF", "#8DD9D0", "#FF9E7A", "#8CBFFF"
             ),
-            difficultyAccents = colors("#56B4E9", "#E69F00", "#CC79A7", "#F2C94C", "#D62828")
+            difficultyAccents = colors("#79A9F2", "#48D6C1", "#F3C766", "#FF9E7A", "#FF6B8A")
         ),
         lightPalette(
             id = 1,
             name = "Light",
-            accent = "#005AB5",
-            button = "#005AB5",
-            success = "#006A6A",
-            warning = "#8A5A00",
-            danger = "#9A2E73",
-            cellFilled = "#111827",
-            cellFixed = "#B7D7FF",
+            accent = "#1D6FCB",
+            button = "#1D6FCB",
+            success = "#007E72",
+            warning = "#8D6200",
+            danger = "#B13E66",
+            cellFilled = "#1D6FCB",
+            cellFixed = "#DDE7F3",
             puzzleAccents = colors(
-                "#005AB5", "#A16207", "#006A6A", "#7A3E9D", "#8A5A00",
-                "#2F5F8F", "#99582A", "#5D5A88", "#24706B", "#9A2E73"
+                "#1D6FCB", "#3A7BD5", "#007E72", "#8D6200", "#2D76C8",
+                "#6B63B5", "#2084B7", "#118678", "#B65C36", "#B13E66"
             ),
-            difficultyAccents = colors("#005AB5", "#A16207", "#7A3E9D", "#111827", "#9A0000")
+            difficultyAccents = colors("#1D6FCB", "#007E72", "#8D6200", "#B65C36", "#B13E66")
         ),
         darkPalette(
             id = 2,
@@ -246,18 +260,191 @@ object ThemeManager {
     val normalPalettes = palettes.filter { it.id in 0..1 }
     val colorblindPalettes = palettes.filter { it.id >= 2 }
 
+    val editableColorSpecs = listOf(
+        ThemeColorSpec("background", "App background", "App surfaces"),
+        ThemeColorSpec("surface", "Panel surface", "App surfaces"),
+        ThemeColorSpec("surface_strong", "Selected panel", "App surfaces"),
+        ThemeColorSpec("text_primary", "Primary text", "Text"),
+        ThemeColorSpec("text_secondary", "Secondary text", "Text"),
+        ThemeColorSpec("accent", "General accent", "Controls"),
+        ThemeColorSpec("accent_text", "Accent text", "Controls"),
+        ThemeColorSpec("button", "Button fill", "Controls"),
+        ThemeColorSpec("button_text", "Button text", "Controls"),
+        ThemeColorSpec("success", "Success feedback", "Feedback"),
+        ThemeColorSpec("warning", "Warning feedback", "Feedback"),
+        ThemeColorSpec("danger", "Danger feedback", "Feedback"),
+        ThemeColorSpec("cell_empty", "Empty cell", "Puzzle cells"),
+        ThemeColorSpec("cell_text", "Cell text", "Puzzle cells"),
+        ThemeColorSpec("cell_filled", "Filled cell", "Puzzle cells"),
+        ThemeColorSpec("cell_filled_text", "Filled cell text", "Puzzle cells"),
+        ThemeColorSpec("cell_selected", "Selected cell", "Puzzle cells"),
+        ThemeColorSpec("cell_selected_text", "Selected cell text", "Puzzle cells"),
+        ThemeColorSpec("cell_fixed", "Given cell", "Puzzle cells"),
+        ThemeColorSpec("cell_fixed_text", "Given cell text", "Puzzle cells"),
+        ThemeColorSpec("shaded_cell", "Shaded cell", "Puzzle cells"),
+        ThemeColorSpec("grid_line", "Grid lines", "Puzzle cells"),
+        ThemeColorSpec("locked", "Locked item", "Puzzle cells"),
+        ThemeColorSpec("locked_text", "Locked item text", "Puzzle cells"),
+        ThemeColorSpec("puzzle_0", "Nonogram accent", "Game accents"),
+        ThemeColorSpec("puzzle_1", "Mastermind accent", "Game accents"),
+        ThemeColorSpec("puzzle_2", "Lights Out accent", "Game accents"),
+        ThemeColorSpec("puzzle_3", "Kakuro accent", "Game accents"),
+        ThemeColorSpec("puzzle_4", "Logic Grid accent", "Game accents"),
+        ThemeColorSpec("puzzle_5", "Slitherlink accent", "Game accents"),
+        ThemeColorSpec("puzzle_6", "Nurikabe accent", "Game accents"),
+        ThemeColorSpec("puzzle_7", "Hidato accent", "Game accents"),
+        ThemeColorSpec("puzzle_8", "Futoshiki accent", "Game accents"),
+        ThemeColorSpec("puzzle_9", "Skyscraper accent", "Game accents"),
+        ThemeColorSpec("difficulty_0", "Easy difficulty", "Difficulty accents"),
+        ThemeColorSpec("difficulty_1", "Medium difficulty", "Difficulty accents"),
+        ThemeColorSpec("difficulty_2", "Hard difficulty", "Difficulty accents"),
+        ThemeColorSpec("difficulty_3", "Expert difficulty", "Difficulty accents"),
+        ThemeColorSpec("difficulty_4", "Master difficulty", "Difficulty accents")
+    )
+
     fun currentPalette(context: Context): AppPalette {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         val id = prefs.getInt(KEY_THEME, 0)
+        customThemeFromId(context, id)?.let { return it }
         return palettes.firstOrNull { it.id == id } ?: palettes.first()
     }
 
-    fun selectedThemeId(context: Context): Int = currentPalette(context).id
+    fun paletteSignature(context: Context): Int =
+        paletteColors(currentPalette(context)).values.fold(17) { hash, value ->
+            hash * 31 + value
+        }
+
+    fun selectedThemeId(context: Context): Int =
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).getInt(KEY_THEME, 0)
 
     fun setTheme(context: Context, id: Int) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit { putInt(KEY_THEME, id) }
     }
+
+    fun customThemeId(slot: Int): Int = CUSTOM_THEME_BASE_ID + slot
+
+    fun customThemeSlots(context: Context): List<CustomThemeSlot> =
+        (0 until CUSTOM_THEME_SLOTS).mapNotNull { slot ->
+            customThemeAt(context, slot)?.let { CustomThemeSlot(slot, it) }
+        }
+
+    fun customThemeAt(context: Context, slot: Int): AppPalette? {
+        if (slot !in 0 until CUSTOM_THEME_SLOTS) return null
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val name = prefs.getString(customThemeNameKey(slot), null)?.trim().orEmpty()
+        if (name.isEmpty()) return null
+        val colors = editableColorSpecs.associate { spec ->
+            spec.key to prefs.getInt(customThemeColorKey(slot, spec.key), defaultColorFor(spec.key))
+        }
+        return createCustomPalette(customThemeId(slot), name, colors)
+    }
+
+    fun firstAvailableCustomSlot(context: Context): Int? {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return (0 until CUSTOM_THEME_SLOTS).firstOrNull { slot ->
+            !prefs.contains(customThemeNameKey(slot))
+        }
+    }
+
+    fun saveCustomTheme(context: Context, slot: Int, name: String, colors: Map<String, Int>): AppPalette {
+        val safeSlot = slot.coerceIn(0, CUSTOM_THEME_SLOTS - 1)
+        val safeName = name.trim().ifEmpty { "Custom ${safeSlot + 1}" }
+        val palette = createCustomPalette(customThemeId(safeSlot), safeName, colors)
+        val storedColors = paletteColors(palette)
+
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit {
+            putString(customThemeNameKey(safeSlot), safeName)
+            editableColorSpecs.forEach { spec ->
+                putInt(customThemeColorKey(safeSlot, spec.key), storedColors.getValue(spec.key))
+            }
+            putInt(KEY_THEME, palette.id)
+        }
+        return palette
+    }
+
+    fun deleteCustomTheme(context: Context, slot: Int) {
+        if (slot !in 0 until CUSTOM_THEME_SLOTS) return
+        val deletedThemeId = customThemeId(slot)
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val wasSelected = prefs.getInt(KEY_THEME, 0) == deletedThemeId
+        prefs.edit {
+            remove(customThemeNameKey(slot))
+            editableColorSpecs.forEach { spec ->
+                remove(customThemeColorKey(slot, spec.key))
+            }
+            if (wasSelected) putInt(KEY_THEME, 0)
+        }
+    }
+
+    fun createCustomPalette(id: Int, name: String, colors: Map<String, Int>): AppPalette {
+        val base = palettes.first()
+        fun c(key: String, fallback: Int): Int = colors[key] ?: fallback
+        return AppPalette(
+            id = id,
+            name = name,
+            background = c("background", base.background),
+            surface = c("surface", base.surface),
+            surfaceStrong = c("surface_strong", base.surfaceStrong),
+            textPrimary = c("text_primary", base.textPrimary),
+            textSecondary = c("text_secondary", base.textSecondary),
+            accent = c("accent", base.accent),
+            accentText = c("accent_text", base.accentText),
+            button = c("button", base.button),
+            buttonText = c("button_text", base.buttonText),
+            success = c("success", base.success),
+            warning = c("warning", base.warning),
+            danger = c("danger", base.danger),
+            cellEmpty = c("cell_empty", base.cellEmpty),
+            cellText = c("cell_text", base.cellText),
+            cellFilled = c("cell_filled", base.cellFilled),
+            cellFilledText = c("cell_filled_text", base.cellFilledText),
+            cellSelected = c("cell_selected", base.cellSelected),
+            cellSelectedText = c("cell_selected_text", base.cellSelectedText),
+            cellFixed = c("cell_fixed", base.cellFixed),
+            cellFixedText = c("cell_fixed_text", base.cellFixedText),
+            shadedCell = c("shaded_cell", base.shadedCell),
+            gridLine = c("grid_line", base.gridLine),
+            locked = c("locked", base.locked),
+            lockedText = c("locked_text", base.lockedText),
+            puzzleAccents = IntArray(base.puzzleAccents.size) { index ->
+                c("puzzle_$index", base.puzzleAccents[index])
+            },
+            difficultyAccents = IntArray(base.difficultyAccents.size) { index ->
+                c("difficulty_$index", base.difficultyAccents[index])
+            }
+        )
+    }
+
+    fun paletteColors(palette: AppPalette): MutableMap<String, Int> =
+        linkedMapOf<String, Int>().apply {
+            put("background", palette.background)
+            put("surface", palette.surface)
+            put("surface_strong", palette.surfaceStrong)
+            put("text_primary", palette.textPrimary)
+            put("text_secondary", palette.textSecondary)
+            put("accent", palette.accent)
+            put("accent_text", palette.accentText)
+            put("button", palette.button)
+            put("button_text", palette.buttonText)
+            put("success", palette.success)
+            put("warning", palette.warning)
+            put("danger", palette.danger)
+            put("cell_empty", palette.cellEmpty)
+            put("cell_text", palette.cellText)
+            put("cell_filled", palette.cellFilled)
+            put("cell_filled_text", palette.cellFilledText)
+            put("cell_selected", palette.cellSelected)
+            put("cell_selected_text", palette.cellSelectedText)
+            put("cell_fixed", palette.cellFixed)
+            put("cell_fixed_text", palette.cellFixedText)
+            put("shaded_cell", palette.shadedCell)
+            put("grid_line", palette.gridLine)
+            put("locked", palette.locked)
+            put("locked_text", palette.lockedText)
+            palette.puzzleAccents.forEachIndexed { index, color -> put("puzzle_$index", color) }
+            palette.difficultyAccents.forEachIndexed { index, color -> put("difficulty_$index", color) }
+        }
 
     fun puzzleAccent(context: Context, type: Int): Int {
         val palette = currentPalette(context)
@@ -268,4 +455,18 @@ object ThemeManager {
         val palette = currentPalette(context)
         return palette.difficultyAccents[difficulty.coerceIn(0, palette.difficultyAccents.lastIndex)]
     }
+
+    private fun customThemeFromId(context: Context, id: Int): AppPalette? {
+        val slot = id - CUSTOM_THEME_BASE_ID
+        return customThemeAt(context, slot)
+    }
+
+    private fun defaultColorFor(key: String): Int =
+        paletteColors(palettes.first()).getValue(key)
+
+    private fun customThemeNameKey(slot: Int): String =
+        "$KEY_CUSTOM_PREFIX${slot}_name"
+
+    private fun customThemeColorKey(slot: Int, colorKey: String): String =
+        "$KEY_CUSTOM_PREFIX${slot}_$colorKey"
 }

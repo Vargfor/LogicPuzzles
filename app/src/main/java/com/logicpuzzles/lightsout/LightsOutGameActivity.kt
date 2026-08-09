@@ -5,7 +5,6 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.LinearLayout
@@ -18,6 +17,7 @@ import com.logicpuzzles.utils.CompletionDialogs
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 
 class LightsOutGameActivity : AppCompatActivity() {
 
@@ -30,6 +30,7 @@ class LightsOutGameActivity : AppCompatActivity() {
     private var moves = 0
     private var solved = false
     private lateinit var movesText: TextView
+    private var themeSignature = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +49,18 @@ class LightsOutGameActivity : AppCompatActivity() {
         buildUi()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
+    }
+
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_LIGHTS_OUT)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
@@ -70,6 +79,7 @@ class LightsOutGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { reset() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_lights_out, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary)
@@ -78,7 +88,7 @@ class LightsOutGameActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         })
         movesText = TextView(this).apply {
-            text = getString(R.string.moves_count, 0)
+            text = getString(R.string.moves_count, moves)
             setTextColor(accent)
             textSize = 14f
             setTypeface(null, Typeface.BOLD)
@@ -100,17 +110,6 @@ class LightsOutGameActivity : AppCompatActivity() {
         }
         boardWrap.addView(buildBoard())
         main.addView(boardWrap)
-
-        main.addView(Button(this).apply {
-            text = getString(R.string.action_reset_puzzle)
-            setBackgroundColor(palette.button)
-            setTextColor(palette.buttonText)
-            val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(dp(8), dp(4), dp(8), dp(8)) }
-            layoutParams = lp
-            setOnClickListener { reset() }
-        })
 
         root.addView(main)
     }
@@ -153,13 +152,12 @@ class LightsOutGameActivity : AppCompatActivity() {
 
     private fun paintCell(r: Int, c: Int) {
         val palette = ThemeManager.currentPalette(this)
-        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_LIGHTS_OUT)
         val on = grid[r][c]
         val drawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = dp(8).toFloat()
-            setColor(if (on) accent else palette.shadedCell)
-            setStroke(2, if (on) palette.warning else palette.gridLine)
+            setColor(if (on) palette.cellFilled else palette.cellEmpty)
+            setStroke(2, if (on) palette.accent else palette.gridLine)
         }
         cellViews[r][c].background = drawable
     }
@@ -196,7 +194,7 @@ class LightsOutGameActivity : AppCompatActivity() {
     private fun isSolved(): Boolean = grid.all { row -> row.none { it } }
 
     private fun reset() {
-        if (solved) return
+        solved = false
         grid = Array(size) { initial[it].copyOf() }
         moves = 0
         movesText.text = getString(R.string.moves_count, 0)

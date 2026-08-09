@@ -18,6 +18,7 @@ import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 
 class FutoshikiGameActivity : AppCompatActivity() {
 
@@ -30,6 +31,7 @@ class FutoshikiGameActivity : AppCompatActivity() {
     private var selectedRow = -1
     private var selectedCol = -1
     private var solved = false
+    private var themeSignature = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +50,18 @@ class FutoshikiGameActivity : AppCompatActivity() {
         buildUi()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
+    }
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_FUTOSHIKI)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
@@ -70,6 +80,7 @@ class FutoshikiGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { resetPuzzle() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_futoshiki, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary); textSize = 18f
@@ -231,6 +242,14 @@ class FutoshikiGameActivity : AppCompatActivity() {
             isFixed -> palette.cellFixedText
             else -> palette.cellText
         })
+    }
+
+    private fun resetPuzzle() {
+        solved = false
+        selectedRow = -1
+        selectedCol = -1
+        values = Array(puzzle.size) { puzzle.initial[it].copyOf() }
+        for (r in 0 until puzzle.size) for (c in 0 until puzzle.size) paintCell(r, c)
     }
 
     private fun checkSolution() {

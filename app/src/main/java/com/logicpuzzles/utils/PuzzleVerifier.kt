@@ -138,6 +138,7 @@ object PuzzleVerifier {
     fun countSkyscraperSolutions(p: SkyscraperPuzzle): Int {
         val n = p.size
         val grid = Array(n) { p.initial[it].copyOf() }
+        val assigned = Array(n) { r -> BooleanArray(n) { c -> p.initial[r][c] > 0 } }
         var count = 0
 
         fun visibility(line: IntArray): Int {
@@ -147,11 +148,43 @@ object PuzzleVerifier {
         }
 
         fun isComplete(): Boolean {
-            for (r in 0 until n) for (c in 0 until n) if (grid[r][c] == 0) return false
+            for (r in 0 until n) for (c in 0 until n) if (!assigned[r][c]) return false
+            return true
+        }
+
+        fun hasExpectedEmptyLots(): Boolean {
+            if (p.emptyLotsPerLine == 0) return true
+            for (r in 0 until n) {
+                if (grid[r].count { it == 0 } != p.emptyLotsPerLine) return false
+            }
+            for (c in 0 until n) {
+                var emptyCount = 0
+                for (r in 0 until n) {
+                    if (grid[r][c] == 0) emptyCount++
+                }
+                if (emptyCount != p.emptyLotsPerLine) return false
+            }
+            return true
+        }
+
+        fun hasExpectedTallestHeights(): Boolean {
+            if (p.maxHeight <= n) return true
+            for (r in 0 until n) {
+                if (grid[r].count { it == p.maxHeight } != 1) return false
+            }
+            for (c in 0 until n) {
+                var tallestCount = 0
+                for (r in 0 until n) {
+                    if (grid[r][c] == p.maxHeight) tallestCount++
+                }
+                if (tallestCount != 1) return false
+            }
             return true
         }
 
         fun verifyClues(): Boolean {
+            if (!hasExpectedEmptyLots()) return false
+            if (!hasExpectedTallestHeights()) return false
             for (c in 0 until n) {
                 val col = IntArray(n) { grid[it][c] }
                 if (p.cluesTop[c] > 0 && visibility(col) != p.cluesTop[c]) return false
@@ -165,19 +198,30 @@ object PuzzleVerifier {
         }
 
         fun consistent(r: Int, c: Int, v: Int): Boolean {
-            for (cc in 0 until n) if (cc != c && grid[r][cc] == v) return false
-            for (rr in 0 until n) if (rr != r && grid[rr][c] == v) return false
+            if (v == 0) {
+                if (p.emptyLotsPerLine == 0) return false
+                var rowEmpty = 0
+                var colEmpty = 0
+                for (cc in 0 until n) if (assigned[r][cc] && grid[r][cc] == 0) rowEmpty++
+                for (rr in 0 until n) if (assigned[rr][c] && grid[rr][c] == 0) colEmpty++
+                return rowEmpty < p.emptyLotsPerLine && colEmpty < p.emptyLotsPerLine
+            }
+            for (cc in 0 until n) if (cc != c && assigned[r][cc] && grid[r][cc] == v) return false
+            for (rr in 0 until n) if (rr != r && assigned[rr][c] && grid[rr][c] == v) return false
             return true
         }
 
         fun bt(): Boolean {
             for (r in 0 until n) for (c in 0 until n) {
-                if (grid[r][c] == 0) {
-                    for (v in 1..n) {
+                if (!assigned[r][c]) {
+                    val values = if (p.emptyLotsPerLine > 0) 0..p.maxHeight else 1..p.maxHeight
+                    for (v in values) {
                         if (consistent(r, c, v)) {
+                            assigned[r][c] = true
                             grid[r][c] = v
                             if (bt()) return true
                             grid[r][c] = 0
+                            assigned[r][c] = false
                         }
                     }
                     return false

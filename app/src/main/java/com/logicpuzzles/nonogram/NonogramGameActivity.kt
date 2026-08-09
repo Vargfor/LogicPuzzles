@@ -20,6 +20,7 @@ import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 import kotlin.math.roundToInt
 
 class NonogramGameActivity : AppCompatActivity() {
@@ -36,11 +37,12 @@ class NonogramGameActivity : AppCompatActivity() {
     private lateinit var grid: Array<IntArray>  // 0=empty, 1=filled, 2=marked
     private lateinit var cellViews: Array<Array<TextView>>
     private lateinit var boardContainer: FrameLayout
-    private lateinit var zoomResetButton: Button
+    private lateinit var zoomPercentText: TextView
     private var rows = 5
     private var cols = 5
     private var solved = false
     private var zoomLevel = 1f
+    private var themeSignature = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,10 +61,18 @@ class NonogramGameActivity : AppCompatActivity() {
         buildUi()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
+    }
+
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
         root.setBackgroundColor(palette.background)
@@ -80,19 +90,13 @@ class NonogramGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { resetGrid() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_nonogram, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary)
             textSize = 18f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        })
-        header.addView(Button(this).apply {
-            text = getString(R.string.reset)
-            textSize = 12f
-            setBackgroundColor(palette.button)
-            setTextColor(palette.buttonText)
-            setOnClickListener { resetGrid() }
         })
         main.addView(header)
 
@@ -139,9 +143,26 @@ class NonogramGameActivity : AppCompatActivity() {
             setPadding(dp(12), 0, dp(12), dp(8))
 
             addView(zoomButton("-", "Zoom out") { changeZoom(-ZOOM_STEP) })
-            zoomResetButton = zoomButton(zoomText(), "Reset zoom") { setZoom(1f) }
-            addView(zoomResetButton)
+            zoomPercentText = zoomPercentLabel()
+            addView(zoomPercentText)
             addView(zoomButton("+", "Zoom in") { changeZoom(ZOOM_STEP) })
+        }
+    }
+
+    private fun zoomPercentLabel(): TextView {
+        val palette = ThemeManager.currentPalette(this)
+        return TextView(this).apply {
+            text = zoomText()
+            contentDescription = "Reset zoom"
+            textSize = 12f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(palette.textSecondary)
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(dp(58), dp(32)).apply {
+                marginStart = dp(2)
+                marginEnd = dp(2)
+            }
+            setOnClickListener { setZoom(1f) }
         }
     }
 
@@ -153,17 +174,14 @@ class NonogramGameActivity : AppCompatActivity() {
             textSize = 12f
             setBackgroundColor(palette.button)
             setTextColor(palette.buttonText)
-            minWidth = dp(44)
-            minimumWidth = dp(44)
-            minHeight = dp(36)
-            minimumHeight = dp(36)
-            setPadding(dp(8), 0, dp(8), 0)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                marginStart = dp(3)
-                marginEnd = dp(3)
+            minWidth = 0
+            minimumWidth = 0
+            minHeight = 0
+            minimumHeight = 0
+            setPadding(0, 0, 0, 0)
+            layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply {
+                marginStart = dp(2)
+                marginEnd = dp(2)
             }
             setOnClickListener { onClick() }
         }
@@ -175,7 +193,7 @@ class NonogramGameActivity : AppCompatActivity() {
 
     private fun setZoom(value: Float) {
         zoomLevel = value.coerceIn(MIN_ZOOM, MAX_ZOOM)
-        if (::zoomResetButton.isInitialized) zoomResetButton.text = zoomText()
+        if (::zoomPercentText.isInitialized) zoomPercentText.text = zoomText()
         if (::boardContainer.isInitialized) {
             boardContainer.removeAllViews()
             boardContainer.addView(buildBoard())
@@ -363,7 +381,7 @@ class NonogramGameActivity : AppCompatActivity() {
     }
 
     private fun resetGrid() {
-        if (solved) return
+        solved = false
         for (r in 0 until rows) for (c in 0 until cols) {
             grid[r][c] = 0
             paintCell(r, c)

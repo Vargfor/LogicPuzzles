@@ -35,8 +35,15 @@ class PrefsManager(context: Context) {
         prefs.edit { clear() }
     }
 
+    fun isSkyscraperBuildingsEnabled(): Boolean =
+        prefs.getBoolean(KEY_SKYSCRAPER_BUILDINGS, true)
+
+    fun setSkyscraperBuildingsEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_SKYSCRAPER_BUILDINGS, enabled) }
+    }
+
     fun resetProgressAndShuffleLevels() {
-        val selectedTheme = prefs.getInt("color_theme", 0)
+        val retainedSettings = prefs.all.filterKeys { isRetainedSettingKey(it) }
         val previousOrders = mutableMapOf<Pair<Int, Int>, List<Int>>()
         for (type in 0 until PUZZLE_TYPES) {
             for (difficulty in 0 until DIFFICULTIES) {
@@ -48,7 +55,16 @@ class PrefsManager(context: Context) {
         val resetSeed = System.currentTimeMillis() xor System.nanoTime()
         prefs.edit {
             clear()
-            putInt("color_theme", selectedTheme)
+            retainedSettings.forEach { (key, value) ->
+                when (value) {
+                    is Boolean -> putBoolean(key, value)
+                    is Float -> putFloat(key, value)
+                    is Int -> putInt(key, value)
+                    is Long -> putLong(key, value)
+                    is String -> putString(key, value)
+                    is Set<*> -> putStringSet(key, value.filterIsInstance<String>().toSet())
+                }
+            }
             for (type in 0 until PUZZLE_TYPES) {
                 for (difficulty in 0 until DIFFICULTIES) {
                     val previous = previousOrders.getValue(type to difficulty)
@@ -73,6 +89,7 @@ class PrefsManager(context: Context) {
         const val EXPERT_UNLOCK_HARD_COMPLETIONS = 10
         const val MASTER_UNLOCK_EXPERT_COMPLETIONS = 10
         private const val SUB_DIFFICULTY_GROUP_SIZE = 5
+        private const val KEY_SKYSCRAPER_BUILDINGS = "skyscraper_buildings_enabled"
 
         @Suppress("UNUSED_PARAMETER")
         fun getPuzzleCount(type: Int, difficulty: Int): Int = when (difficulty) {
@@ -150,4 +167,9 @@ class PrefsManager(context: Context) {
 
     private fun levelOrderKey(type: Int, difficulty: Int): String =
         "level_order_${type}_${difficulty}"
+
+    private fun isRetainedSettingKey(key: String): Boolean =
+        key == "color_theme" ||
+            key == KEY_SKYSCRAPER_BUILDINGS ||
+            key.startsWith("custom_theme_")
 }

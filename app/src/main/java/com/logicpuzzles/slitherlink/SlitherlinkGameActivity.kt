@@ -22,9 +22,17 @@ import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
+import com.logicpuzzles.utils.resetSymbolButton
 import java.util.ArrayDeque
+import kotlin.math.roundToInt
 
 class SlitherlinkGameActivity : AppCompatActivity() {
+
+    companion object {
+        private const val MIN_ZOOM = 0.6f
+        private const val MAX_ZOOM = 3.0f
+        private const val ZOOM_FACTOR = 1.2f
+    }
 
     private var difficulty = 0
     private var puzzleIndex = 0
@@ -36,6 +44,8 @@ class SlitherlinkGameActivity : AppCompatActivity() {
     private var solved = false
     private var zoomLevel = 1.0f
     private lateinit var boardContainer: FrameLayout
+    private lateinit var zoomPercentText: TextView
+    private var themeSignature = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,11 +65,19 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         buildUi()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+            buildUi()
+        }
+    }
+
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     private fun dp(v: Float) = (v * resources.displayMetrics.density).toInt()
 
     private fun buildUi() {
         val palette = ThemeManager.currentPalette(this)
+        themeSignature = ThemeManager.paletteSignature(this)
         val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SLITHERLINK)
         val root = findViewById<FrameLayout>(R.id.game_root)
         root.removeAllViews()
@@ -78,19 +96,12 @@ class SlitherlinkGameActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(12), dp(12), dp(12), dp(8))
         }
+        header.addView(resetSymbolButton { resetPuzzle() })
         header.addView(TextView(this).apply {
             text = puzzleHeader(R.string.puzzle_slitherlink, difficulty, puzzleIndex)
             setTextColor(palette.textPrimary); textSize = 16f
             setTypeface(null, Typeface.BOLD)
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        })
-        header.addView(zoomButton("−") {
-            zoomLevel = (zoomLevel / 1.2f).coerceAtLeast(0.6f)
-            refreshBoard()
-        })
-        header.addView(zoomButton("+") {
-            zoomLevel = (zoomLevel * 1.2f).coerceAtMost(3.0f)
-            refreshBoard()
         })
         header.addView(Button(this).apply {
             text = getString(R.string.action_check); textSize = 11f
@@ -110,6 +121,8 @@ class SlitherlinkGameActivity : AppCompatActivity() {
             textSize = 12f
             setPadding(dp(12), 0, dp(12), dp(8))
         })
+
+        main.addView(buildZoomControls())
 
         // 2D scrollable board container
         val verticalScroll = ScrollView(this).apply {
@@ -137,24 +150,65 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         root.addView(main)
     }
 
-    private fun zoomButton(label: String, onClick: () -> Unit): View {
+    private fun buildZoomControls(): View {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(dp(12), 0, dp(12), dp(8))
+
+            addView(zoomButton("-", "Zoom out") { setZoom(zoomLevel / ZOOM_FACTOR) })
+            zoomPercentText = zoomPercentLabel()
+            addView(zoomPercentText)
+            addView(zoomButton("+", "Zoom in") { setZoom(zoomLevel * ZOOM_FACTOR) })
+        }
+    }
+
+    private fun zoomPercentLabel(): TextView {
+        val palette = ThemeManager.currentPalette(this)
+        return TextView(this).apply {
+            text = zoomText()
+            contentDescription = "Reset zoom"
+            textSize = 12f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(palette.textSecondary)
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(dp(58), dp(32)).apply {
+                marginStart = dp(2)
+                marginEnd = dp(2)
+            }
+            setOnClickListener { setZoom(1f) }
+        }
+    }
+
+    private fun zoomButton(label: String, description: String, onClick: () -> Unit): Button {
         val palette = ThemeManager.currentPalette(this)
         return Button(this).apply {
             text = label
-            textSize = 16f
+            contentDescription = description
+            textSize = 12f
             setTypeface(null, Typeface.BOLD)
             setBackgroundColor(palette.button)
             setTextColor(palette.buttonText)
-            minWidth = dp(36)
-            minHeight = dp(36)
-            setPadding(dp(8), 0, dp(8), 0)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { marginStart = dp(4) }
+            minWidth = 0
+            minimumWidth = 0
+            minHeight = 0
+            minimumHeight = 0
+            setPadding(0, 0, 0, 0)
+            layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply {
+                marginStart = dp(2)
+                marginEnd = dp(2)
+            }
             setOnClickListener { onClick() }
         }
     }
+
+    private fun setZoom(value: Float) {
+        zoomLevel = value.coerceIn(MIN_ZOOM, MAX_ZOOM)
+        if (::zoomPercentText.isInitialized) zoomPercentText.text = zoomText()
+        if (::boardContainer.isInitialized) refreshBoard()
+    }
+
+    private fun zoomText(): String = "${(zoomLevel * 100).roundToInt()}%"
 
     private fun refreshBoard() {
         boardContainer.removeAllViews()
@@ -162,6 +216,14 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         hEdgeViews = Array(puzzle.rows + 1) { arrayOfNulls<View>(puzzle.cols) }
         vEdgeViews = Array(puzzle.rows) { arrayOfNulls<View>(puzzle.cols + 1) }
         boardContainer.addView(buildBoard())
+    }
+
+    private fun resetPuzzle() {
+        solved = false
+        hEdges = Array(puzzle.rows + 1) { BooleanArray(puzzle.cols) }
+        vEdges = Array(puzzle.rows) { BooleanArray(puzzle.cols + 1) }
+        for (r in 0..puzzle.rows) for (c in 0 until puzzle.cols) paintHEdge(r, c)
+        for (r in 0 until puzzle.rows) for (c in 0..puzzle.cols) paintVEdge(r, c)
     }
 
     private fun buildBoard(): View {
