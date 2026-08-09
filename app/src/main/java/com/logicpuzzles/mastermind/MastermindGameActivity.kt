@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isNotEmpty
 import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
@@ -377,7 +378,7 @@ class MastermindGameActivity : AppCompatActivity() {
         val (blacks, whites) = checkGuess(secret, currentGuess)
         val submitted = SubmittedGuess(currentGuess.toList(), blacks, whites)
         submittedGuesses.add(submitted)
-        if (rowsContainer.childCount > 0) rowsContainer.removeViewAt(rowsContainer.childCount - 1)
+        if (rowsContainer.isNotEmpty()) rowsContainer.removeViewAt(rowsContainer.childCount - 1)
         buildSubmittedGuessRow(guessesUsed, submitted)
         guessesUsed++
         updateGuessesLeft()

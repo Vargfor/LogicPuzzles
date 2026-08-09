@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Logic Puzzles</string>
     <string name="support_button_with_icon">&#9749; Support</string>
     <string name="support">Support</string>
@@ -8,18 +8,15 @@
     <string name="choose_puzzle_type">Choose a puzzle type</string>
     <string name="ad_label">Ad</string>
     <string name="ad_promo">Try our other puzzle apps &#8212; coming soon!</string>
-    <string name="color_theme">Color theme</string>
-    <string name="normal_themes">Normal themes</string>
-    <string name="colorblind_themes">Colorblind themes</string>
     <string name="settings_options">Options</string>
     <string name="settings_themes">Themes</string>
-    <string name="settings_reset">Reset</string>
     <string name="default_themes">Default</string>
     <string name="custom_themes">Custom</string>
     <string name="custom_theme_create">Create custom theme</string>
     <string name="custom_theme_default_name">Custom Theme</string>
     <string name="custom_theme_empty">No custom themes saved yet.</string>
     <string name="custom_theme_title">Custom theme</string>
+    <string name="custom_theme_back">Back</string>
     <string name="custom_theme_name">Theme name</string>
     <string name="custom_theme_edit">Edit</string>
     <string name="custom_theme_save">Save</string>
@@ -102,7 +99,7 @@
     <string name="instruction_mastermind">Tap a slot then a color. &#9679; = right color &amp; spot, &#9675; = right color, wrong spot.</string>
     <string name="instruction_nonogram">Tap = fill &#9632;   Long-press = mark &#10005;</string>
     <string name="instruction_nurikabe">Tap or drag to shade. Each number forms an island of exactly that size. All shaded cells must connect. No 2&#215;2 shaded.</string>
-    <string name="instruction_skyscraper">Use numbers 1&#8211;%1$d. Each row &amp; column needs height %1$d once; lower heights may be skipped but not repeated. Outside numbers = visible buildings.</string>
-    <string name="instruction_skyscraper_with_empty_lots">Use numbers 1&#8211;%1$d and leave one empty lot per row &amp; column. Each line needs height %1$d once; filled heights cannot repeat.</string>
+    <string name="instruction_skyscraper" tools:ignore="PluralsCandidate">Use heights 1&#8211;%1$d. Each row &amp; column includes the tallest height exactly once; lower heights may be skipped but not repeated. Outside numbers = visible buildings.</string>
+    <string name="instruction_skyscraper_with_empty_lots" tools:ignore="PluralsCandidate">Use heights 1&#8211;%1$d with one empty lot per row &amp; column. Each line includes the tallest height exactly once; filled heights cannot repeat.</string>
     <string name="instruction_slitherlink">Tap an edge to toggle. Numbers = edges around that cell. All edges form one closed loop.</string>
 </resources>

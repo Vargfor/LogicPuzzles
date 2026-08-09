@@ -1,5 +1,6 @@
 package com.logicpuzzles.nurikabe
 
+import android.content.Context
 import android.graphics.Typeface
 import android.graphics.Rect
 import android.os.Bundle
@@ -13,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
@@ -131,11 +133,14 @@ class NurikabeGameActivity : AppCompatActivity() {
 
         for (r in 0 until puzzle.rows) {
             for (c in 0 until puzzle.cols) {
-                val tv = TextView(this).apply {
+                val tv = NurikabeCellView(this).apply {
                     gravity = Gravity.CENTER
                     textSize = 16f
                     setTypeface(null, Typeface.BOLD)
-                    setOnTouchListener { _, event -> handleCellTouch(event) }
+                    setOnTouchListener { view, event ->
+                        if (event.actionMasked == MotionEvent.ACTION_UP) view.performClick()
+                        handleCellTouch(event)
+                    }
                 }
                 tv.layoutParams = GridLayout.LayoutParams().apply {
                     rowSpec = GridLayout.spec(r)
@@ -164,7 +169,11 @@ class NurikabeGameActivity : AppCompatActivity() {
                 invertCellAt(event.rawX.toInt(), event.rawY.toInt())
                 return true
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+            MotionEvent.ACTION_UP -> {
+                dragTouchedCells.clear()
+                return true
+            }
+            MotionEvent.ACTION_CANCEL -> {
                 dragTouchedCells.clear()
                 return true
             }
@@ -187,6 +196,13 @@ class NurikabeGameActivity : AppCompatActivity() {
                     return
                 }
             }
+        }
+    }
+
+    private class NurikabeCellView(context: Context) : AppCompatTextView(context) {
+        override fun performClick(): Boolean {
+            super.performClick()
+            return true
         }
     }
 
