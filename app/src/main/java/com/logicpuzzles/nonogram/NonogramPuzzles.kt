@@ -1,5 +1,7 @@
 package com.logicpuzzles.nonogram
 
+import com.logicpuzzles.utils.PuzzleBoardSpecs
+
 object NonogramPuzzles {
     private val EASY by lazy {
         arrayOf(
@@ -2464,13 +2466,34 @@ object NonogramPuzzles {
     }
 
     fun get(difficulty: Int, index: Int): Array<IntArray> {
-        val pool = when (difficulty) {
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val pool = when (safeDifficulty) {
             0 -> EASY
             1 -> MEDIUM
             2 -> HARD
             3 -> EXPERT
             else -> MASTER
         }
-        return pool[index.coerceIn(0, pool.size - 1)]
+        val source = pool[index.coerceIn(0, pool.size - 1)]
+        return scalePixelArt(source, PuzzleBoardSpecs.largeSquareSide(safeDifficulty))
+    }
+
+    private fun scalePixelArt(source: Array<IntArray>, targetSide: Int): Array<IntArray> {
+        if (source.size == targetSide && source.all { it.size == targetSide }) {
+            return source.map { it.copyOf() }.toTypedArray()
+        }
+        val sourceRows = source.size
+        val sourceCols = source.first().size
+        return Array(targetSide) { r ->
+            val sourceR = ((r + 0.5f) * sourceRows / targetSide)
+                .toInt()
+                .coerceIn(0, sourceRows - 1)
+            IntArray(targetSide) { c ->
+                val sourceC = ((c + 0.5f) * sourceCols / targetSide)
+                    .toInt()
+                    .coerceIn(0, sourceCols - 1)
+                source[sourceR][sourceC]
+            }
+        }
     }
 }

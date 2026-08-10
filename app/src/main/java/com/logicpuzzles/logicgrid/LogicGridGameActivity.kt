@@ -18,8 +18,10 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
 
@@ -44,18 +46,20 @@ class LogicGridGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_LOGIC_GRID, difficulty, puzzleIndex)
-        puzzle = LogicGridPuzzles.get(difficulty, catalogIndex)
-
-        val nCats = puzzle.categories.size
-        val nItems = puzzle.items[0].size
-        marks = Array(nCats) { Array(nItems) { Array(nCats) { IntArray(nItems) } } }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_LOGIC_GRID, "Logic Grid d=$difficulty i=$puzzleIndex", {
+            LogicGridPuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            puzzle = loaded
+            val nCats = puzzle.categories.size
+            val nItems = puzzle.items[0].size
+            marks = Array(nCats) { Array(nItems) { Array(nCats) { IntArray(nItems) } } }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::puzzle.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -107,15 +111,18 @@ class LogicGridGameActivity : AppCompatActivity() {
             ).apply { topMargin = dp(8) }
             layoutParams = lp
         })
-        content.addView(TextView(this).apply {
-            text = puzzle.description
-            setTextColor(palette.textSecondary)
-            textSize = 13f
-            val lp = LinearLayout.LayoutParams(
+        content.addView(gameInstructionRow(
+            puzzleType = MainActivity.TYPE_LOGIC_GRID,
+            instruction = puzzle.description,
+            textSizeSp = 13f,
+            horizontalPaddingDp = 0,
+            topPaddingDp = 4,
+            bottomPaddingDp = 12
+        ).apply {
+            layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp(4); bottomMargin = dp(12) }
-            layoutParams = lp
+            )
         })
 
         // Clues card
@@ -172,16 +179,29 @@ class LogicGridGameActivity : AppCompatActivity() {
             setTypeface(null, Typeface.BOLD)
             textSize = 14f
         })
-        for (clue in puzzle.clues) {
-            box.addView(TextView(this).apply {
-                text = clue
-                setTextColor(palette.textPrimary)
-                textSize = 13f
-                val lp = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { topMargin = dp(4) }
-                layoutParams = lp
+        val displayClues = if (puzzle.typedClues.isNotEmpty()) {
+            puzzle.typedClues.mapIndexed { index, clue -> "${index + 1}. ${clue.displayText(puzzle)}" }
+        } else {
+            puzzle.clues
+        }
+        val clueColumns = if (resources.displayMetrics.widthPixels > resources.displayMetrics.heightPixels) 3 else 1
+        for (rowClues in displayClues.chunked(clueColumns)) {
+            box.addView(LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                for (column in 0 until clueColumns) {
+                    val clue = rowClues.getOrNull(column)
+                    addView(TextView(this@LogicGridGameActivity).apply {
+                        text = clue.orEmpty()
+                        setTextColor(palette.textPrimary)
+                        textSize = 12f
+                        setPadding(if (column == 0) 0 else dp(8), dp(4), dp(4), 0)
+                        layoutParams = LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            1f
+                        )
+                    })
+                }
             })
         }
         card.addView(box)

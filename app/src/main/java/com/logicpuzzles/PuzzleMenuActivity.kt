@@ -75,6 +75,7 @@ class PuzzleMenuActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.menu_title).setTextColor(palette.textPrimary)
         findViewById<TextView>(R.id.menu_subtitle).setTextColor(palette.textSecondary)
 
+        val developerUnlockAll = prefs.isDeveloperUnlockAllLevelsEnabled()
         val density = resources.displayMetrics.density
         fun dp(v: Int) = (v * density).toInt()
 
@@ -95,7 +96,7 @@ class PuzzleMenuActivity : AppCompatActivity() {
                 setTextColor(ThemeManager.difficultyAccent(this@PuzzleMenuActivity, diffIndex))
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             })
-            unlockRequirementText(prefs, diffIndex)?.let { requirement ->
+            if (!developerUnlockAll) unlockRequirementText(prefs, diffIndex)?.let { requirement ->
                 headerRow.addView(TextView(this).apply {
                     text = requirement
                     textSize = 11f
@@ -137,10 +138,7 @@ class PuzzleMenuActivity : AppCompatActivity() {
                         continue
                     }
                     val isCompleted = prefs.isPuzzleCompleted(puzzleType, diffIndex, puzzleIndex)
-                    val difficultyUnlocked = prefs.isDifficultyUnlocked(puzzleType, diffIndex)
-                    val prevDone = puzzleIndex == 0 ||
-                            prefs.isPuzzleCompleted(puzzleType, diffIndex, puzzleIndex - 1)
-                    val isUnlocked = difficultyUnlocked && prevDone
+                    val isUnlocked = prefs.isLevelUnlocked(puzzleType, diffIndex, puzzleIndex)
 
                     val card = CardView(this).apply {
                         radius = 12f * density

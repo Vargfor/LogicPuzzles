@@ -19,8 +19,11 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.ZoomableBoardHost
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
@@ -46,15 +49,18 @@ class NurikabeGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_NURIKABE, difficulty, puzzleIndex)
-        puzzle = NurikabePuzzles.get(difficulty, catalogIndex)
-        shaded = Array(puzzle.rows) { BooleanArray(puzzle.cols) }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_NURIKABE, "Nurikabe d=$difficulty i=$puzzleIndex", {
+            NurikabePuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            puzzle = loaded
+            shaded = Array(puzzle.rows) { BooleanArray(puzzle.cols) }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::puzzle.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -97,28 +103,25 @@ class NurikabeGameActivity : AppCompatActivity() {
         })
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = getString(R.string.instruction_nurikabe)
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_NURIKABE,
+            getString(R.string.instruction_nurikabe)
+        ))
 
-        val boardWrap = FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
-            )
-        }
-        boardWrap.addView(buildBoard())
-        main.addView(boardWrap)
+        main.addView(
+            ZoomableBoardHost(this, MainActivity.TYPE_NURIKABE) { zoom -> buildBoard(zoom) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        )
 
         root.addView(main)
     }
 
-    private fun buildBoard(): View {
+    private fun buildBoard(zoom: Float): View {
         val displayW = resources.displayMetrics.widthPixels
+        val displayH = resources.displayMetrics.heightPixels
         val pad = dp(16)
-        val cellSize = ((displayW - 2 * pad) / puzzle.cols).coerceAtMost(dp(56)).coerceAtLeast(dp(28))
+        val overview = minOf(displayW - 2 * pad, (displayH * 0.62f).toInt()) / puzzle.cols
+        val cellSize = (overview * zoom).toInt().coerceIn(dp(18), dp(96))
 
         val gl = GridLayout(this).apply {
             rowCount = puzzle.rows

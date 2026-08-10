@@ -6,6 +6,7 @@ import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -21,15 +22,24 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.GameHelpExtraSection
+import com.logicpuzzles.utils.gameInstructionRow
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.ZoomableBoardHost
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class SkyscraperGameActivity : AppCompatActivity() {
+
+    private companion object {
+        const val EMPTY_LOT = -1
+        const val ORIGINAL_BUILDING_MIN_HEIGHT = 100f
+        const val ORIGINAL_BUILDING_FLOOR_HEIGHT = 42f
+    }
 
     private var difficulty = 0
     private var puzzleIndex = 0
@@ -54,19 +64,21 @@ class SkyscraperGameActivity : AppCompatActivity() {
         val prefs = PrefsManager(this)
         showBuildingIcons = prefs.isSkyscraperBuildingsEnabled()
         val catalogIndex = prefs.getCatalogIndex(MainActivity.TYPE_SKYSCRAPER, difficulty, puzzleIndex)
-        puzzle = SkyscraperPuzzles.get(difficulty, catalogIndex)
-
-        val n = puzzle.size
-        values = Array(n) { puzzle.initial[it].copyOf() }
-        fixed = Array(n) { r -> BooleanArray(n) { c -> puzzle.initial[r][c] != 0 } }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_SKYSCRAPER, "Skyscraper d=$difficulty i=$puzzleIndex", {
+            SkyscraperPuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            puzzle = loaded
+            val n = puzzle.size
+            values = Array(n) { puzzle.initial[it].copyOf() }
+            fixed = Array(n) { r -> BooleanArray(n) { c -> puzzle.initial[r][c] != 0 } }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         val enabled = PrefsManager(this).isSkyscraperBuildingsEnabled()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::puzzle.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             showBuildingIcons = enabled
             buildUi()
             return
@@ -115,69 +127,163 @@ class SkyscraperGameActivity : AppCompatActivity() {
         })
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = if (puzzle.emptyLotsPerLine > 0) {
-                getString(R.string.instruction_skyscraper_with_empty_lots, puzzle.maxHeight)
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_SKYSCRAPER,
+            if (puzzle.emptyLotsPerLine > 0) {
+                resources.getQuantityString(
+                    R.plurals.instruction_skyscraper_with_empty_lots,
+                    puzzle.emptyLotsPerLine,
+                    puzzle.maxHeight,
+                    puzzle.emptyLotsPerLine
+                )
             } else {
                 getString(R.string.instruction_skyscraper, puzzle.maxHeight)
+            },
+            extraHelpSection = GameHelpExtraSection(R.string.skyscraper_display_mode) {
+                buildDisplayModeSelector()
             }
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        ))
 
-        val boardWrap = FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
-            )
-        }
-        boardWrap.addView(buildBoard())
-        main.addView(boardWrap)
+        main.addView(
+            ZoomableBoardHost(this, MainActivity.TYPE_SKYSCRAPER) { zoom -> buildBoard(zoom) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        )
 
-        val numpad = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setBackgroundColor(palette.surface)
-            setPadding(dp(8), dp(8), dp(8), dp(8))
-        }
-        val buttonWidth = numberButtonWidth(puzzle.maxHeight + 1)
-        for (n in 1..puzzle.maxHeight) numpad.addView(numBtn(n.toString(), buttonWidth) { setValue(n) })
-        numpad.addView(numBtn("✕") { setValue(0) })
-        main.addView(numpad)
+        main.addView(buildNumpad(palette.surface))
 
         root.addView(main)
     }
 
-    private fun numberButtonWidth(buttonCount: Int): Int {
-        val availableWidth = resources.displayMetrics.widthPixels - dp(16)
-        val margins = buttonCount * dp(4)
-        return ((availableWidth - margins) / buttonCount).coerceIn(dp(30), dp(40))
+    private fun buildDisplayModeSelector(): View {
+        val palette = ThemeManager.currentPalette(this)
+        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_SKYSCRAPER)
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(6), 0, 0)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        lateinit var buildingsButton: Button
+        lateinit var numbersButton: Button
+
+        fun style(button: Button, selected: Boolean) {
+            button.isSelected = selected
+            button.setTextColor(if (selected) palette.accentText else palette.textSecondary)
+            button.background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(4).toFloat()
+                setColor(if (selected) accent else palette.surfaceStrong)
+                setStroke(dp(1).coerceAtLeast(1), if (selected) accent else palette.gridLine)
+            }
+        }
+
+        fun refresh() {
+            style(buildingsButton, showBuildingIcons)
+            style(numbersButton, !showBuildingIcons)
+        }
+
+        fun modeButton(label: String, enabled: Boolean): Button = Button(this).apply {
+            text = label
+            setAllCaps(false)
+            textSize = 12f
+            setTypeface(null, Typeface.BOLD)
+            minWidth = 0
+            minimumWidth = 0
+            minHeight = 0
+            minimumHeight = 0
+            setPadding(dp(6), 0, dp(6), 0)
+            layoutParams = LinearLayout.LayoutParams(0, dp(38), 1f).apply {
+                marginStart = dp(4)
+            }
+            setOnClickListener {
+                setBuildingDisplay(enabled)
+                refresh()
+            }
+        }
+
+        buildingsButton = modeButton(getString(R.string.skyscraper_display_buildings_short), true).apply {
+            (layoutParams as LinearLayout.LayoutParams).marginStart = 0
+        }
+        numbersButton = modeButton(getString(R.string.skyscraper_display_numbers), false)
+        row.addView(buildingsButton)
+        row.addView(numbersButton)
+        refresh()
+        return row
     }
 
-    private fun numBtn(
-        label: String,
-        width: Int = numberButtonWidth(puzzle.maxHeight + 1),
-        onClick: () -> Unit
-    ): View {
+    private fun setBuildingDisplay(enabled: Boolean) {
+        if (showBuildingIcons == enabled) return
+        showBuildingIcons = enabled
+        PrefsManager(this).setSkyscraperBuildingsEnabled(enabled)
+        if (::cellViews.isInitialized) repaintCells()
+    }
+
+    private fun numBtn(label: String, onClick: () -> Unit): View {
         val palette = ThemeManager.currentPalette(this)
         return Button(this).apply {
             text = label; textSize = 16f
             setTypeface(null, Typeface.BOLD)
             setTextColor(palette.buttonText)
             setBackgroundColor(palette.button)
-            layoutParams = LinearLayout.LayoutParams(width, dp(48)).apply {
+            minWidth = 0
+            minimumWidth = 0
+            layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
                 setMargins(dp(2), 0, dp(2), 0)
             }
             setOnClickListener { onClick() }
         }
     }
 
-    private fun buildBoard(): View {
+    private fun buildNumpad(backgroundColor: Int): View = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setBackgroundColor(backgroundColor)
+        setPadding(dp(8), dp(8), dp(8), dp(8))
+        val useSingleLandscapeRow = puzzle.maxHeight > 9 &&
+            resources.displayMetrics.widthPixels > resources.displayMetrics.heightPixels
+        if (useSingleLandscapeRow) {
+            addView(LinearLayout(this@SkyscraperGameActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                for (value in 1..puzzle.maxHeight) {
+                    addView(numBtn(value.toString()) { setValue(value) })
+                }
+                addView(numBtn("X") { setValue(EMPTY_LOT) })
+            })
+            return@apply
+        }
+
+        addView(LinearLayout(this@SkyscraperGameActivity).apply {
+            orientation = LinearLayout.HORIZONTAL
+            for (value in 1..minOf(9, puzzle.maxHeight)) addView(numBtn(value.toString()) { setValue(value) })
+            if (puzzle.maxHeight <= 9) {
+                val clearOrEmpty = if (puzzle.emptyLotsPerLine > 0) EMPTY_LOT else 0
+                addView(numBtn("X") { setValue(clearOrEmpty) })
+            }
+        })
+        if (puzzle.maxHeight > 9) {
+            addView(LinearLayout(this@SkyscraperGameActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(6) }
+                for (value in 10..puzzle.maxHeight) addView(numBtn(value.toString()) { setValue(value) })
+                addView(numBtn("X") { setValue(EMPTY_LOT) })
+            })
+        }
+    }
+
+    private fun buildBoard(zoom: Float): View {
         val n = puzzle.size
         val gridSize = n + 2
         val displayW = resources.displayMetrics.widthPixels
+        val displayH = resources.displayMetrics.heightPixels
         val pad = dp(16)
-        val cellSize = ((displayW - 2 * pad) / gridSize).coerceAtMost(dp(64)).coerceAtLeast(dp(28))
+        val overview = minOf(displayW - 2 * pad, (displayH * 0.56f).toInt()) / gridSize
+        val cellSize = (overview * zoom).toInt().coerceIn(dp(18), dp(96))
         boardCellSize = cellSize
 
         val gl = GridLayout(this).apply {
@@ -210,7 +316,7 @@ class SkyscraperGameActivity : AppCompatActivity() {
                         val r = gr - 1; val c = gc - 1
                         val tv = TextView(this).apply {
                             gravity = Gravity.CENTER
-                            textSize = 18f
+                            textSize = (18f * zoom).coerceIn(10f, 28f)
                             setTypeface(null, Typeface.BOLD)
                             includeFontPadding = false
                             setForegroundGravity(Gravity.CENTER)
@@ -255,7 +361,13 @@ class SkyscraperGameActivity : AppCompatActivity() {
         if (solved) return
         if (selectedRow < 0 || selectedCol < 0) return
         if (fixed[selectedRow][selectedCol]) return
-        values[selectedRow][selectedCol] = v
+        values[selectedRow][selectedCol] = if (
+            v == EMPTY_LOT && values[selectedRow][selectedCol] == EMPTY_LOT
+        ) {
+            0
+        } else {
+            v
+        }
         paintCell(selectedRow, selectedCol)
     }
 
@@ -276,14 +388,18 @@ class SkyscraperGameActivity : AppCompatActivity() {
             else -> palette.cellText
         }
         tv.setTextColor(foregroundColor)
-        if (showBuildingIcons && v > 0) {
+        if (showBuildingIcons && v in 1..16) {
             tv.text = ""
             tv.setCompoundDrawables(null, null, null, null)
             tv.foreground = buildingIcon(v, foregroundColor)
         } else {
             tv.foreground = null
             tv.setCompoundDrawables(null, null, null, null)
-            tv.text = if (v == 0) "" else numberText(v)
+            tv.text = when {
+                v == EMPTY_LOT -> "X"
+                v == 0 -> ""
+                else -> numberText(v)
+            }
         }
     }
 
@@ -292,35 +408,32 @@ class SkyscraperGameActivity : AppCompatActivity() {
     }
 
     private fun buildingIcon(value: Int, color: Int): Drawable? {
-        val heightValue = value.coerceIn(1, 9)
+        val heightValue = value.coerceIn(1, 16)
         val source = ContextCompat.getDrawable(this, buildingDrawable(heightValue))?.mutate() ?: return null
         source.setTint(color)
 
         val maxIconSize = (boardCellSize - dp(4)).coerceAtLeast(dp(20))
         val sourceHeight = originalBuildingHeight(heightValue)
-        val tallestHeight = originalBuildingHeight(puzzle.maxHeight.coerceIn(1, 9))
+        val tallestHeight = originalBuildingHeight(puzzle.maxHeight.coerceIn(1, 16))
         val minDisplayHeight = maxIconSize * 0.48f
         val displayProgress = if (tallestHeight == ORIGINAL_BUILDING_MIN_HEIGHT) {
             1f
         } else {
-            (sourceHeight - ORIGINAL_BUILDING_MIN_HEIGHT) / (tallestHeight - ORIGINAL_BUILDING_MIN_HEIGHT)
+            (sourceHeight - ORIGINAL_BUILDING_MIN_HEIGHT) /
+                (tallestHeight - ORIGINAL_BUILDING_MIN_HEIGHT)
         }
 
-        var displayHeight = (minDisplayHeight + (maxIconSize - minDisplayHeight) * displayProgress).roundToInt()
-        var displayWidth = (displayHeight * ORIGINAL_BUILDING_WIDTH / sourceHeight).roundToInt()
-        if (displayWidth > maxIconSize) {
-            displayWidth = maxIconSize
-            displayHeight = (displayWidth * sourceHeight / ORIGINAL_BUILDING_WIDTH).roundToInt()
-        }
+        val displayHeight =
+            (minDisplayHeight + (maxIconSize - minDisplayHeight) * displayProgress).roundToInt()
 
-        return AspectRatioBuildingDrawable(
+        return CellBuildingDrawable(
             source = source,
-            intrinsicWidth = displayWidth.coerceAtLeast(1),
+            intrinsicWidth = maxIconSize,
             intrinsicHeight = displayHeight.coerceAtLeast(1)
         )
     }
 
-    private fun buildingDrawable(value: Int): Int = when (value.coerceIn(1, 9)) {
+    private fun buildingDrawable(value: Int): Int = when (value.coerceIn(1, 16)) {
         1 -> R.drawable.skyscraper_1
         2 -> R.drawable.skyscraper_2
         3 -> R.drawable.skyscraper_3
@@ -329,13 +442,20 @@ class SkyscraperGameActivity : AppCompatActivity() {
         6 -> R.drawable.skyscraper_6
         7 -> R.drawable.skyscraper_7
         8 -> R.drawable.skyscraper_8
-        else -> R.drawable.skyscraper_9
+        9 -> R.drawable.skyscraper_9
+        10 -> R.drawable.skyscraper_10
+        11 -> R.drawable.skyscraper_11
+        12 -> R.drawable.skyscraper_12
+        13 -> R.drawable.skyscraper_13
+        14 -> R.drawable.skyscraper_14
+        15 -> R.drawable.skyscraper_15
+        else -> R.drawable.skyscraper_16
     }
 
     private fun originalBuildingHeight(value: Int): Float =
-        ORIGINAL_BUILDING_MIN_HEIGHT + ORIGINAL_BUILDING_FLOOR_HEIGHT * (value.coerceIn(1, 9) - 1)
+        ORIGINAL_BUILDING_MIN_HEIGHT + ORIGINAL_BUILDING_FLOOR_HEIGHT * (value.coerceIn(1, 16) - 1)
 
-    private class AspectRatioBuildingDrawable(
+    private class CellBuildingDrawable(
         private val source: Drawable,
         private val intrinsicWidth: Int,
         private val intrinsicHeight: Int
@@ -346,12 +466,8 @@ class SkyscraperGameActivity : AppCompatActivity() {
             val drawingBounds = bounds
             if (drawingBounds.isEmpty) return
 
-            val scale = min(
-                drawingBounds.width().toFloat() / intrinsicWidth,
-                drawingBounds.height().toFloat() / intrinsicHeight
-            )
-            val drawWidth = (intrinsicWidth * scale).roundToInt().coerceAtLeast(1)
-            val drawHeight = (intrinsicHeight * scale).roundToInt().coerceAtLeast(1)
+            val drawWidth = intrinsicWidth.coerceAtMost(drawingBounds.width()).coerceAtLeast(1)
+            val drawHeight = intrinsicHeight.coerceAtMost(drawingBounds.height()).coerceAtLeast(1)
             val left = drawingBounds.left + (drawingBounds.width() - drawWidth) / 2
             val top = drawingBounds.top + (drawingBounds.height() - drawHeight) / 2
 
@@ -376,12 +492,6 @@ class SkyscraperGameActivity : AppCompatActivity() {
         override fun getIntrinsicHeight(): Int = intrinsicHeight
     }
 
-    private companion object {
-        private const val ORIGINAL_BUILDING_WIDTH = 120f
-        private const val ORIGINAL_BUILDING_MIN_HEIGHT = 100f
-        private const val ORIGINAL_BUILDING_FLOOR_HEIGHT = 42f
-    }
-
     private fun visibility(line: IntArray): Int {
         var maxSeen = 0
         var count = 0
@@ -404,12 +514,16 @@ class SkyscraperGameActivity : AppCompatActivity() {
         val maxHeight = puzzle.maxHeight
         for (r in 0 until n) for (c in 0 until n) {
             val value = values[r][c]
-            if (value !in 0..maxHeight) {
+            if (value == 0) {
+                Toast.makeText(this, "Fill every cell or mark it as an empty lot.", Toast.LENGTH_SHORT).show()
+                return
+            }
+            if (value != EMPTY_LOT && value !in 1..maxHeight) {
                 Toast.makeText(this, "Use numbers from 1 to $maxHeight.", Toast.LENGTH_SHORT).show()
                 return
             }
-            if (puzzle.emptyLotsPerLine == 0 && value == 0) {
-                Toast.makeText(this, "Fill every cell first.", Toast.LENGTH_SHORT).show()
+            if (puzzle.emptyLotsPerLine == 0 && value == EMPTY_LOT) {
+                Toast.makeText(this, "This level has no empty lots.", Toast.LENGTH_SHORT).show()
                 return
             }
         }
@@ -453,18 +567,18 @@ class SkyscraperGameActivity : AppCompatActivity() {
         if (expected == 0) return true
         val n = puzzle.size
         for (r in 0 until n) {
-            if (values[r].count { it == 0 } != expected) {
-                Toast.makeText(this, "Row ${r + 1} must have one empty lot.", Toast.LENGTH_SHORT).show()
+            if (values[r].count { it == EMPTY_LOT } != expected) {
+                Toast.makeText(this, "Row ${r + 1} must have $expected empty lot${if (expected == 1) "" else "s"}.", Toast.LENGTH_SHORT).show()
                 return false
             }
         }
         for (c in 0 until n) {
             var emptyCount = 0
             for (r in 0 until n) {
-                if (values[r][c] == 0) emptyCount++
+                if (values[r][c] == EMPTY_LOT) emptyCount++
             }
             if (emptyCount != expected) {
-                Toast.makeText(this, "Column ${c + 1} must have one empty lot.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Column ${c + 1} must have $expected empty lot${if (expected == 1) "" else "s"}.", Toast.LENGTH_SHORT).show()
                 return false
             }
         }
@@ -477,7 +591,7 @@ class SkyscraperGameActivity : AppCompatActivity() {
             val seen = HashSet<Int>()
             for (c in 0 until n) {
                 val value = values[r][c]
-                if (value != 0 && !seen.add(value)) {
+                if (value > 0 && !seen.add(value)) {
                     Toast.makeText(this, "Duplicate height in row ${r + 1}.", Toast.LENGTH_SHORT).show()
                     return false
                 }
@@ -487,7 +601,7 @@ class SkyscraperGameActivity : AppCompatActivity() {
             val seen = HashSet<Int>()
             for (r in 0 until n) {
                 val value = values[r][c]
-                if (value != 0 && !seen.add(value)) {
+                if (value > 0 && !seen.add(value)) {
                     Toast.makeText(this, "Duplicate height in column ${c + 1}.", Toast.LENGTH_SHORT).show()
                     return false
                 }

@@ -11,6 +11,7 @@ import com.logicpuzzles.lightsout.LightsOutPuzzle
 import com.logicpuzzles.lightsout.LightsOutPuzzles
 import com.logicpuzzles.logicgrid.LogicGridPuzzle
 import com.logicpuzzles.logicgrid.LogicGridPuzzles
+import com.logicpuzzles.logicgrid.LogicGridSolver
 import com.logicpuzzles.mastermind.MastermindData
 import com.logicpuzzles.nonogram.NonogramPuzzles
 import com.logicpuzzles.nurikabe.NurikabePuzzle
@@ -21,12 +22,136 @@ import com.logicpuzzles.slitherlink.SlitherlinkPuzzle
 import com.logicpuzzles.slitherlink.SlitherlinkPuzzles
 import com.logicpuzzles.utils.PuzzleVerifier
 import kotlin.math.abs
+import kotlin.math.ceil
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PuzzleCatalogVerificationTest {
+
+    @Test
+    fun kakuroClueStorageUsesTheOneToFortyFiveRange() {
+        KCell.Clue(downSum = 1, rightSum = 45)
+        KCell.Clue(downSum = 0, rightSum = 0)
+        assertThrows(IllegalArgumentException::class.java) { KCell.Clue(downSum = -1) }
+        assertThrows(IllegalArgumentException::class.java) { KCell.Clue(rightSum = 46) }
+    }
+
+    @Test
+    fun kakuroDifficultiesUseFixedSquareBoards() {
+        for (difficulty in 0 until DIFFICULTIES) {
+            val puzzle = KakuroPuzzles.get(difficulty, 0)
+            val expectedSide = expectedKakuroSide(difficulty)
+            assertEquals("Kakuro difficulty $difficulty row count", expectedSide, puzzle.rows)
+            assertEquals("Kakuro difficulty $difficulty column count", expectedSide, puzzle.cols)
+            assertTrue(
+                "Kakuro difficulty $difficulty contains transparent gaps",
+                puzzle.grid.all { row -> row.none { it is KCell.Void } }
+            )
+        }
+    }
+
+    @Test
+    fun affectedCatalogsUseExactDifficultyDimensions() {
+        val standard = intArrayOf(7, 9, 11, 13, 15)
+        val slitherlink = intArrayOf(5, 9, 11, 13, 15)
+        val hidatoSides = intArrayOf(5, 7, 9, 13, 15)
+        val futoshiki = intArrayOf(4, 6, 9, 12, 16)
+        for (difficulty in 0 until DIFFICULTIES) {
+            for (index in 0 until levelCount(difficulty)) {
+                val nonogram = NonogramPuzzles.get(difficulty, index)
+                assertEquals(standard[difficulty], nonogram.size)
+                assertTrue(nonogram.all { it.size == standard[difficulty] })
+
+                val slither = SlitherlinkPuzzles.get(difficulty, index)
+                assertEquals(slitherlink[difficulty], slither.rows)
+                assertEquals(slitherlink[difficulty], slither.cols)
+
+                val nurikabe = NurikabePuzzles.get(difficulty, index)
+                assertEquals(standard[difficulty], nurikabe.rows)
+                assertEquals(standard[difficulty], nurikabe.cols)
+
+                val hidato = HidatoPuzzles.get(difficulty, index)
+                assertEquals(hidatoSides[difficulty], hidato.rows)
+                assertEquals(hidatoSides[difficulty], hidato.cols)
+
+                assertEquals(futoshiki[difficulty], FutoshikiPuzzles.get(difficulty, index).size)
+                assertEquals(standard[difficulty], SkyscraperPuzzles.get(difficulty, index).size)
+            }
+        }
+    }
+
+    @Test
+    fun futoshikiPresetNumbersAreHalvedWhileInequalitiesStayAtTheirOriginalDensity() {
+        val givenRatios = doubleArrayOf(0.22, 0.17, 0.14, 0.115, 0.095)
+        val inequalityRatios = doubleArrayOf(0.20, 0.22, 0.24, 0.26, 0.28)
+        for (difficulty in 0 until DIFFICULTIES) {
+            for (index in 0 until levelCount(difficulty)) {
+                val puzzle = FutoshikiPuzzles.get(difficulty, index)
+                val givens = puzzle.initial.sumOf { row -> row.count { it > 0 } }
+                val inequalities = puzzle.hConstraints.sumOf { row -> row.count { it > 0 } } +
+                    puzzle.vConstraints.sumOf { row -> row.count { it > 0 } }
+                assertEquals(
+                    "Futoshiki [d=$difficulty i=$index] preset count",
+                    ceil(puzzle.size * puzzle.size * givenRatios[difficulty]).toInt(),
+                    givens
+                )
+                assertEquals(
+                    "Futoshiki [d=$difficulty i=$index] inequality count",
+                    ceil(2 * puzzle.size * (puzzle.size - 1) * inequalityRatios[difficulty]).toInt(),
+                    inequalities
+                )
+            }
+        }
+    }
+
+    @Test
+    fun hidatoUsesTwoDigitDifficultyRanges() {
+        val ranges = arrayOf(25..25, 42..47, 68..78, 84..94, 90..99)
+        for (difficulty in 0 until DIFFICULTIES) {
+            for (index in 0 until levelCount(difficulty)) {
+                val puzzle = HidatoPuzzles.get(difficulty, index)
+                assertTrue(
+                    "Hidato [d=$difficulty i=$index] active count ${puzzle.maxNumber}",
+                    puzzle.maxNumber in ranges[difficulty]
+                )
+                if (difficulty > 0) {
+                    assertTrue(
+                        "Hidato [d=$difficulty i=$index] should contain blocked cells",
+                        puzzle.initial.any { row -> row.any { it == -1 } }
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun everyLogicGridClueSetIsUniqueAndEveryClueIsNecessary() {
+        for (difficulty in 0 until DIFFICULTIES) {
+            for (index in 0 until levelCount(difficulty)) {
+                val puzzle = LogicGridPuzzles.get(difficulty, index)
+                assertTrue("Logic Grid [d=$difficulty i=$index] has no typed clues", puzzle.typedClues.isNotEmpty())
+                assertTrue(
+                    "Logic Grid [d=$difficulty i=$index] stored solution contradicts a clue",
+                    LogicGridSolver.storedSolutionSatisfiesClues(puzzle)
+                )
+                assertEquals(
+                    "Logic Grid [d=$difficulty i=$index] should have one solution",
+                    1,
+                    LogicGridSolver.countSolutions(puzzle)
+                )
+                for (clueIndex in puzzle.typedClues.indices) {
+                    assertEquals(
+                        "Logic Grid [d=$difficulty i=$index] clue $clueIndex is redundant",
+                        2,
+                        LogicGridSolver.countSolutions(puzzle, omittedClueIndex = clueIndex)
+                    )
+                }
+            }
+        }
+    }
 
     private data class CatalogCheck(
         val name: String,
@@ -115,16 +240,6 @@ class PuzzleCatalogVerificationTest {
             }
         }
 
-        assertNotEquals(
-            "Futoshiki Hard and Expert share a size, so givens/constraints must change difficulty.",
-            futoshikiDifficultyProfile(2, 0),
-            futoshikiDifficultyProfile(3, 0)
-        )
-        assertNotEquals(
-            "Hidato Hard and Expert share a size, so clue density must change difficulty.",
-            hidatoDifficultyProfile(2, 0),
-            hidatoDifficultyProfile(3, 0)
-        )
         assertTrue(
             "Lights Out Easy should stay a short solve.",
             maxLightsOutMinimumMoves(0) <= 4
@@ -148,10 +263,6 @@ class PuzzleCatalogVerificationTest {
             averageNurikabeClueDensity(3) < averageNurikabeClueDensity(0)
         )
         assertTrue(
-            "Nurikabe Expert should mix 1-8 and 1-9 island profiles.",
-            expertNurikabeMaxClues().containsAll(listOf(8, 9))
-        )
-        assertTrue(
             "Skyscraper should reduce starting givens as difficulty rises.",
             averageSkyscraperGivenDensity(0) > averageSkyscraperGivenDensity(1) &&
                 averageSkyscraperGivenDensity(1) > averageSkyscraperGivenDensity(2) &&
@@ -167,16 +278,40 @@ class PuzzleCatalogVerificationTest {
                 assertMastermindLevelValid(difficulty, index)
                 val lightsOutMoves = minimumLightsOutMoves(LightsOutPuzzles.get(difficulty, index))
                 assertTrue("Lights Out [d=$difficulty i=$index] is not solvable", lightsOutMoves != null)
-                assertTrue(
-                    "Kakuro [d=$difficulty i=$index] has no solver witness",
-                    kakuroHasSolution(KakuroPuzzles.get(difficulty, index))
-                )
+                assertKakuroSolutionValid(KakuroPuzzles.get(difficulty, index), difficulty, index)
                 assertLogicGridSolutionValid(LogicGridPuzzles.get(difficulty, index), difficulty, index)
                 assertSlitherlinkSolutionValid(SlitherlinkPuzzles.get(difficulty, index), difficulty, index)
                 assertNurikabeSolutionValid(NurikabePuzzles.get(difficulty, index), difficulty, index)
                 assertHidatoSolutionValid(HidatoPuzzles.get(difficulty, index), difficulty, index)
                 assertFutoshikiSolutionValid(FutoshikiPuzzles.get(difficulty, index), difficulty, index)
                 assertSkyscraperSolutionValid(SkyscraperPuzzles.get(difficulty, index), difficulty, index)
+            }
+        }
+    }
+
+    @Test
+    fun kakuroCatalogUsesDistinctClassicLayouts() {
+        val layouts = HashSet<String>()
+        for (difficulty in 0 until DIFFICULTIES) {
+            for (index in 0 until levelCount(difficulty)) {
+                val puzzle = KakuroPuzzles.get(difficulty, index)
+                assertTrue(
+                    "Kakuro [d=$difficulty i=$index] repeats a black/white layout",
+                    layouts.add(kakuroLayoutSignature(puzzle))
+                )
+            }
+        }
+    }
+
+    @Test
+    fun everyKakuroLevelUsesAValidClassicBoard() {
+        for (difficulty in 0 until DIFFICULTIES) {
+            for (index in 0 until levelCount(difficulty)) {
+                assertKakuroSolutionValid(KakuroPuzzles.get(difficulty, index), difficulty, index)
+                assertTrue(
+                    "Kakuro [d=$difficulty i=$index] did not use its known-good generation attempt",
+                    KakuroPuzzles.usedKnownGoodAttemptForTesting(difficulty, index)
+                )
             }
         }
     }
@@ -198,6 +333,257 @@ class PuzzleCatalogVerificationTest {
                 level.secret.toSet().size
             )
         }
+    }
+
+    private fun assertKakuroSolutionValid(puzzle: KakuroPuzzle, difficulty: Int, index: Int) {
+        val solution = puzzle.solution ?: missing("Kakuro [d=$difficulty i=$index] has no stored solution")
+        val initial = puzzle.initial ?: missing("Kakuro [d=$difficulty i=$index] has no starter grid")
+        assertEquals("Kakuro [d=$difficulty i=$index] solution row count", puzzle.rows, solution.size)
+        assertEquals("Kakuro [d=$difficulty i=$index] initial row count", puzzle.rows, initial.size)
+
+        val horizontalCovered = HashSet<Pair<Int, Int>>()
+        val verticalCovered = HashSet<Pair<Int, Int>>()
+        var starters = 0
+        var whites = 0
+        var voids = 0
+        var internalClues = 0
+        var dualClues = 0
+        var twoDigitClues = 0
+
+        for (r in 0 until puzzle.rows) {
+            assertEquals("Kakuro [d=$difficulty i=$index] solution col count", puzzle.cols, solution[r].size)
+            assertEquals("Kakuro [d=$difficulty i=$index] initial col count", puzzle.cols, initial[r].size)
+            for (c in 0 until puzzle.cols) {
+                val given = initial[r][c]
+                val solvedValue = solution[r][c]
+                when (val cell = puzzle.grid[r][c]) {
+                    KCell.Void -> {
+                        voids++
+                        assertEquals("Kakuro [d=$difficulty i=$index] void solution at $r,$c", 0, solvedValue)
+                        assertEquals("Kakuro [d=$difficulty i=$index] void starter at $r,$c", 0, given)
+                    }
+                    KCell.Black -> {
+                        assertEquals("Kakuro [d=$difficulty i=$index] non-white solution at $r,$c", 0, solvedValue)
+                        assertEquals("Kakuro [d=$difficulty i=$index] non-white starter at $r,$c", 0, given)
+                    }
+                    is KCell.Clue -> {
+                        assertTrue(
+                            "Kakuro [d=$difficulty i=$index] empty clue at $r,$c",
+                            cell.downSum > 0 || cell.rightSum > 0
+                        )
+                        assertEquals("Kakuro [d=$difficulty i=$index] clue solution at $r,$c", 0, solvedValue)
+                        assertEquals("Kakuro [d=$difficulty i=$index] clue starter at $r,$c", 0, given)
+                        if (r > 0 && c > 0) internalClues++
+                        if (cell.downSum > 0 && cell.rightSum > 0) dualClues++
+                        for (sum in listOf(cell.downSum, cell.rightSum).filter { it > 0 }) {
+                            assertTrue(
+                                "Kakuro [d=$difficulty i=$index] clue value out of 1-45 range at $r,$c",
+                                sum in 1..45
+                            )
+                            if (sum >= 10) twoDigitClues++
+                        }
+                        if (cell.rightSum > 0) {
+                            val cells = kakuroRunCells(puzzle, r, c + 1, 0 to 1)
+                            assertKakuroRunMatchesSolution(puzzle, solution, cells, cell.rightSum, difficulty, index)
+                            horizontalCovered.addAll(cells)
+                        }
+                        if (cell.downSum > 0) {
+                            val cells = kakuroRunCells(puzzle, r + 1, c, 1 to 0)
+                            assertKakuroRunMatchesSolution(puzzle, solution, cells, cell.downSum, difficulty, index)
+                            verticalCovered.addAll(cells)
+                        }
+                    }
+                    KCell.White -> {
+                        whites++
+                        assertTrue(
+                            "Kakuro [d=$difficulty i=$index] white solution out of range at $r,$c",
+                            solvedValue in 1..9
+                        )
+                        assertTrue(
+                            "Kakuro [d=$difficulty i=$index] starter out of range at $r,$c",
+                            given in 0..9
+                        )
+                        if (given > 0) {
+                            starters++
+                            assertEquals("Kakuro [d=$difficulty i=$index] starter mismatch at $r,$c", solvedValue, given)
+                        }
+                    }
+                }
+            }
+        }
+
+        assertEquals(
+            "Kakuro [d=$difficulty i=$index] row count",
+            expectedKakuroSide(difficulty),
+            puzzle.rows
+        )
+        assertEquals(
+            "Kakuro [d=$difficulty i=$index] column count",
+            expectedKakuroSide(difficulty),
+            puzzle.cols
+        )
+        assertEquals("Kakuro [d=$difficulty i=$index] contains transparent gaps", 0, voids)
+        assertTrue(
+            "Kakuro [d=$difficulty i=$index] white count $whites is outside its density range",
+            whites in expectedKakuroMinimumWhites(difficulty)..expectedKakuroMaximumWhites(difficulty)
+        )
+        assertTrue("Kakuro [d=$difficulty i=$index] has white cells in its top clue border", puzzle.grid[0].none { it is KCell.White })
+        assertTrue("Kakuro [d=$difficulty i=$index] has white cells in its left clue border", puzzle.grid.none { it[0] is KCell.White })
+        assertTrue(
+            "Kakuro [d=$difficulty i=$index] has too few internal clue cells",
+            internalClues >= maxOf(2, expectedKakuroSide(difficulty) / 3)
+        )
+        assertTrue("Kakuro [d=$difficulty i=$index] has no dual clue cells", dualClues > 0)
+        assertTrue("Kakuro [d=$difficulty i=$index] has no two-digit clues", twoDigitClues > 0)
+        assertTrue(
+            "Kakuro [d=$difficulty i=$index] starter count $starters is outside the 1-5 range",
+            starters in expectedKakuroMinimumStarterCount(difficulty)..5
+        )
+        for (r in 0 until puzzle.rows) {
+            for (c in 0 until puzzle.cols) {
+                if (puzzle.grid[r][c] is KCell.White) {
+                    assertTrue("Kakuro [d=$difficulty i=$index] missing horizontal run at $r,$c", (r to c) in horizontalCovered)
+                    assertTrue("Kakuro [d=$difficulty i=$index] missing vertical run at $r,$c", (r to c) in verticalCovered)
+                }
+            }
+        }
+        assertKakuroRunGraphConnected(puzzle, difficulty, index)
+        assertKakuroNotDiagonal(puzzle, difficulty, index)
+        assertEquals(
+            "Kakuro [d=$difficulty i=$index] should have exactly one solution",
+            1,
+            PuzzleVerifier.countKakuroSolutions(puzzle, initial)
+        )
+    }
+
+    private fun assertKakuroRunMatchesSolution(
+        puzzle: KakuroPuzzle,
+        solution: Array<IntArray>,
+        cells: List<Pair<Int, Int>>,
+        expectedSum: Int,
+        difficulty: Int,
+        index: Int
+    ) {
+        assertTrue("Kakuro [d=$difficulty i=$index] clue run length ${cells.size}", cells.size in 2..9)
+        val values = cells.map { (r, c) -> solution[r][c] }
+        assertEquals("Kakuro [d=$difficulty i=$index] run sum mismatch", expectedSum, values.sum())
+        assertEquals("Kakuro [d=$difficulty i=$index] duplicate in solution run", values.size, values.toSet().size)
+        for ((r, c) in cells) {
+            assertTrue("Kakuro [d=$difficulty i=$index] run cell is not white at $r,$c", puzzle.grid[r][c] is KCell.White)
+        }
+    }
+
+    private fun kakuroRunCells(
+        puzzle: KakuroPuzzle,
+        startRow: Int,
+        startCol: Int,
+        delta: Pair<Int, Int>
+    ): List<Pair<Int, Int>> {
+        val cells = ArrayList<Pair<Int, Int>>()
+        var r = startRow
+        var c = startCol
+        while (r in 0 until puzzle.rows && c in 0 until puzzle.cols && puzzle.grid[r][c] is KCell.White) {
+            cells.add(r to c)
+            r += delta.first
+            c += delta.second
+        }
+        return cells
+    }
+
+    private fun expectedKakuroMinimumStarterCount(difficulty: Int): Int = when (difficulty) {
+        0 -> 5
+        1 -> 4
+        2 -> 3
+        3 -> 2
+        else -> 1
+    }
+
+    private fun expectedKakuroMinimumWhites(difficulty: Int): Int = when (difficulty) {
+        0 -> 16
+        1 -> 24
+        2 -> 34
+        3 -> 52
+        else -> 76
+    }
+
+    private fun expectedKakuroMaximumWhites(difficulty: Int): Int = when (difficulty) {
+        0 -> 24
+        1 -> 38
+        2 -> 54
+        3 -> 74
+        else -> 96
+    }
+
+    private fun expectedKakuroSide(difficulty: Int): Int = when (difficulty) {
+        0 -> 7
+        1 -> 9
+        2 -> 11
+        3 -> 13
+        else -> 15
+    }
+
+    private fun assertKakuroNotDiagonal(puzzle: KakuroPuzzle, difficulty: Int, index: Int) {
+        val cells = puzzle.grid.flatMapIndexed { r, row ->
+            row.mapIndexedNotNull { c, cell -> if (cell is KCell.White) r to c else null }
+        }
+
+        fun concentration(mainDiagonal: Boolean): Int {
+            val keys = cells.map { (r, c) -> if (mainDiagonal) r - c else r + c }
+            return (keys.minOrNull()!!..keys.maxOrNull()!!).maxOf { center ->
+                keys.count { kotlin.math.abs(it - center) <= 1 } * 100 / cells.size
+            }
+        }
+
+        assertTrue(
+            "Kakuro [d=$difficulty i=$index] is concentrated along a diagonal",
+            concentration(mainDiagonal = true) <= 55 && concentration(mainDiagonal = false) <= 55
+        )
+    }
+
+    private fun assertKakuroRunGraphConnected(puzzle: KakuroPuzzle, difficulty: Int, index: Int) {
+        val whiteCells = mutableListOf<Pair<Int, Int>>()
+        for (r in 0 until puzzle.rows) {
+            for (c in 0 until puzzle.cols) {
+                if (puzzle.grid[r][c] is KCell.White) whiteCells.add(r to c)
+            }
+        }
+        val start = whiteCells.firstOrNull() ?: missing("Kakuro [d=$difficulty i=$index] has no white cells")
+        val adjacency = HashMap<Pair<Int, Int>, MutableSet<Pair<Int, Int>>>()
+        for (cell in whiteCells) adjacency[cell] = HashSet()
+
+        fun connectRun(cells: List<Pair<Int, Int>>) {
+            for (i in 0 until cells.lastIndex) {
+                adjacency.getValue(cells[i]).add(cells[i + 1])
+                adjacency.getValue(cells[i + 1]).add(cells[i])
+            }
+        }
+
+        for (r in 0 until puzzle.rows) {
+            for (c in 0 until puzzle.cols) {
+                val cell = puzzle.grid[r][c]
+                if (cell is KCell.Clue) {
+                    if (cell.rightSum > 0) connectRun(kakuroRunCells(puzzle, r, c + 1, 0 to 1))
+                    if (cell.downSum > 0) connectRun(kakuroRunCells(puzzle, r + 1, c, 1 to 0))
+                }
+            }
+        }
+
+        val seen = HashSet<Pair<Int, Int>>()
+        val queue = ArrayDeque<Pair<Int, Int>>()
+        queue.add(start)
+        seen.add(start)
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            for (next in adjacency.getValue(current)) {
+                if (seen.add(next)) queue.add(next)
+            }
+        }
+
+        assertEquals(
+            "Kakuro [d=$difficulty i=$index] is split into independent run-graph components",
+            whiteCells.size,
+            seen.size
+        )
     }
 
     private fun assertNonogramSolutionValid(solution: Array<IntArray>, name: String, difficulty: Int, index: Int) {
@@ -257,6 +643,19 @@ class PuzzleCatalogVerificationTest {
                 }
             }
         }
+        val expected = (1..puzzle.size).toSet()
+        for (boxR in 0 until puzzle.size / puzzle.boxRows) {
+            for (boxC in 0 until puzzle.size / puzzle.boxCols) {
+                val values = buildSet {
+                    for (r in boxR * puzzle.boxRows until (boxR + 1) * puzzle.boxRows) {
+                        for (c in boxC * puzzle.boxCols until (boxC + 1) * puzzle.boxCols) {
+                            add(solution[r][c])
+                        }
+                    }
+                }
+                assertEquals("Futoshiki [d=$difficulty i=$index] Sudoku region", expected, values)
+            }
+        }
     }
 
     private fun assertHidatoSolutionValid(puzzle: HidatoPuzzle, difficulty: Int, index: Int) {
@@ -265,6 +664,10 @@ class PuzzleCatalogVerificationTest {
         for (r in 0 until puzzle.rows) {
             for (c in 0 until puzzle.cols) {
                 val value = solution[r][c]
+                if (puzzle.initial[r][c] == -1) {
+                    assertEquals("Hidato [d=$difficulty i=$index] blocked solution", -1, value)
+                    continue
+                }
                 assertTrue("Hidato [d=$difficulty i=$index] value out of range", value in 1..puzzle.maxNumber)
                 positions[value] = r to c
                 val given = puzzle.initial[r][c]
@@ -310,12 +713,20 @@ class PuzzleCatalogVerificationTest {
         }
         for (c in 0 until puzzle.size) {
             val col = IntArray(puzzle.size) { r -> solution[r][c] }
-            assertEquals("Skyscraper [d=$difficulty i=$index] top clue", puzzle.cluesTop[c], visibility(col))
-            assertEquals("Skyscraper [d=$difficulty i=$index] bottom clue", puzzle.cluesBottom[c], visibility(col.reversedArray()))
+            if (puzzle.cluesTop[c] > 0) {
+                assertEquals("Skyscraper [d=$difficulty i=$index] top clue", puzzle.cluesTop[c], visibility(col))
+            }
+            if (puzzle.cluesBottom[c] > 0) {
+                assertEquals("Skyscraper [d=$difficulty i=$index] bottom clue", puzzle.cluesBottom[c], visibility(col.reversedArray()))
+            }
         }
         for (r in 0 until puzzle.size) {
-            assertEquals("Skyscraper [d=$difficulty i=$index] left clue", puzzle.cluesLeft[r], visibility(solution[r]))
-            assertEquals("Skyscraper [d=$difficulty i=$index] right clue", puzzle.cluesRight[r], visibility(solution[r].reversedArray()))
+            if (puzzle.cluesLeft[r] > 0) {
+                assertEquals("Skyscraper [d=$difficulty i=$index] left clue", puzzle.cluesLeft[r], visibility(solution[r]))
+            }
+            if (puzzle.cluesRight[r] > 0) {
+                assertEquals("Skyscraper [d=$difficulty i=$index] right clue", puzzle.cluesRight[r], visibility(solution[r].reversedArray()))
+            }
         }
         if (difficulty == 0) {
             val minimumEasyGivens = if (puzzle.size == 4) 12 else 18
@@ -323,24 +734,16 @@ class PuzzleCatalogVerificationTest {
                 "Skyscraper Easy [i=$index] should have enough givens to be easy",
                 givens >= minimumEasyGivens
             )
-            assertTrue(
-                "Skyscraper Easy [i=$index] should have a valid relaxed-rule solution",
-                PuzzleVerifier.countSkyscraperSolutions(puzzle) >= 1
-            )
         }
         assertTrue(
-            "Skyscraper [d=$difficulty i=$index] should include the extra height",
+            "Skyscraper [d=$difficulty i=$index] should include the tallest height",
             solution.any { row -> row.any { it == puzzle.maxHeight } }
         )
-        assertTrue(
-            "Skyscraper [d=$difficulty i=$index] should not put the extra height on the simple diagonal",
-            (0 until puzzle.size).any { r -> solution[r][r] != puzzle.maxHeight }
+        assertEquals(
+            "Skyscraper [d=$difficulty i=$index] empty lots per line",
+            intArrayOf(0, 1, 1, 2, 3)[difficulty],
+            puzzle.emptyLotsPerLine
         )
-        if (difficulty >= 2) {
-            assertEquals("Skyscraper [d=$difficulty i=$index] empty lots per line", 1, puzzle.emptyLotsPerLine)
-        } else {
-            assertEquals("Skyscraper [d=$difficulty i=$index] empty lots per line", 0, puzzle.emptyLotsPerLine)
-        }
     }
 
     private fun assertSlitherlinkSolutionValid(puzzle: SlitherlinkPuzzle, difficulty: Int, index: Int) {
@@ -567,16 +970,8 @@ class PuzzleCatalogVerificationTest {
         }
     }
 
-    private fun expectedNurikabeMaxClue(difficulty: Int, index: Int): Int? = when (difficulty) {
-        0 -> if (index >= 10) 3 else 2
-        1 -> if (index >= 10) 4 else 3
-        2 -> if (index >= 10) 6 else 5
-        3 -> null
-        else -> when {
-            index >= 25 -> 10
-            else -> 9
-        }
-    }
+    private fun expectedNurikabeMaxClue(difficulty: Int, index: Int): Int? =
+        intArrayOf(4, 6, 9, 12, 15)[difficulty]
 
     private data class KakuroRun(val cells: List<Pair<Int, Int>>, val sum: Int)
 
@@ -712,7 +1107,7 @@ class PuzzleCatalogVerificationTest {
         label: String
     ) {
         assertEquals("$label row count", size, grid.size)
-        assertTrue("$label max height should allow an extra value", maxHeight > size)
+        assertTrue("$label max height", maxHeight >= size)
         for (r in 0 until size) {
             assertEquals("$label row width", size, grid[r].size)
             assertSkyscraperLine(grid[r], maxHeight, emptyLotsPerLine, "$label row $r")
@@ -846,12 +1241,25 @@ class PuzzleCatalogVerificationTest {
         puzzle.grid.joinToString("/") { row ->
             row.joinToString(",") { cell ->
                 when (cell) {
+                    KCell.Void -> "V"
                     KCell.Black -> "B"
                     is KCell.Clue -> "C${cell.downSum}:${cell.rightSum}"
                     KCell.White -> "W"
                 }
             }
         } + "|" + (puzzle.initial?.let(::intGridSignature) ?: "")
+
+    private fun kakuroLayoutSignature(puzzle: KakuroPuzzle): String =
+        puzzle.grid.joinToString("/") { row ->
+            row.joinToString("") { cell ->
+                when (cell) {
+                    KCell.Void -> "."
+                    KCell.Black -> "B"
+                    is KCell.Clue -> "C"
+                    KCell.White -> "W"
+                }
+            }
+        }
 
     private fun logicGridSignature(puzzle: LogicGridPuzzle): String =
         "${puzzle.title}|${puzzle.categories.joinToString(",")}|${puzzle.items.flatten().joinToString(",")}|${puzzle.solution.flatten().joinToString(",")}"

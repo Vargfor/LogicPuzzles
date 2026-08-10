@@ -1,5 +1,10 @@
 package com.logicpuzzles.skyscraper
 
+import com.logicpuzzles.utils.PuzzleBoardSpecs
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.ceil
+import kotlin.random.Random
+
 data class SkyscraperPuzzle(
     val size: Int,
     val initial: Array<IntArray>,
@@ -13,399 +18,120 @@ data class SkyscraperPuzzle(
 )
 
 object SkyscraperPuzzles {
+    private val cache = ConcurrentHashMap<Pair<Int, Int>, SkyscraperPuzzle>()
+
+    private fun build(size: Int, difficulty: Int, index: Int): SkyscraperPuzzle {
+        val random = Random(60_000 + difficulty * 10_009 + index * 211 + size * 31)
+        val solution = latinSolution(size, random)
+        val maxHeight = if (difficulty == 0) size else size + 1
+        val emptyLots = intArrayOf(0, 1, 1, 2, 3)[difficulty]
+
+        if (difficulty > 0) {
+            val permutationStep = coprimeSteps(size)[random.nextInt(coprimeSteps(size).size)]
+            val shift = random.nextInt(size)
+            val tallestCols = IntArray(size) { r -> positiveMod(r * permutationStep + shift, size) }
+            for (r in 0 until size) solution[r][tallestCols[r]] = maxHeight
+
+            val offsets = (1 until size).toList().shuffled(random).take(emptyLots)
+            for (offset in offsets) {
+                for (r in 0 until size) {
+                    solution[r][positiveMod(tallestCols[r] + offset, size)] = 0
+                }
+            }
+        }
+
+        val cluesTop = IntArray(size) { c -> visibility(IntArray(size) { r -> solution[r][c] }) }
+        val cluesBottom = IntArray(size) { c -> visibility(IntArray(size) { r -> solution[size - 1 - r][c] }) }
+        val cluesLeft = IntArray(size) { r -> visibility(solution[r]) }
+        val cluesRight = IntArray(size) { r -> visibility(solution[r].reversedArray()) }
+        hideClues(cluesTop, cluesBottom, cluesLeft, cluesRight, difficulty, random)
+
+        val givenRatio = floatArrayOf(0.42f, 0.28f, 0.18f, 0.10f, 0.06f)[difficulty]
+        val nonEmpty = buildList {
+            for (r in 0 until size) for (c in 0 until size) {
+                if (solution[r][c] > 0) add(r * size + c)
+            }
+        }.shuffled(random)
+        val givenCount = ceil(nonEmpty.size * givenRatio).toInt()
+        val initial = Array(size) { IntArray(size) }
+        for (position in nonEmpty.take(givenCount)) {
+            initial[position / size][position % size] = solution[position / size][position % size]
+        }
+
+        return SkyscraperPuzzle(
+            size = size,
+            initial = initial,
+            cluesTop = cluesTop,
+            cluesBottom = cluesBottom,
+            cluesLeft = cluesLeft,
+            cluesRight = cluesRight,
+            solution = solution,
+            maxHeight = maxHeight,
+            emptyLotsPerLine = emptyLots
+        )
+    }
+
+    private fun latinSolution(size: Int, random: Random): Array<IntArray> {
+        val stepOptions = coprimeSteps(size)
+        val step = stepOptions[random.nextInt(stepOptions.size)]
+        val rowOrder = (0 until size).toList().shuffled(random)
+        val colOrder = (0 until size).toList().shuffled(random)
+        val symbols = (1..size).toList().shuffled(random)
+        return Array(size) { r ->
+            IntArray(size) { c -> symbols[(rowOrder[r] * step + colOrder[c]) % size] }
+        }
+    }
+
+    private fun coprimeSteps(size: Int): IntArray =
+        (1 until size).filter { gcd(it, size) == 1 }.toIntArray()
+
+    private fun gcd(a: Int, b: Int): Int {
+        var x = a
+        var y = b
+        while (y != 0) {
+            val next = x % y
+            x = y
+            y = next
+        }
+        return x
+    }
+
+    private fun hideClues(
+        top: IntArray,
+        bottom: IntArray,
+        left: IntArray,
+        right: IntArray,
+        difficulty: Int,
+        random: Random
+    ) {
+        val keepRatio = floatArrayOf(1f, 0.88f, 0.75f, 0.62f, 0.50f)[difficulty]
+        for (side in arrayOf(top, bottom, left, right)) {
+            val keep = ceil(side.size * keepRatio).toInt().coerceAtLeast(1)
+            val visible = side.indices.toList().shuffled(random).take(keep).toSet()
+            for (i in side.indices) if (i !in visible) side[i] = 0
+        }
+    }
 
     private fun visibility(line: IntArray): Int {
         var maxSeen = 0
         var count = 0
-        for (h in line) {
-            if (h > maxSeen) { count++; maxSeen = h }
+        for (height in line) {
+            if (height > maxSeen) {
+                maxSeen = height
+                count++
+            }
         }
         return count
     }
 
-    private fun build(
-        solution: Array<IntArray>,
-        initial: Array<IntArray>? = null,
-        maxHeight: Int = solution.size,
-        emptyLotsPerLine: Int = 0
-    ): SkyscraperPuzzle {
-        val n = solution.size
-        val init = initial?.map { it.copyOf() }?.toTypedArray() ?: Array(n) { IntArray(n) }
-        val cT = IntArray(n) { c -> visibility(IntArray(n) { r -> solution[r][c] }) }
-        val cB = IntArray(n) { c -> visibility(IntArray(n) { r -> solution[n - 1 - r][c] }) }
-        val cL = IntArray(n) { r -> visibility(solution[r]) }
-        val cR = IntArray(n) { r -> visibility(solution[r].reversedArray()) }
-        return SkyscraperPuzzle(
-            n,
-            init,
-            cT,
-            cB,
-            cL,
-            cR,
-            solution.map { it.copyOf() }.toTypedArray(),
-            maxHeight,
-            emptyLotsPerLine
-        )
-    }
-
-    private fun withDifficultyGivens(puzzle: SkyscraperPuzzle, difficulty: Int, index: Int): SkyscraperPuzzle {
-        val solution = puzzle.solution ?: return puzzle
-        return SkyscraperPuzzle(
-            size = puzzle.size,
-            initial = seededInitial(solution, givenCountFor(difficulty, puzzle.size), difficulty * 31 + index),
-            cluesTop = puzzle.cluesTop.copyOf(),
-            cluesBottom = puzzle.cluesBottom.copyOf(),
-            cluesLeft = puzzle.cluesLeft.copyOf(),
-            cluesRight = puzzle.cluesRight.copyOf(),
-            solution = solution.map { it.copyOf() }.toTypedArray(),
-            maxHeight = puzzle.maxHeight,
-            emptyLotsPerLine = puzzle.emptyLotsPerLine
-        )
-    }
-
-    private fun givenCountFor(difficulty: Int, size: Int): Int {
-        val count = when (difficulty) {
-            0 -> when (size) {
-                4 -> 12
-                5 -> 18
-                else -> size * size / 2
-            }
-            1 -> when (size) {
-                4 -> 5
-                5 -> 7
-                else -> size + 2
-            }
-            2 -> when (size) {
-                5 -> 3
-                6 -> 4
-                else -> size / 2
-            }
-            3 -> 0
-            else -> 0
-        }
-        return count.coerceIn(0, size * size)
-    }
-
-    private fun seededInitial(solution: Array<IntArray>, count: Int, seed: Int): Array<IntArray> {
-        val size = solution.size
-        val initial = Array(size) { IntArray(size) }
-        if (count <= 0) return initial
-
-        val selected = HashSet<Int>()
-        var placed = 0
-
-        fun addCell(r: Int, c: Int) {
-            if (placed >= count) return
-            if (solution[r][c] <= 0) return
-            val key = r * size + c
-            if (selected.add(key)) {
-                initial[r][c] = solution[r][c]
-                placed++
-            }
-        }
-
-        if (count >= size) {
-            for (r in 0 until size) addCell(r, positiveMod(r * 2 + seed, size))
-            for (c in 0 until size) addCell(positiveMod(c * 3 + seed + 1, size), c)
-        }
-
-        val cells = (0 until size * size).sortedWith(
-            compareBy<Int> { seededCellScore(it, seed, size) }.thenBy { it }
-        )
-        for (cell in cells) {
-            addCell(cell / size, cell % size)
-            if (placed >= count) break
-        }
-
-        return initial
-    }
-
     private fun positiveMod(value: Int, modulus: Int): Int = ((value % modulus) + modulus) % modulus
 
-    private fun seededCellScore(cell: Int, seed: Int, size: Int): Int {
-        val r = cell / size
-        val c = cell % size
-        val mixed = (seed.toLong() + 1L) * 1_103_515_245L +
-            (r.toLong() + 1L) * 73_856_093L +
-            (c.toLong() + 1L) * 19_349_663L
-        return ((mixed xor (mixed ushr 32)) and 0x7fff_ffffL).toInt()
-    }
-
-    private fun skylineVariant(puzzle: SkyscraperPuzzle, difficulty: Int, index: Int): SkyscraperPuzzle {
-        val source = puzzle.solution ?: return puzzle
-        val size = puzzle.size
-        val maxHeight = size + 1
-        val rowOrder = seededPermutation(size, 10_000 + difficulty * 997 + index * 37)
-        val colOrder = seededPermutation(size, 20_000 + difficulty * 991 + index * 41)
-        val heightOrder = seededPermutation(size, 30_000 + difficulty * 983 + index * 43)
-        val heightMap = IntArray(size + 1)
-        for (height in 1..size) {
-            heightMap[height] = heightOrder[height - 1] + 1
-        }
-
-        val solution = Array(size) { r ->
-            IntArray(size) { c ->
-                heightMap[source[rowOrder[r]][colOrder[c]]]
-            }
-        }
-
-        val extraHeightCols = seededDerangedColumns(size, 40_000 + difficulty * 977 + index * 47)
-        for (r in 0 until size) {
-            solution[r][extraHeightCols[r]] = maxHeight
-        }
-
-        val emptyLots = emptyLotsForDifficulty(difficulty)
-        if (emptyLots > 0) {
-            val blankShift = 1 + positiveMod(50_000 + difficulty * 971 + index * 53, size - 1)
-            for (r in 0 until size) {
-                solution[r][positiveMod(extraHeightCols[r] + blankShift, size)] = 0
-            }
-        }
-
-        return build(solution, maxHeight = maxHeight, emptyLotsPerLine = emptyLots)
-    }
-
-    private fun emptyLotsForDifficulty(difficulty: Int): Int =
-        if (difficulty >= 2) 1 else 0
-
-    private fun seededPermutation(size: Int, seed: Int): IntArray =
-        (0 until size)
-            .sortedWith(compareBy<Int> { seededCellScore(it, seed, size) }.thenBy { it })
-            .toIntArray()
-
-    private fun seededDerangedColumns(size: Int, seed: Int): IntArray {
-        val base = seededPermutation(size, seed)
-        for (shift in 1 until size) {
-            val candidate = IntArray(size) { r -> positiveMod(base[r] + shift, size) }
-            if (candidate.indices.all { r -> candidate[r] != r }) return candidate
-        }
-        return IntArray(size) { r -> positiveMod(r + 1, size) }
-    }
-
-    private fun grid(rows: Array<IntArray>): Array<IntArray> = rows
-    private fun row(vararg v: Int): IntArray = v
-
-    // EASY: levels 1-10 = 4x4, levels 11-15 = 5x5 bridge
-    private val EASY by lazy {
-        listOf(
-        build(grid(arrayOf(row(2,1,4,3), row(4,3,2,1), row(1,4,3,2), row(3,2,1,4)))),
-        build(grid(arrayOf(row(1,2,3,4), row(2,1,4,3), row(3,4,1,2), row(4,3,2,1)))),
-        build(grid(arrayOf(row(3,1,4,2), row(4,2,3,1), row(1,3,2,4), row(2,4,1,3)))),
-        build(grid(arrayOf(row(4,1,2,3), row(3,2,1,4), row(2,3,4,1), row(1,4,3,2)))),
-        build(grid(arrayOf(row(2,4,1,3), row(3,1,4,2), row(1,3,2,4), row(4,2,3,1)))),
-        build(grid(arrayOf(row(1,3,2,4), row(2,4,1,3), row(3,1,4,2), row(4,2,3,1)))),
-        build(grid(arrayOf(row(4,2,3,1), row(1,3,2,4), row(2,4,1,3), row(3,1,4,2)))),
-        build(grid(arrayOf(row(3,4,1,2), row(4,3,2,1), row(2,1,4,3), row(1,2,3,4)))),
-        build(grid(arrayOf(row(2,3,4,1), row(4,1,2,3), row(1,2,3,4), row(3,4,1,2)))),
-        build(grid(arrayOf(row(4,3,1,2), row(2,1,3,4), row(1,2,4,3), row(3,4,2,1)))),
-        // 11-15: 5x5 bridge (+1 size step)
-        build(grid(arrayOf(row(1,2,3,4,5), row(3,4,5,1,2), row(5,1,2,3,4), row(2,3,4,5,1), row(4,5,1,2,3)))),
-        build(grid(arrayOf(row(1,3,5,4,2), row(3,5,4,2,1), row(5,4,2,1,3), row(4,2,1,3,5), row(2,1,3,5,4)))),
-        build(grid(arrayOf(row(1,5,4,3,2), row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4), row(2,1,5,4,3)))),
-        build(grid(arrayOf(row(2,5,3,4,1), row(5,3,4,1,2), row(3,4,1,2,5), row(4,1,2,5,3), row(1,2,5,3,4)))),
-        build(grid(arrayOf(row(3,5,1,4,2), row(5,1,4,2,3), row(1,4,2,3,5), row(4,2,3,5,1), row(2,3,5,1,4))))
-        )
-    }
-
-    // MEDIUM: levels 1-10 = 4x4 (different grids from Easy), levels 11-15 = 5x5
-    private val MEDIUM by lazy {
-        listOf(
-        build(grid(arrayOf(row(1,4,2,3), row(2,3,1,4), row(3,2,4,1), row(4,1,3,2)))),
-        build(grid(arrayOf(row(2,3,4,1), row(1,4,3,2), row(4,1,2,3), row(3,2,1,4)))),
-        build(grid(arrayOf(row(3,2,1,4), row(4,1,2,3), row(1,4,3,2), row(2,3,4,1)))),
-        build(grid(arrayOf(row(4,3,2,1), row(3,4,1,2), row(2,1,4,3), row(1,2,3,4)))),
-        build(grid(arrayOf(row(1,2,4,3), row(3,4,2,1), row(2,1,3,4), row(4,3,1,2)))),
-        build(grid(arrayOf(row(2,1,3,4), row(4,3,1,2), row(1,2,4,3), row(3,4,2,1)))),
-        build(grid(arrayOf(row(3,4,2,1), row(1,2,4,3), row(4,3,1,2), row(2,1,3,4)))),
-        build(grid(arrayOf(row(4,1,3,2), row(2,3,1,4), row(3,2,4,1), row(1,4,2,3)))),
-        build(grid(arrayOf(row(1,3,4,2), row(4,2,3,1), row(2,4,1,3), row(3,1,2,4)))),
-        build(grid(arrayOf(row(2,4,3,1), row(3,1,4,2), row(4,2,1,3), row(1,3,2,4)))),
-        // 11-15: 5x5
-        build(grid(arrayOf(row(2,3,4,5,1), row(3,4,5,1,2), row(4,5,1,2,3), row(5,1,2,3,4), row(1,2,3,4,5)))),
-        build(grid(arrayOf(row(4,1,5,3,2), row(1,5,3,2,4), row(5,3,2,4,1), row(3,2,4,1,5), row(2,4,1,5,3)))),
-        build(grid(arrayOf(row(5,2,1,4,3), row(2,1,4,3,5), row(1,4,3,5,2), row(4,3,5,2,1), row(3,5,2,1,4)))),
-        build(grid(arrayOf(row(1,5,2,4,3), row(5,2,4,3,1), row(2,4,3,1,5), row(4,3,1,5,2), row(3,1,5,2,4)))),
-        build(grid(arrayOf(row(3,2,5,4,1), row(2,5,4,1,3), row(5,4,1,3,2), row(4,1,3,2,5), row(1,3,2,5,4))))
-    ) + listOf(
-        // 16-25: more 5x5
-        build(grid(arrayOf(row(1,4,5,2,3), row(4,5,2,3,1), row(5,2,3,1,4), row(2,3,1,4,5), row(3,1,4,5,2)))),
-        build(grid(arrayOf(row(2,1,5,4,3), row(1,5,4,3,2), row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4)))),
-        build(grid(arrayOf(row(3,1,2,5,4), row(1,2,5,4,3), row(2,5,4,3,1), row(5,4,3,1,2), row(4,3,1,2,5)))),
-        build(grid(arrayOf(row(4,3,1,5,2), row(3,1,5,2,4), row(1,5,2,4,3), row(5,2,4,3,1), row(2,4,3,1,5)))),
-        build(grid(arrayOf(row(5,3,4,2,1), row(3,4,2,1,5), row(4,2,1,5,3), row(2,1,5,3,4), row(1,5,3,4,2)))),
-        build(grid(arrayOf(row(2,4,3,1,5), row(4,3,1,5,2), row(3,1,5,2,4), row(1,5,2,4,3), row(5,2,4,3,1)))),
-        build(grid(arrayOf(row(3,5,2,1,4), row(5,2,1,4,3), row(2,1,4,3,5), row(1,4,3,5,2), row(4,3,5,2,1)))),
-        build(grid(arrayOf(row(4,5,1,3,2), row(5,1,3,2,4), row(1,3,2,4,5), row(3,2,4,5,1), row(2,4,5,1,3)))),
-        build(grid(arrayOf(row(5,4,2,3,1), row(4,2,3,1,5), row(2,3,1,5,4), row(3,1,5,4,2), row(1,5,4,2,3)))),
-        build(grid(arrayOf(row(1,2,4,5,3), row(2,4,5,3,1), row(4,5,3,1,2), row(5,3,1,2,4), row(3,1,2,4,5))))
-        )
-    }
-
-    // HARD: levels 1-10 = 5x5, levels 11-15 = 6x6 bridge
-    private val HARD by lazy {
-        listOf(
-        build(grid(arrayOf(row(1,2,3,4,5), row(2,3,4,5,1), row(3,4,5,1,2), row(4,5,1,2,3), row(5,1,2,3,4)))),
-        build(grid(arrayOf(row(2,3,4,5,1), row(3,4,5,1,2), row(4,5,1,2,3), row(5,1,2,3,4), row(1,2,3,4,5)))),
-        build(grid(arrayOf(row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4), row(2,1,5,4,3), row(1,5,4,3,2)))),
-        build(grid(arrayOf(row(1,3,5,2,4), row(3,5,2,4,1), row(5,2,4,1,3), row(2,4,1,3,5), row(4,1,3,5,2)))),
-        build(grid(arrayOf(row(2,4,1,3,5), row(4,1,3,5,2), row(1,3,5,2,4), row(3,5,2,4,1), row(5,2,4,1,3)))),
-        build(grid(arrayOf(row(3,1,5,2,4), row(1,5,2,4,3), row(5,2,4,3,1), row(2,4,3,1,5), row(4,3,1,5,2)))),
-        build(grid(arrayOf(row(4,2,5,3,1), row(2,5,3,1,4), row(5,3,1,4,2), row(3,1,4,2,5), row(1,4,2,5,3)))),
-        build(grid(arrayOf(row(1,4,2,5,3), row(4,2,5,3,1), row(2,5,3,1,4), row(5,3,1,4,2), row(3,1,4,2,5)))),
-        build(grid(arrayOf(row(2,1,3,5,4), row(1,3,5,4,2), row(3,5,4,2,1), row(5,4,2,1,3), row(4,2,1,3,5)))),
-        build(grid(arrayOf(row(5,3,1,4,2), row(3,1,4,2,5), row(1,4,2,5,3), row(4,2,5,3,1), row(2,5,3,1,4)))),
-        // 11-15: 6x6 bridge (+1 size step)
-        // Each 6x6 grid is a cyclic left-rotation Latin square: row[i] = rotate(row[0], left by i)
-        build(grid(arrayOf(row(1,2,3,4,5,6), row(2,3,4,5,6,1), row(3,4,5,6,1,2), row(4,5,6,1,2,3), row(5,6,1,2,3,4), row(6,1,2,3,4,5)))),
-        build(grid(arrayOf(row(1,2,3,4,5,6), row(6,1,2,3,4,5), row(5,6,1,2,3,4), row(4,5,6,1,2,3), row(3,4,5,6,1,2), row(2,3,4,5,6,1)))),
-        build(grid(arrayOf(row(1,3,5,2,4,6), row(3,5,2,4,6,1), row(5,2,4,6,1,3), row(2,4,6,1,3,5), row(4,6,1,3,5,2), row(6,1,3,5,2,4)))),
-        build(grid(arrayOf(row(1,4,2,5,3,6), row(4,2,5,3,6,1), row(2,5,3,6,1,4), row(5,3,6,1,4,2), row(3,6,1,4,2,5), row(6,1,4,2,5,3)))),
-        build(grid(arrayOf(row(2,5,4,1,6,3), row(5,4,1,6,3,2), row(4,1,6,3,2,5), row(1,6,3,2,5,4), row(6,3,2,5,4,1), row(3,2,5,4,1,6))))
-    ) + listOf(
-        // 16-35: more 6x6
-        build(grid(arrayOf(row(2,1,3,6,4,5), row(1,3,6,4,5,2), row(3,6,4,5,2,1), row(6,4,5,2,1,3), row(4,5,2,1,3,6), row(5,2,1,3,6,4)))),
-        build(grid(arrayOf(row(3,1,4,6,2,5), row(1,4,6,2,5,3), row(4,6,2,5,3,1), row(6,2,5,3,1,4), row(2,5,3,1,4,6), row(5,3,1,4,6,2)))),
-        build(grid(arrayOf(row(4,1,6,3,5,2), row(1,6,3,5,2,4), row(6,3,5,2,4,1), row(3,5,2,4,1,6), row(5,2,4,1,6,3), row(2,4,1,6,3,5)))),
-        build(grid(arrayOf(row(5,1,4,3,6,2), row(1,4,3,6,2,5), row(4,3,6,2,5,1), row(3,6,2,5,1,4), row(6,2,5,1,4,3), row(2,5,1,4,3,6)))),
-        build(grid(arrayOf(row(6,2,4,1,5,3), row(2,4,1,5,3,6), row(4,1,5,3,6,2), row(1,5,3,6,2,4), row(5,3,6,2,4,1), row(3,6,2,4,1,5)))),
-        build(grid(arrayOf(row(1,6,4,3,5,2), row(6,4,3,5,2,1), row(4,3,5,2,1,6), row(3,5,2,1,6,4), row(5,2,1,6,4,3), row(2,1,6,4,3,5)))),
-        build(grid(arrayOf(row(2,6,1,5,3,4), row(6,1,5,3,4,2), row(1,5,3,4,2,6), row(5,3,4,2,6,1), row(3,4,2,6,1,5), row(4,2,6,1,5,3)))),
-        build(grid(arrayOf(row(3,6,2,5,4,1), row(6,2,5,4,1,3), row(2,5,4,1,3,6), row(5,4,1,3,6,2), row(4,1,3,6,2,5), row(1,3,6,2,5,4)))),
-        build(grid(arrayOf(row(4,6,3,5,1,2), row(6,3,5,1,2,4), row(3,5,1,2,4,6), row(5,1,2,4,6,3), row(1,2,4,6,3,5), row(2,4,6,3,5,1)))),
-        build(grid(arrayOf(row(5,6,2,4,1,3), row(6,2,4,1,3,5), row(2,4,1,3,5,6), row(4,1,3,5,6,2), row(1,3,5,6,2,4), row(3,5,6,2,4,1)))),
-        build(grid(arrayOf(row(1,3,6,4,2,5), row(3,6,4,2,5,1), row(6,4,2,5,1,3), row(4,2,5,1,3,6), row(2,5,1,3,6,4), row(5,1,3,6,4,2)))),
-        build(grid(arrayOf(row(2,3,5,6,1,4), row(3,5,6,1,4,2), row(5,6,1,4,2,3), row(6,1,4,2,3,5), row(1,4,2,3,5,6), row(4,2,3,5,6,1)))),
-        build(grid(arrayOf(row(3,2,6,4,5,1), row(2,6,4,5,1,3), row(6,4,5,1,3,2), row(4,5,1,3,2,6), row(5,1,3,2,6,4), row(1,3,2,6,4,5)))),
-        build(grid(arrayOf(row(4,3,2,6,5,1), row(3,2,6,5,1,4), row(2,6,5,1,4,3), row(6,5,1,4,3,2), row(5,1,4,3,2,6), row(1,4,3,2,6,5)))),
-        build(grid(arrayOf(row(5,4,3,2,6,1), row(4,3,2,6,1,5), row(3,2,6,1,5,4), row(2,6,1,5,4,3), row(6,1,5,4,3,2), row(1,5,4,3,2,6)))),
-        build(grid(arrayOf(row(6,4,2,3,5,1), row(4,2,3,5,1,6), row(2,3,5,1,6,4), row(3,5,1,6,4,2), row(5,1,6,4,2,3), row(1,6,4,2,3,5)))),
-        build(grid(arrayOf(row(1,5,4,6,3,2), row(5,4,6,3,2,1), row(4,6,3,2,1,5), row(6,3,2,1,5,4), row(3,2,1,5,4,6), row(2,1,5,4,6,3)))),
-        build(grid(arrayOf(row(2,5,6,3,4,1), row(5,6,3,4,1,2), row(6,3,4,1,2,5), row(3,4,1,2,5,6), row(4,1,2,5,6,3), row(1,2,5,6,3,4)))),
-        build(grid(arrayOf(row(3,5,4,1,6,2), row(5,4,1,6,2,3), row(4,1,6,2,3,5), row(1,6,2,3,5,4), row(6,2,3,5,4,1), row(2,3,5,4,1,6)))),
-        build(grid(arrayOf(row(4,5,6,1,3,2), row(5,6,1,3,2,4), row(6,1,3,2,4,5), row(1,3,2,4,5,6), row(3,2,4,5,6,1), row(2,4,5,6,1,3))))
-        )
-    }
-
-    // EXPERT: levels 1-10 = 5x5 (different from Hard), levels 11-15 = 6x6
-    private val EXPERT by lazy {
-        listOf(
-        build(grid(arrayOf(row(1,3,5,4,2), row(3,5,4,2,1), row(5,4,2,1,3), row(4,2,1,3,5), row(2,1,3,5,4)))),
-        build(grid(arrayOf(row(1,5,4,3,2), row(5,4,3,2,1), row(4,3,2,1,5), row(3,2,1,5,4), row(2,1,5,4,3)))),
-        build(grid(arrayOf(row(2,5,3,4,1), row(5,3,4,1,2), row(3,4,1,2,5), row(4,1,2,5,3), row(1,2,5,3,4)))),
-        build(grid(arrayOf(row(3,5,1,4,2), row(5,1,4,2,3), row(1,4,2,3,5), row(4,2,3,5,1), row(2,3,5,1,4)))),
-        build(grid(arrayOf(row(4,5,2,3,1), row(5,2,3,1,4), row(2,3,1,4,5), row(3,1,4,5,2), row(1,4,5,2,3)))),
-        build(grid(arrayOf(row(4,2,1,5,3), row(2,1,5,3,4), row(1,5,3,4,2), row(5,3,4,2,1), row(3,4,2,1,5)))),
-        build(grid(arrayOf(row(5,1,3,4,2), row(1,3,4,2,5), row(3,4,2,5,1), row(4,2,5,1,3), row(2,5,1,3,4)))),
-        build(grid(arrayOf(row(3,4,1,5,2), row(4,1,5,2,3), row(1,5,2,3,4), row(5,2,3,4,1), row(2,3,4,1,5)))),
-        build(grid(arrayOf(row(5,2,4,3,1), row(2,4,3,1,5), row(4,3,1,5,2), row(3,1,5,2,4), row(1,5,2,4,3)))),
-        build(grid(arrayOf(row(1,4,3,5,2), row(4,3,5,2,1), row(3,5,2,1,4), row(5,2,1,4,3), row(2,1,4,3,5)))),
-        // 11-15: 6x6
-        build(grid(arrayOf(row(3,6,4,1,5,2), row(6,4,1,5,2,3), row(4,1,5,2,3,6), row(1,5,2,3,6,4), row(5,2,3,6,4,1), row(2,3,6,4,1,5)))),
-        build(grid(arrayOf(row(4,1,6,2,5,3), row(1,6,2,5,3,4), row(6,2,5,3,4,1), row(2,5,3,4,1,6), row(5,3,4,1,6,2), row(3,4,1,6,2,5)))),
-        build(grid(arrayOf(row(5,2,6,3,1,4), row(2,6,3,1,4,5), row(6,3,1,4,5,2), row(3,1,4,5,2,6), row(1,4,5,2,6,3), row(4,5,2,6,3,1)))),
-        build(grid(arrayOf(row(6,3,5,2,4,1), row(3,5,2,4,1,6), row(5,2,4,1,6,3), row(2,4,1,6,3,5), row(4,1,6,3,5,2), row(1,6,3,5,2,4)))),
-        build(grid(arrayOf(row(4,6,1,5,3,2), row(6,1,5,3,2,4), row(1,5,3,2,4,6), row(5,3,2,4,6,1), row(3,2,4,6,1,5), row(2,4,6,1,5,3))))
-    ) + listOf(
-        // 16-30: more 6x6
-        build(grid(arrayOf(row(2,4,6,1,5,3), row(4,6,1,5,3,2), row(6,1,5,3,2,4), row(1,5,3,2,4,6), row(5,3,2,4,6,1), row(3,2,4,6,1,5)))),
-        build(grid(arrayOf(row(3,4,6,5,2,1), row(4,6,5,2,1,3), row(6,5,2,1,3,4), row(5,2,1,3,4,6), row(2,1,3,4,6,5), row(1,3,4,6,5,2)))),
-        build(grid(arrayOf(row(5,3,6,1,4,2), row(3,6,1,4,2,5), row(6,1,4,2,5,3), row(1,4,2,5,3,6), row(4,2,5,3,6,1), row(2,5,3,6,1,4)))),
-        build(grid(arrayOf(row(6,5,4,3,2,1), row(5,4,3,2,1,6), row(4,3,2,1,6,5), row(3,2,1,6,5,4), row(2,1,6,5,4,3), row(1,6,5,4,3,2)))),
-        build(grid(arrayOf(row(1,6,5,4,3,2), row(6,5,4,3,2,1), row(5,4,3,2,1,6), row(4,3,2,1,6,5), row(3,2,1,6,5,4), row(2,1,6,5,4,3)))),
-        build(grid(arrayOf(row(2,6,5,1,4,3), row(6,5,1,4,3,2), row(5,1,4,3,2,6), row(1,4,3,2,6,5), row(4,3,2,6,5,1), row(3,2,6,5,1,4)))),
-        build(grid(arrayOf(row(3,6,5,4,1,2), row(6,5,4,1,2,3), row(5,4,1,2,3,6), row(4,1,2,3,6,5), row(1,2,3,6,5,4), row(2,3,6,5,4,1)))),
-        build(grid(arrayOf(row(4,6,5,2,3,1), row(6,5,2,3,1,4), row(5,2,3,1,4,6), row(2,3,1,4,6,5), row(3,1,4,6,5,2), row(1,4,6,5,2,3)))),
-        build(grid(arrayOf(row(5,6,4,3,1,2), row(6,4,3,1,2,5), row(4,3,1,2,5,6), row(3,1,2,5,6,4), row(1,2,5,6,4,3), row(2,5,6,4,3,1)))),
-        build(grid(arrayOf(row(6,1,4,5,3,2), row(1,4,5,3,2,6), row(4,5,3,2,6,1), row(5,3,2,6,1,4), row(3,2,6,1,4,5), row(2,6,1,4,5,3)))),
-        build(grid(arrayOf(row(1,4,6,5,2,3), row(4,6,5,2,3,1), row(6,5,2,3,1,4), row(5,2,3,1,4,6), row(2,3,1,4,6,5), row(3,1,4,6,5,2)))),
-        build(grid(arrayOf(row(2,4,5,6,3,1), row(4,5,6,3,1,2), row(5,6,3,1,2,4), row(6,3,1,2,4,5), row(3,1,2,4,5,6), row(1,2,4,5,6,3)))),
-        build(grid(arrayOf(row(3,4,5,2,6,1), row(4,5,2,6,1,3), row(5,2,6,1,3,4), row(2,6,1,3,4,5), row(6,1,3,4,5,2), row(1,3,4,5,2,6)))),
-        build(grid(arrayOf(row(4,2,6,5,3,1), row(2,6,5,3,1,4), row(6,5,3,1,4,2), row(5,3,1,4,2,6), row(3,1,4,2,6,5), row(1,4,2,6,5,3)))),
-        build(grid(arrayOf(row(5,2,4,6,1,3), row(2,4,6,1,3,5), row(4,6,1,3,5,2), row(6,1,3,5,2,4), row(1,3,5,2,4,6), row(3,5,2,4,6,1)))),
-        // 31-45: 7x7
-        build(grid(arrayOf(row(1,2,3,4,5,6,7), row(2,3,4,5,6,7,1), row(3,4,5,6,7,1,2), row(4,5,6,7,1,2,3), row(5,6,7,1,2,3,4), row(6,7,1,2,3,4,5), row(7,1,2,3,4,5,6)))),
-        build(grid(arrayOf(row(1,3,5,7,2,4,6), row(3,5,7,2,4,6,1), row(5,7,2,4,6,1,3), row(7,2,4,6,1,3,5), row(2,4,6,1,3,5,7), row(4,6,1,3,5,7,2), row(6,1,3,5,7,2,4)))),
-        build(grid(arrayOf(row(1,4,7,3,6,2,5), row(4,7,3,6,2,5,1), row(7,3,6,2,5,1,4), row(3,6,2,5,1,4,7), row(6,2,5,1,4,7,3), row(2,5,1,4,7,3,6), row(5,1,4,7,3,6,2)))),
-        build(grid(arrayOf(row(1,5,2,6,3,7,4), row(5,2,6,3,7,4,1), row(2,6,3,7,4,1,5), row(6,3,7,4,1,5,2), row(3,7,4,1,5,2,6), row(7,4,1,5,2,6,3), row(4,1,5,2,6,3,7)))),
-        build(grid(arrayOf(row(2,5,1,4,7,3,6), row(5,1,4,7,3,6,2), row(1,4,7,3,6,2,5), row(4,7,3,6,2,5,1), row(7,3,6,2,5,1,4), row(3,6,2,5,1,4,7), row(6,2,5,1,4,7,3)))),
-        build(grid(arrayOf(row(3,6,2,5,1,4,7), row(6,2,5,1,4,7,3), row(2,5,1,4,7,3,6), row(5,1,4,7,3,6,2), row(1,4,7,3,6,2,5), row(4,7,3,6,2,5,1), row(7,3,6,2,5,1,4)))),
-        build(grid(arrayOf(row(1,6,4,2,7,5,3), row(6,4,2,7,5,3,1), row(4,2,7,5,3,1,6), row(2,7,5,3,1,6,4), row(7,5,3,1,6,4,2), row(5,3,1,6,4,2,7), row(3,1,6,4,2,7,5)))),
-        build(grid(arrayOf(row(2,7,5,3,1,6,4), row(7,5,3,1,6,4,2), row(5,3,1,6,4,2,7), row(3,1,6,4,2,7,5), row(1,6,4,2,7,5,3), row(6,4,2,7,5,3,1), row(4,2,7,5,3,1,6)))),
-        build(grid(arrayOf(row(3,7,4,1,5,2,6), row(7,4,1,5,2,6,3), row(4,1,5,2,6,3,7), row(1,5,2,6,3,7,4), row(5,2,6,3,7,4,1), row(2,6,3,7,4,1,5), row(6,3,7,4,1,5,2)))),
-        build(grid(arrayOf(row(4,1,7,5,2,6,3), row(1,7,5,2,6,3,4), row(7,5,2,6,3,4,1), row(5,2,6,3,4,1,7), row(2,6,3,4,1,7,5), row(6,3,4,1,7,5,2), row(3,4,1,7,5,2,6)))),
-        build(grid(arrayOf(row(5,2,7,4,1,6,3), row(2,7,4,1,6,3,5), row(7,4,1,6,3,5,2), row(4,1,6,3,5,2,7), row(1,6,3,5,2,7,4), row(6,3,5,2,7,4,1), row(3,5,2,7,4,1,6)))),
-        build(grid(arrayOf(row(7,6,5,4,3,2,1), row(6,5,4,3,2,1,7), row(5,4,3,2,1,7,6), row(4,3,2,1,7,6,5), row(3,2,1,7,6,5,4), row(2,1,7,6,5,4,3), row(1,7,6,5,4,3,2)))),
-        build(grid(arrayOf(row(1,7,6,5,4,3,2), row(7,6,5,4,3,2,1), row(6,5,4,3,2,1,7), row(5,4,3,2,1,7,6), row(4,3,2,1,7,6,5), row(3,2,1,7,6,5,4), row(2,1,7,6,5,4,3)))),
-        build(grid(arrayOf(row(2,1,7,6,5,4,3), row(1,7,6,5,4,3,2), row(7,6,5,4,3,2,1), row(6,5,4,3,2,1,7), row(5,4,3,2,1,7,6), row(4,3,2,1,7,6,5), row(3,2,1,7,6,5,4)))),
-        build(grid(arrayOf(row(3,1,7,6,2,5,4), row(1,7,6,2,5,4,3), row(7,6,2,5,4,3,1), row(6,2,5,4,3,1,7), row(2,5,4,3,1,7,6), row(5,4,3,1,7,6,2), row(4,3,1,7,6,2,5))))
-        )
-    }
-
-    // MASTER: levels 1-25 = 7x7, levels 26-55 = 8x8
-    private val MASTER by lazy {
-        listOf(
-        build(grid(arrayOf(row(4,2,6,1,7,5,3), row(2,6,1,7,5,3,4), row(6,1,7,5,3,4,2), row(1,7,5,3,4,2,6), row(7,5,3,4,2,6,1), row(5,3,4,2,6,1,7), row(3,4,2,6,1,7,5)))),
-        build(grid(arrayOf(row(5,3,7,2,6,4,1), row(3,7,2,6,4,1,5), row(7,2,6,4,1,5,3), row(2,6,4,1,5,3,7), row(6,4,1,5,3,7,2), row(4,1,5,3,7,2,6), row(1,5,3,7,2,6,4)))),
-        build(grid(arrayOf(row(6,4,1,7,3,5,2), row(4,1,7,3,5,2,6), row(1,7,3,5,2,6,4), row(7,3,5,2,6,4,1), row(3,5,2,6,4,1,7), row(5,2,6,4,1,7,3), row(2,6,4,1,7,3,5)))),
-        build(grid(arrayOf(row(7,5,2,6,4,1,3), row(5,2,6,4,1,3,7), row(2,6,4,1,3,7,5), row(6,4,1,3,7,5,2), row(4,1,3,7,5,2,6), row(1,3,7,5,2,6,4), row(3,7,5,2,6,4,1)))),
-        build(grid(arrayOf(row(1,6,3,7,4,2,5), row(6,3,7,4,2,5,1), row(3,7,4,2,5,1,6), row(7,4,2,5,1,6,3), row(4,2,5,1,6,3,7), row(2,5,1,6,3,7,4), row(5,1,6,3,7,4,2)))),
-        build(grid(arrayOf(row(2,7,3,5,1,6,4), row(7,3,5,1,6,4,2), row(3,5,1,6,4,2,7), row(5,1,6,4,2,7,3), row(1,6,4,2,7,3,5), row(6,4,2,7,3,5,1), row(4,2,7,3,5,1,6)))),
-        build(grid(arrayOf(row(3,7,6,2,5,4,1), row(7,6,2,5,4,1,3), row(6,2,5,4,1,3,7), row(2,5,4,1,3,7,6), row(5,4,1,3,7,6,2), row(4,1,3,7,6,2,5), row(1,3,7,6,2,5,4)))),
-        build(grid(arrayOf(row(4,7,1,6,3,5,2), row(7,1,6,3,5,2,4), row(1,6,3,5,2,4,7), row(6,3,5,2,4,7,1), row(3,5,2,4,7,1,6), row(5,2,4,7,1,6,3), row(2,4,7,1,6,3,5)))),
-        build(grid(arrayOf(row(5,7,2,4,6,1,3), row(7,2,4,6,1,3,5), row(2,4,6,1,3,5,7), row(4,6,1,3,5,7,2), row(6,1,3,5,7,2,4), row(1,3,5,7,2,4,6), row(3,5,7,2,4,6,1)))),
-        build(grid(arrayOf(row(6,7,3,1,5,4,2), row(7,3,1,5,4,2,6), row(3,1,5,4,2,6,7), row(1,5,4,2,6,7,3), row(5,4,2,6,7,3,1), row(4,2,6,7,3,1,5), row(2,6,7,3,1,5,4)))),
-        build(grid(arrayOf(row(7,1,4,6,2,3,5), row(1,4,6,2,3,5,7), row(4,6,2,3,5,7,1), row(6,2,3,5,7,1,4), row(2,3,5,7,1,4,6), row(3,5,7,1,4,6,2), row(5,7,1,4,6,2,3)))),
-        build(grid(arrayOf(row(7,2,5,3,6,1,4), row(2,5,3,6,1,4,7), row(5,3,6,1,4,7,2), row(3,6,1,4,7,2,5), row(6,1,4,7,2,5,3), row(1,4,7,2,5,3,6), row(4,7,2,5,3,6,1)))),
-        build(grid(arrayOf(row(1,3,6,2,7,4,5), row(3,6,2,7,4,5,1), row(6,2,7,4,5,1,3), row(2,7,4,5,1,3,6), row(7,4,5,1,3,6,2), row(4,5,1,3,6,2,7), row(5,1,3,6,2,7,4)))),
-        build(grid(arrayOf(row(2,3,7,1,5,6,4), row(3,7,1,5,6,4,2), row(7,1,5,6,4,2,3), row(1,5,6,4,2,3,7), row(5,6,4,2,3,7,1), row(6,4,2,3,7,1,5), row(4,2,3,7,1,5,6)))),
-        build(grid(arrayOf(row(3,2,5,7,1,6,4), row(2,5,7,1,6,4,3), row(5,7,1,6,4,3,2), row(7,1,6,4,3,2,5), row(1,6,4,3,2,5,7), row(6,4,3,2,5,7,1), row(4,3,2,5,7,1,6)))),
-        build(grid(arrayOf(row(4,3,5,6,7,2,1), row(3,5,6,7,2,1,4), row(5,6,7,2,1,4,3), row(6,7,2,1,4,3,5), row(7,2,1,4,3,5,6), row(2,1,4,3,5,6,7), row(1,4,3,5,6,7,2)))),
-        build(grid(arrayOf(row(5,4,6,3,7,1,2), row(4,6,3,7,1,2,5), row(6,3,7,1,2,5,4), row(3,7,1,2,5,4,6), row(7,1,2,5,4,6,3), row(1,2,5,4,6,3,7), row(2,5,4,6,3,7,1)))),
-        build(grid(arrayOf(row(6,4,7,5,2,3,1), row(4,7,5,2,3,1,6), row(7,5,2,3,1,6,4), row(5,2,3,1,6,4,7), row(2,3,1,6,4,7,5), row(3,1,6,4,7,5,2), row(1,6,4,7,5,2,3)))),
-        build(grid(arrayOf(row(7,4,5,6,1,2,3), row(4,5,6,1,2,3,7), row(5,6,1,2,3,7,4), row(6,1,2,3,7,4,5), row(1,2,3,7,4,5,6), row(2,3,7,4,5,6,1), row(3,7,4,5,6,1,2)))),
-        build(grid(arrayOf(row(1,7,2,5,3,6,4), row(7,2,5,3,6,4,1), row(2,5,3,6,4,1,7), row(5,3,6,4,1,7,2), row(3,6,4,1,7,2,5), row(6,4,1,7,2,5,3), row(4,1,7,2,5,3,6)))),
-        build(grid(arrayOf(row(2,7,4,6,1,3,5), row(7,4,6,1,3,5,2), row(4,6,1,3,5,2,7), row(6,1,3,5,2,7,4), row(1,3,5,2,7,4,6), row(3,5,2,7,4,6,1), row(5,2,7,4,6,1,3)))),
-        build(grid(arrayOf(row(3,7,5,4,6,1,2), row(7,5,4,6,1,2,3), row(5,4,6,1,2,3,7), row(4,6,1,2,3,7,5), row(6,1,2,3,7,5,4), row(1,2,3,7,5,4,6), row(2,3,7,5,4,6,1)))),
-        build(grid(arrayOf(row(4,5,3,7,6,2,1), row(5,3,7,6,2,1,4), row(3,7,6,2,1,4,5), row(7,6,2,1,4,5,3), row(6,2,1,4,5,3,7), row(2,1,4,5,3,7,6), row(1,4,5,3,7,6,2)))),
-        build(grid(arrayOf(row(5,6,4,7,2,3,1), row(6,4,7,2,3,1,5), row(4,7,2,3,1,5,6), row(7,2,3,1,5,6,4), row(2,3,1,5,6,4,7), row(3,1,5,6,4,7,2), row(1,5,6,4,7,2,3)))),
-        build(grid(arrayOf(row(6,5,7,4,3,1,2), row(5,7,4,3,1,2,6), row(7,4,3,1,2,6,5), row(4,3,1,2,6,5,7), row(3,1,2,6,5,7,4), row(1,2,6,5,7,4,3), row(2,6,5,7,4,3,1)))),
-        build(grid(arrayOf(row(7,6,4,5,3,2,1), row(6,4,5,3,2,1,7), row(4,5,3,2,1,7,6), row(5,3,2,1,7,6,4), row(3,2,1,7,6,4,5), row(2,1,7,6,4,5,3), row(1,7,6,4,5,3,2)))),
-        // 26-55: 8x8
-        build(grid(arrayOf(row(1,2,3,4,5,6,7,8), row(2,3,4,5,6,7,8,1), row(3,4,5,6,7,8,1,2), row(4,5,6,7,8,1,2,3), row(5,6,7,8,1,2,3,4), row(6,7,8,1,2,3,4,5), row(7,8,1,2,3,4,5,6), row(8,1,2,3,4,5,6,7)))),
-        build(grid(arrayOf(row(1,3,5,7,2,4,6,8), row(3,5,7,2,4,6,8,1), row(5,7,2,4,6,8,1,3), row(7,2,4,6,8,1,3,5), row(2,4,6,8,1,3,5,7), row(4,6,8,1,3,5,7,2), row(6,8,1,3,5,7,2,4), row(8,1,3,5,7,2,4,6)))),
-        build(grid(arrayOf(row(1,4,7,2,5,8,3,6), row(4,7,2,5,8,3,6,1), row(7,2,5,8,3,6,1,4), row(2,5,8,3,6,1,4,7), row(5,8,3,6,1,4,7,2), row(8,3,6,1,4,7,2,5), row(3,6,1,4,7,2,5,8), row(6,1,4,7,2,5,8,3)))),
-        build(grid(arrayOf(row(1,5,2,6,3,7,4,8), row(5,2,6,3,7,4,8,1), row(2,6,3,7,4,8,1,5), row(6,3,7,4,8,1,5,2), row(3,7,4,8,1,5,2,6), row(7,4,8,1,5,2,6,3), row(4,8,1,5,2,6,3,7), row(8,1,5,2,6,3,7,4)))),
-        build(grid(arrayOf(row(1,6,3,8,5,2,7,4), row(6,3,8,5,2,7,4,1), row(3,8,5,2,7,4,1,6), row(8,5,2,7,4,1,6,3), row(5,2,7,4,1,6,3,8), row(2,7,4,1,6,3,8,5), row(7,4,1,6,3,8,5,2), row(4,1,6,3,8,5,2,7)))),
-        build(grid(arrayOf(row(2,4,6,8,1,3,5,7), row(4,6,8,1,3,5,7,2), row(6,8,1,3,5,7,2,4), row(8,1,3,5,7,2,4,6), row(1,3,5,7,2,4,6,8), row(3,5,7,2,4,6,8,1), row(5,7,2,4,6,8,1,3), row(7,2,4,6,8,1,3,5)))),
-        build(grid(arrayOf(row(2,5,8,3,6,1,4,7), row(5,8,3,6,1,4,7,2), row(8,3,6,1,4,7,2,5), row(3,6,1,4,7,2,5,8), row(6,1,4,7,2,5,8,3), row(1,4,7,2,5,8,3,6), row(4,7,2,5,8,3,6,1), row(7,2,5,8,3,6,1,4)))),
-        build(grid(arrayOf(row(3,6,1,4,7,2,5,8), row(6,1,4,7,2,5,8,3), row(1,4,7,2,5,8,3,6), row(4,7,2,5,8,3,6,1), row(7,2,5,8,3,6,1,4), row(2,5,8,3,6,1,4,7), row(5,8,3,6,1,4,7,2), row(8,3,6,1,4,7,2,5)))),
-        build(grid(arrayOf(row(4,7,2,5,8,3,6,1), row(7,2,5,8,3,6,1,4), row(2,5,8,3,6,1,4,7), row(5,8,3,6,1,4,7,2), row(8,3,6,1,4,7,2,5), row(3,6,1,4,7,2,5,8), row(6,1,4,7,2,5,8,3), row(1,4,7,2,5,8,3,6)))),
-        build(grid(arrayOf(row(5,8,3,6,1,4,7,2), row(8,3,6,1,4,7,2,5), row(3,6,1,4,7,2,5,8), row(6,1,4,7,2,5,8,3), row(1,4,7,2,5,8,3,6), row(4,7,2,5,8,3,6,1), row(7,2,5,8,3,6,1,4), row(2,5,8,3,6,1,4,7)))),
-        build(grid(arrayOf(row(8,7,6,5,4,3,2,1), row(7,6,5,4,3,2,1,8), row(6,5,4,3,2,1,8,7), row(5,4,3,2,1,8,7,6), row(4,3,2,1,8,7,6,5), row(3,2,1,8,7,6,5,4), row(2,1,8,7,6,5,4,3), row(1,8,7,6,5,4,3,2)))),
-        build(grid(arrayOf(row(1,8,7,6,5,4,3,2), row(8,7,6,5,4,3,2,1), row(7,6,5,4,3,2,1,8), row(6,5,4,3,2,1,8,7), row(5,4,3,2,1,8,7,6), row(4,3,2,1,8,7,6,5), row(3,2,1,8,7,6,5,4), row(2,1,8,7,6,5,4,3)))),
-        build(grid(arrayOf(row(2,8,6,4,1,7,5,3), row(8,6,4,1,7,5,3,2), row(6,4,1,7,5,3,2,8), row(4,1,7,5,3,2,8,6), row(1,7,5,3,2,8,6,4), row(7,5,3,2,8,6,4,1), row(5,3,2,8,6,4,1,7), row(3,2,8,6,4,1,7,5)))),
-        build(grid(arrayOf(row(3,8,5,2,7,4,1,6), row(8,5,2,7,4,1,6,3), row(5,2,7,4,1,6,3,8), row(2,7,4,1,6,3,8,5), row(7,4,1,6,3,8,5,2), row(4,1,6,3,8,5,2,7), row(1,6,3,8,5,2,7,4), row(6,3,8,5,2,7,4,1)))),
-        build(grid(arrayOf(row(4,2,8,6,3,5,7,1), row(2,8,6,3,5,7,1,4), row(8,6,3,5,7,1,4,2), row(6,3,5,7,1,4,2,8), row(3,5,7,1,4,2,8,6), row(5,7,1,4,2,8,6,3), row(7,1,4,2,8,6,3,5), row(1,4,2,8,6,3,5,7)))),
-        build(grid(arrayOf(row(5,1,8,4,7,3,6,2), row(1,8,4,7,3,6,2,5), row(8,4,7,3,6,2,5,1), row(4,7,3,6,2,5,1,8), row(7,3,6,2,5,1,8,4), row(3,6,2,5,1,8,4,7), row(6,2,5,1,8,4,7,3), row(2,5,1,8,4,7,3,6)))),
-        build(grid(arrayOf(row(6,1,5,8,3,7,2,4), row(1,5,8,3,7,2,4,6), row(5,8,3,7,2,4,6,1), row(8,3,7,2,4,6,1,5), row(3,7,2,4,6,1,5,8), row(7,2,4,6,1,5,8,3), row(2,4,6,1,5,8,3,7), row(4,6,1,5,8,3,7,2)))),
-        build(grid(arrayOf(row(7,1,5,3,8,2,6,4), row(1,5,3,8,2,6,4,7), row(5,3,8,2,6,4,7,1), row(3,8,2,6,4,7,1,5), row(8,2,6,4,7,1,5,3), row(2,6,4,7,1,5,3,8), row(6,4,7,1,5,3,8,2), row(4,7,1,5,3,8,2,6)))),
-        build(grid(arrayOf(row(1,2,8,6,4,7,3,5), row(2,8,6,4,7,3,5,1), row(8,6,4,7,3,5,1,2), row(6,4,7,3,5,1,2,8), row(4,7,3,5,1,2,8,6), row(7,3,5,1,2,8,6,4), row(3,5,1,2,8,6,4,7), row(5,1,2,8,6,4,7,3)))),
-        build(grid(arrayOf(row(2,3,7,5,8,4,6,1), row(3,7,5,8,4,6,1,2), row(7,5,8,4,6,1,2,3), row(5,8,4,6,1,2,3,7), row(8,4,6,1,2,3,7,5), row(4,6,1,2,3,7,5,8), row(6,1,2,3,7,5,8,4), row(1,2,3,7,5,8,4,6)))),
-        build(grid(arrayOf(row(3,5,6,8,2,4,7,1), row(5,6,8,2,4,7,1,3), row(6,8,2,4,7,1,3,5), row(8,2,4,7,1,3,5,6), row(2,4,7,1,3,5,6,8), row(4,7,1,3,5,6,8,2), row(7,1,3,5,6,8,2,4), row(1,3,5,6,8,2,4,7)))),
-        build(grid(arrayOf(row(4,6,8,2,5,7,1,3), row(6,8,2,5,7,1,3,4), row(8,2,5,7,1,3,4,6), row(2,5,7,1,3,4,6,8), row(5,7,1,3,4,6,8,2), row(7,1,3,4,6,8,2,5), row(1,3,4,6,8,2,5,7), row(3,4,6,8,2,5,7,1)))),
-        build(grid(arrayOf(row(5,7,1,3,6,8,2,4), row(7,1,3,6,8,2,4,5), row(1,3,6,8,2,4,5,7), row(3,6,8,2,4,5,7,1), row(6,8,2,4,5,7,1,3), row(8,2,4,5,7,1,3,6), row(2,4,5,7,1,3,6,8), row(4,5,7,1,3,6,8,2)))),
-        build(grid(arrayOf(row(6,8,2,4,7,1,3,5), row(8,2,4,7,1,3,5,6), row(2,4,7,1,3,5,6,8), row(4,7,1,3,5,6,8,2), row(7,1,3,5,6,8,2,4), row(1,3,5,6,8,2,4,7), row(3,5,6,8,2,4,7,1), row(5,6,8,2,4,7,1,3)))),
-        build(grid(arrayOf(row(7,8,3,5,2,6,1,4), row(8,3,5,2,6,1,4,7), row(3,5,2,6,1,4,7,8), row(5,2,6,1,4,7,8,3), row(2,6,1,4,7,8,3,5), row(6,1,4,7,8,3,5,2), row(1,4,7,8,3,5,2,6), row(4,7,8,3,5,2,6,1)))),
-        build(grid(arrayOf(row(8,6,4,2,7,5,3,1), row(6,4,2,7,5,3,1,8), row(4,2,7,5,3,1,8,6), row(2,7,5,3,1,8,6,4), row(7,5,3,1,8,6,4,2), row(5,3,1,8,6,4,2,7), row(3,1,8,6,4,2,7,5), row(1,8,6,4,2,7,5,3)))),
-        build(grid(arrayOf(row(8,5,2,7,4,1,6,3), row(5,2,7,4,1,6,3,8), row(2,7,4,1,6,3,8,5), row(7,4,1,6,3,8,5,2), row(4,1,6,3,8,5,2,7), row(1,6,3,8,5,2,7,4), row(6,3,8,5,2,7,4,1), row(3,8,5,2,7,4,1,6))))
-        )
-    }
-
     fun get(difficulty: Int, index: Int): SkyscraperPuzzle {
-        val pool = when (difficulty) {
-            0 -> EASY; 1 -> MEDIUM; 2 -> HARD; 3 -> EXPERT; else -> MASTER
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
+        val safeIndex = index.coerceIn(0, maxIndex)
+        return cache.getOrPut(safeDifficulty to safeIndex) {
+            build(PuzzleBoardSpecs.largeSquareSide(safeDifficulty), safeDifficulty, safeIndex)
         }
-        val poolIndex = index.coerceIn(0, pool.size - 1)
-        return withDifficultyGivens(skylineVariant(pool[poolIndex], difficulty, poolIndex), difficulty, poolIndex)
     }
 }

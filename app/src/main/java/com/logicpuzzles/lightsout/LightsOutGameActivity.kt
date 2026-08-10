@@ -14,8 +14,10 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
 
@@ -41,17 +43,19 @@ class LightsOutGameActivity : AppCompatActivity() {
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
 
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_LIGHTS_OUT, difficulty, puzzleIndex)
-        val puzzle = LightsOutPuzzles.get(difficulty, catalogIndex)
-        size = puzzle.size
-        initial = Array(size) { puzzle.initial[it].copyOf() }
-        grid = Array(size) { initial[it].copyOf() }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_LIGHTS_OUT, "Lights Out d=$difficulty i=$puzzleIndex", {
+            LightsOutPuzzles.get(difficulty, catalogIndex)
+        }) { puzzle ->
+            size = puzzle.size
+            initial = Array(size) { puzzle.initial[it].copyOf() }
+            grid = Array(size) { initial[it].copyOf() }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::initial.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -96,12 +100,10 @@ class LightsOutGameActivity : AppCompatActivity() {
         header.addView(movesText)
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = getString(R.string.instruction_lights_out)
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_LIGHTS_OUT,
+            getString(R.string.instruction_lights_out)
+        ))
 
         val boardWrap = FrameLayout(this).apply {
             layoutParams = LinearLayout.LayoutParams(

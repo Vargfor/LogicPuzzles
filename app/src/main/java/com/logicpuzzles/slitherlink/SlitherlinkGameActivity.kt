@@ -3,8 +3,10 @@ package com.logicpuzzles.slitherlink
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewConfiguration
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.GridLayout
@@ -18,18 +20,25 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
+import com.logicpuzzles.utils.DragPaintSession
 import com.logicpuzzles.utils.PrefsManager
+import com.logicpuzzles.utils.SlitherlinkEdgeHitTester
+import com.logicpuzzles.utils.SlitherlinkEdgeTarget
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
 import java.util.ArrayDeque
+import kotlin.math.ceil
+import kotlin.math.hypot
 import kotlin.math.roundToInt
 
 class SlitherlinkGameActivity : AppCompatActivity() {
 
     companion object {
-        private const val MIN_ZOOM = 0.6f
+        private const val MIN_ZOOM = 0.3f
         private const val MAX_ZOOM = 3.0f
         private const val ZOOM_FACTOR = 1.2f
     }
@@ -44,8 +53,20 @@ class SlitherlinkGameActivity : AppCompatActivity() {
     private var solved = false
     private var zoomLevel = 1.0f
     private lateinit var boardContainer: FrameLayout
+    private lateinit var boardGrid: GridLayout
     private lateinit var zoomPercentText: TextView
     private var themeSignature = 0
+    private var boardCellSize = 0
+    private var boardEdgeSize = 0
+    private var boardPadding = 0
+    private val dragSession = DragPaintSession<SlitherlinkEdgeTarget>()
+    private var dragStarted = false
+    private var suppressNextClick = false
+    private var downRawX = 0f
+    private var downRawY = 0f
+    private var lastRawX = 0f
+    private var lastRawY = 0f
+    private val touchSlop by lazy { ViewConfiguration.get(this).scaledTouchSlop.toFloat() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,19 +76,21 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_SLITHERLINK, difficulty, puzzleIndex)
-        puzzle = SlitherlinkPuzzles.get(difficulty, catalogIndex)
-
-        hEdges = Array(puzzle.rows + 1) { BooleanArray(puzzle.cols) }
-        vEdges = Array(puzzle.rows) { BooleanArray(puzzle.cols + 1) }
-        hEdgeViews = Array(puzzle.rows + 1) { arrayOfNulls<View>(puzzle.cols) }
-        vEdgeViews = Array(puzzle.rows) { arrayOfNulls<View>(puzzle.cols + 1) }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_SLITHERLINK, "Slitherlink d=$difficulty i=$puzzleIndex", {
+            SlitherlinkPuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            puzzle = loaded
+            hEdges = Array(puzzle.rows + 1) { BooleanArray(puzzle.cols) }
+            vEdges = Array(puzzle.rows) { BooleanArray(puzzle.cols + 1) }
+            hEdgeViews = Array(puzzle.rows + 1) { arrayOfNulls<View>(puzzle.cols) }
+            vEdgeViews = Array(puzzle.rows) { arrayOfNulls<View>(puzzle.cols + 1) }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::puzzle.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -115,12 +138,10 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         })
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = getString(R.string.instruction_slitherlink)
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_SLITHERLINK,
+            getString(R.string.instruction_slitherlink)
+        ))
 
         main.addView(buildZoomControls())
 
@@ -236,9 +257,9 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         // total width = cols*cellSize + (cols+1)*cellSize/3 = cellSize * (3*cols + cols + 1) / 3
         // = cellSize * (4*cols + 1) / 3
         // cellSize = maxBoardW * 3 / (4*cols + 1)
-        val baseCellSize = (maxBoardW * 3 / (4 * cols + 1)).coerceAtLeast(dp(36))
-        val cellSize = (baseCellSize * zoomLevel).toInt().coerceAtLeast(dp(28))
-        val edgeSize = (cellSize / 3).coerceAtLeast(dp(10))
+        val baseCellSize = (maxBoardW * 3 / (4 * cols + 1)).coerceAtLeast(dp(28))
+        val cellSize = (baseCellSize * zoomLevel).toInt().coerceAtLeast(dp(12))
+        val edgeSize = (cellSize / 3).coerceAtLeast(dp(4))
 
         val gl = GridLayout(this).apply {
             rowCount = 2 * rows + 1
@@ -251,6 +272,10 @@ class SlitherlinkGameActivity : AppCompatActivity() {
             setPadding(dp(8), dp(8), dp(8), dp(8))
             setBackgroundColor(palette.cellEmpty)
         }
+        boardGrid = gl
+        boardCellSize = cellSize
+        boardEdgeSize = edgeSize
+        boardPadding = dp(8)
 
         for (gr in 0 until 2 * rows + 1) {
             for (gc in 0 until 2 * cols + 1) {
@@ -263,7 +288,13 @@ class SlitherlinkGameActivity : AppCompatActivity() {
                     gr % 2 == 0 && gc % 2 == 1 -> {
                         val r = gr / 2; val c = gc / 2
                         val v = View(this).apply {
+                            val target = SlitherlinkEdgeTarget(horizontal = true, row = r, col = c)
+                            setOnTouchListener { touched, event -> handleEdgeTouch(touched, event, target) }
                             setOnClickListener {
+                                if (suppressNextClick) {
+                                    suppressNextClick = false
+                                    return@setOnClickListener
+                                }
                                 hEdges[r][c] = !hEdges[r][c]
                                 paintHEdge(r, c)
                             }
@@ -274,7 +305,13 @@ class SlitherlinkGameActivity : AppCompatActivity() {
                     gr % 2 == 1 && gc % 2 == 0 -> {
                         val r = gr / 2; val c = gc / 2
                         val v = View(this).apply {
+                            val target = SlitherlinkEdgeTarget(horizontal = false, row = r, col = c)
+                            setOnTouchListener { touched, event -> handleEdgeTouch(touched, event, target) }
                             setOnClickListener {
+                                if (suppressNextClick) {
+                                    suppressNextClick = false
+                                    return@setOnClickListener
+                                }
                                 vEdges[r][c] = !vEdges[r][c]
                                 paintVEdge(r, c)
                             }
@@ -289,7 +326,7 @@ class SlitherlinkGameActivity : AppCompatActivity() {
                             text = if (clue >= 0) numberText(clue) else ""
                             setTextColor(palette.cellText)
                             textSize = (cellSize / resources.displayMetrics.density / 3.5f)
-                                .coerceAtLeast(12f)
+                                .coerceAtLeast(8f)
                                 .coerceAtMost(22f)
                             setTypeface(null, Typeface.BOLD)
                             gravity = Gravity.CENTER
@@ -311,6 +348,91 @@ class SlitherlinkGameActivity : AppCompatActivity() {
         for (r in 0 until rows) for (c in 0..cols) paintVEdge(r, c)
 
         return gl
+    }
+
+    private fun handleEdgeTouch(view: View, event: MotionEvent, start: SlitherlinkEdgeTarget): Boolean {
+        if (solved) return false
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                view.parent?.requestDisallowInterceptTouchEvent(true)
+                dragStarted = false
+                suppressNextClick = false
+                downRawX = event.rawX
+                downRawY = event.rawY
+                lastRawX = event.rawX
+                lastRawY = event.rawY
+                dragSession.begin(targetState = !isEdgeSet(start))
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                if (!dragStarted && hypot(event.rawX - downRawX, event.rawY - downRawY) >= touchSlop) {
+                    dragStarted = true
+                    applyDragEdge(start)
+                }
+                if (dragStarted) {
+                    visitEdgeSegment(lastRawX, lastRawY, event.rawX, event.rawY)
+                    lastRawX = event.rawX
+                    lastRawY = event.rawY
+                }
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                view.parent?.requestDisallowInterceptTouchEvent(false)
+                if (dragStarted) {
+                    suppressNextClick = true
+                    view.post { suppressNextClick = false }
+                }
+                dragSession.end()
+                dragStarted = false
+            }
+        }
+        return false
+    }
+
+    private fun visitEdgeSegment(fromX: Float, fromY: Float, toX: Float, toY: Float) {
+        val distance = hypot(toX - fromX, toY - fromY)
+        val sampleSize = (minOf(boardCellSize, boardEdgeSize) / 2f).coerceAtLeast(2f)
+        val steps = ceil(distance / sampleSize).toInt().coerceAtLeast(1)
+        for (step in 0..steps) {
+            val progress = step / steps.toFloat()
+            val target = edgeAt(
+                fromX + (toX - fromX) * progress,
+                fromY + (toY - fromY) * progress
+            ) ?: continue
+            applyDragEdge(target)
+        }
+    }
+
+    private fun edgeAt(rawX: Float, rawY: Float): SlitherlinkEdgeTarget? {
+        if (!::boardGrid.isInitialized) return null
+        val location = IntArray(2)
+        boardGrid.getLocationOnScreen(location)
+        return SlitherlinkEdgeHitTester.hit(
+            x = rawX - location[0],
+            y = rawY - location[1],
+            rows = puzzle.rows,
+            cols = puzzle.cols,
+            cellSize = boardCellSize,
+            edgeSize = boardEdgeSize,
+            padding = boardPadding
+        )
+    }
+
+    private fun isEdgeSet(target: SlitherlinkEdgeTarget): Boolean = if (target.horizontal) {
+        hEdges[target.row][target.col]
+    } else {
+        vEdges[target.row][target.col]
+    }
+
+    private fun applyDragEdge(target: SlitherlinkEdgeTarget) {
+        val targetState = dragSession.visit(target) ?: return
+        if (target.horizontal) {
+            hEdges[target.row][target.col] = targetState
+            paintHEdge(target.row, target.col)
+        } else {
+            vEdges[target.row][target.col] = targetState
+            paintVEdge(target.row, target.col)
+        }
     }
 
     private fun paintHEdge(r: Int, c: Int) {

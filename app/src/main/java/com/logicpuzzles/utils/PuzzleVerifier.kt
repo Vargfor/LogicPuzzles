@@ -5,9 +5,9 @@ import com.logicpuzzles.futoshiki.FutoshikiPuzzle
 import com.logicpuzzles.futoshiki.FutoshikiPuzzles
 import com.logicpuzzles.hidato.HidatoPuzzle
 import com.logicpuzzles.hidato.HidatoPuzzles
-import com.logicpuzzles.kakuro.KCell
 import com.logicpuzzles.kakuro.KakuroPuzzle
 import com.logicpuzzles.kakuro.KakuroPuzzles
+import com.logicpuzzles.kakuro.KakuroSolver
 import com.logicpuzzles.skyscraper.SkyscraperPuzzle
 import com.logicpuzzles.skyscraper.SkyscraperPuzzles
 import kotlin.math.abs
@@ -34,6 +34,13 @@ object PuzzleVerifier {
         fun consistent(r: Int, c: Int, v: Int): Boolean {
             for (cc in 0 until n) if (cc != c && grid[r][cc] == v) return false
             for (rr in 0 until n) if (rr != r && grid[rr][c] == v) return false
+            val boxStartR = (r / p.boxRows) * p.boxRows
+            val boxStartC = (c / p.boxCols) * p.boxCols
+            for (rr in boxStartR until boxStartR + p.boxRows) {
+                for (cc in boxStartC until boxStartC + p.boxCols) {
+                    if ((rr != r || cc != c) && grid[rr][cc] == v) return false
+                }
+            }
             if (c > 0 && grid[r][c - 1] != 0) {
                 val con = p.hConstraints[r][c - 1]
                 if (con == 1 && grid[r][c - 1] >= v) return false
@@ -238,88 +245,8 @@ object PuzzleVerifier {
     }
 
     // ---------- Kakuro ----------
-    fun countKakuroSolutions(p: KakuroPuzzle, initial: Array<IntArray>? = null): Int {
-        val rows = p.rows; val cols = p.cols
-        val grid = Array(rows) { r ->
-            IntArray(cols) { c ->
-                initial?.getOrNull(r)?.getOrNull(c) ?: 0
-            }
-        }
-        var count = 0
-
-        // Build run constraints: each run has its sum and the list of cells
-        data class Run(val cells: List<Pair<Int, Int>>, val sum: Int)
-        val runs = ArrayList<Run>()
-        for (r in 0 until rows) for (c in 0 until cols) {
-            val cell = p.grid[r][c]
-            if (cell is KCell.Clue) {
-                if (cell.rightSum > 0) {
-                    val run = ArrayList<Pair<Int, Int>>()
-                    var cc = c + 1
-                    while (cc < cols && p.grid[r][cc] is KCell.White) {
-                        run.add(r to cc); cc++
-                    }
-                    runs.add(Run(run, cell.rightSum))
-                }
-                if (cell.downSum > 0) {
-                    val run = ArrayList<Pair<Int, Int>>()
-                    var rr = r + 1
-                    while (rr < rows && p.grid[rr][c] is KCell.White) {
-                        run.add(rr to c); rr++
-                    }
-                    runs.add(Run(run, cell.downSum))
-                }
-            }
-        }
-        // For each white cell, list runs it belongs to
-        val cellRuns = HashMap<Pair<Int, Int>, ArrayList<Int>>()
-        for ((idx, run) in runs.withIndex()) {
-            for (pos in run.cells) cellRuns.getOrPut(pos) { ArrayList() }.add(idx)
-        }
-        val whites = ArrayList<Pair<Int, Int>>()
-        for (r in 0 until rows) for (c in 0 until cols) {
-            if (p.grid[r][c] is KCell.White) whites.add(r to c)
-        }
-
-        fun runOk(runIdx: Int): Boolean {
-            val r = runs[runIdx]
-            var sum = 0; var any = false
-            val seen = HashSet<Int>()
-            for ((rr, cc) in r.cells) {
-                val v = grid[rr][cc]
-                if (v == 0) any = true
-                else {
-                    if (!seen.add(v)) return false
-                    sum += v
-                }
-            }
-            return if (any) sum < r.sum else sum == r.sum
-        }
-
-        fun bt(idx: Int): Boolean {
-            if (idx == whites.size) {
-                count++
-                return count >= CAP
-            }
-            val (r, c) = whites[idx]
-            if (grid[r][c] != 0) return bt(idx + 1)  // pre-filled
-            for (v in 1..9) {
-                grid[r][c] = v
-                var ok = true
-                for (ri in cellRuns[r to c]!!) {
-                    if (!runOk(ri)) { ok = false; break }
-                }
-                if (ok && bt(idx + 1)) {
-                    grid[r][c] = 0
-                    return true
-                }
-                grid[r][c] = 0
-            }
-            return false
-        }
-        bt(0)
-        return count
-    }
+    fun countKakuroSolutions(p: KakuroPuzzle, initial: Array<IntArray>? = null): Int =
+        KakuroSolver.countSolutions(p, initial, CAP)
 
     // ---------- Bulk verification (debug helper) ----------
 

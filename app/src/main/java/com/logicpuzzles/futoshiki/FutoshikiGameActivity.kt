@@ -1,5 +1,9 @@
 package com.logicpuzzles.futoshiki
 
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
@@ -14,8 +18,11 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.ZoomableBoardHost
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
@@ -41,18 +48,20 @@ class FutoshikiGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_FUTOSHIKI, difficulty, puzzleIndex)
-        puzzle = FutoshikiPuzzles.get(difficulty, catalogIndex)
-
-        val n = puzzle.size
-        values = Array(n) { puzzle.initial[it].copyOf() }
-        fixed = Array(n) { r -> BooleanArray(n) { c -> puzzle.initial[r][c] != 0 } }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_FUTOSHIKI, "Futoshiki d=$difficulty i=$puzzleIndex", {
+            FutoshikiPuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            puzzle = loaded
+            val n = puzzle.size
+            values = Array(n) { puzzle.initial[it].copyOf() }
+            fixed = Array(n) { r -> BooleanArray(n) { c -> puzzle.initial[r][c] != 0 } }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::puzzle.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -95,30 +104,21 @@ class FutoshikiGameActivity : AppCompatActivity() {
         })
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = getString(R.string.instruction_futoshiki, puzzle.size)
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_FUTOSHIKI,
+            if (puzzle.size > 9) {
+                getString(R.string.instruction_futoshiki_symbols)
+            } else {
+                getString(R.string.instruction_futoshiki, puzzle.size)
+            }
+        ))
 
-        val boardWrap = FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
-            )
-        }
-        boardWrap.addView(buildBoard())
-        main.addView(boardWrap)
+        main.addView(
+            ZoomableBoardHost(this, MainActivity.TYPE_FUTOSHIKI) { zoom -> buildBoard(zoom) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        )
 
-        val numpad = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setBackgroundColor(palette.surface)
-            setPadding(dp(8), dp(8), dp(8), dp(8))
-        }
-        for (n in 1..puzzle.size) numpad.addView(numBtn(n.toString()) { setValue(n) })
-        numpad.addView(numBtn("✕") { setValue(0) })
-        main.addView(numpad)
+        main.addView(buildNumpad(palette.surface))
 
         root.addView(main)
     }
@@ -130,21 +130,57 @@ class FutoshikiGameActivity : AppCompatActivity() {
             setTypeface(null, Typeface.BOLD)
             setTextColor(palette.buttonText)
             setBackgroundColor(palette.button)
-            layoutParams = LinearLayout.LayoutParams(dp(40), dp(48)).apply {
+            minWidth = 0
+            minimumWidth = 0
+            layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
                 setMargins(dp(2), 0, dp(2), 0)
             }
             setOnClickListener { onClick() }
         }
     }
 
-    private fun buildBoard(): View {
-        val accent = ThemeManager.puzzleAccent(this, MainActivity.TYPE_FUTOSHIKI)
+    private fun buildNumpad(backgroundColor: Int): View = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setBackgroundColor(backgroundColor)
+        setPadding(dp(8), dp(8), dp(8), dp(8))
+
+        addView(LinearLayout(this@FutoshikiGameActivity).apply {
+            orientation = LinearLayout.HORIZONTAL
+            for (value in 1..minOf(9, puzzle.size)) {
+                addView(numBtn(valueText(value)) { setValue(value) })
+            }
+            if (puzzle.size <= 9) addView(numBtn("X") { setValue(0) })
+        })
+
+        if (puzzle.size > 9) {
+            addView(LinearLayout(this@FutoshikiGameActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(6) }
+                for (value in 10..puzzle.size) {
+                    addView(numBtn(valueText(value)) { setValue(value) })
+                }
+                addView(numBtn("X") { setValue(0) })
+            })
+        }
+    }
+
+    private fun buildBoard(zoom: Float): View {
         val n = puzzle.size
         val displayW = resources.displayMetrics.widthPixels
+        val displayH = resources.displayMetrics.heightPixels
         val pad = dp(16)
-        val totalUnits = n + (n - 1) * 0.4f
-        val cellSize = ((displayW - 2 * pad) / totalUnits).toInt()
-        val ineqSize = (cellSize * 0.4f).toInt()
+        val available = minOf(displayW - 2 * pad, (displayH * 0.56f).toInt())
+        val geometry = FutoshikiBoardGeometry.calculate(
+            availablePx = available,
+            size = n,
+            zoom = zoom,
+            density = resources.displayMetrics.density
+        )
+        val cellSize = geometry.cellSizePx
+        val ineqSize = geometry.inequalitySizePx
 
         val board = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -160,13 +196,17 @@ class FutoshikiGameActivity : AppCompatActivity() {
             // Cell row
             val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
             for (c in 0 until n) {
-                val tv = TextView(this).apply {
+                val tv = FutoshikiCellView(
+                    context = this,
+                    cellRow = r,
+                    cellCol = c,
+                    gridStrokeWidth = geometry.gridStrokePx,
+                    regionStrokeWidth = geometry.regionStrokePx
+                ).apply {
                     gravity = Gravity.CENTER
-                    textSize = 18f
+                    textSize = geometry.fontSizeSp
                     setTypeface(null, Typeface.BOLD)
-                    layoutParams = LinearLayout.LayoutParams(cellSize, cellSize).apply {
-                        setMargins(1, 1, 1, 1)
-                    }
+                    layoutParams = LinearLayout.LayoutParams(cellSize, cellSize)
                     setOnClickListener { selectCell(r, c) }
                 }
                 cellViews[r][c] = tv
@@ -174,11 +214,7 @@ class FutoshikiGameActivity : AppCompatActivity() {
                 paintCell(r, c)
 
                 if (c < n - 1) {
-                    val sym = when (puzzle.hConstraints[r][c]) { 1 -> "<"; 2 -> ">"; else -> "" }
-                    row.addView(TextView(this).apply {
-                        text = sym; gravity = Gravity.CENTER
-                        textSize = 14f; setTypeface(null, Typeface.BOLD)
-                        setTextColor(accent)
+                    row.addView(InequalityView(this, puzzle.hConstraints[r][c], horizontal = true).apply {
                         layoutParams = LinearLayout.LayoutParams(ineqSize, cellSize)
                     })
                 }
@@ -188,11 +224,7 @@ class FutoshikiGameActivity : AppCompatActivity() {
             if (r < n - 1) {
                 val ineqRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
                 for (c in 0 until n) {
-                    val sym = when (puzzle.vConstraints[r][c]) { 1 -> "∧"; 2 -> "∨"; else -> "" }
-                    ineqRow.addView(TextView(this).apply {
-                        text = sym; gravity = Gravity.CENTER
-                        textSize = 14f; setTypeface(null, Typeface.BOLD)
-                        setTextColor(accent)
+                    ineqRow.addView(InequalityView(this, puzzle.vConstraints[r][c], horizontal = false).apply {
                         layoutParams = LinearLayout.LayoutParams(cellSize, ineqSize)
                     })
                     if (c < n - 1) {
@@ -231,7 +263,7 @@ class FutoshikiGameActivity : AppCompatActivity() {
         val isSelected = (r == selectedRow && c == selectedCol)
         val isFixed = fixed[r][c]
 
-        tv.text = if (v == 0) "" else numberText(v)
+        tv.text = if (v == 0) "" else valueText(v)
         tv.setBackgroundColor(when {
             isSelected -> palette.cellSelected
             isFixed -> palette.cellFixed
@@ -281,6 +313,20 @@ class FutoshikiGameActivity : AppCompatActivity() {
                 }
             }
         }
+        // Sudoku regions unique
+        for (boxR in 0 until n / puzzle.boxRows) {
+            for (boxC in 0 until n / puzzle.boxCols) {
+                val seen = HashSet<Int>()
+                for (r in boxR * puzzle.boxRows until (boxR + 1) * puzzle.boxRows) {
+                    for (c in boxC * puzzle.boxCols until (boxC + 1) * puzzle.boxCols) {
+                        if (!seen.add(values[r][c])) {
+                            Toast.makeText(this, "Duplicate in Sudoku region.", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                    }
+                }
+            }
+        }
         // Horizontal inequalities
         for (r in 0 until n) for (c in 0 until n - 1) {
             val a = values[r][c]; val b = values[r][c + 1]
@@ -308,5 +354,121 @@ class FutoshikiGameActivity : AppCompatActivity() {
             puzzleIndex,
             FutoshikiGameActivity::class.java
         )
+    }
+
+    private fun valueText(value: Int): String = when {
+        value <= 0 -> ""
+        value <= 9 -> numberText(value)
+        else -> ('A'.code + value - 10).toChar().toString()
+    }
+
+    private inner class FutoshikiCellView(
+        context: Context,
+        private val cellRow: Int,
+        private val cellCol: Int,
+        gridStrokeWidth: Float,
+        regionStrokeWidth: Float
+    ) : TextView(context) {
+        private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = gridStrokeWidth
+        }
+        private val regionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = regionStrokeWidth
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            val outlineColor = ThemeManager.currentPalette(this@FutoshikiGameActivity).gridLine
+            gridPaint.color = outlineColor
+            gridPaint.alpha = 128
+            regionPaint.color = outlineColor
+            regionPaint.alpha = 128
+            val gridInset = gridPaint.strokeWidth / 2f
+            canvas.drawRect(
+                gridInset,
+                gridInset,
+                width.toFloat() - gridInset,
+                height.toFloat() - gridInset,
+                gridPaint
+            )
+
+            val regionInset = regionPaint.strokeWidth / 2f
+            val right = width.toFloat() - regionInset
+            val bottom = height.toFloat() - regionInset
+            if (cellRow % puzzle.boxRows == 0) canvas.drawLine(0f, regionInset, width.toFloat(), regionInset, regionPaint)
+            if ((cellRow + 1) % puzzle.boxRows == 0) canvas.drawLine(0f, bottom, width.toFloat(), bottom, regionPaint)
+            if (cellCol % puzzle.boxCols == 0) canvas.drawLine(regionInset, 0f, regionInset, height.toFloat(), regionPaint)
+            if ((cellCol + 1) % puzzle.boxCols == 0) canvas.drawLine(right, 0f, right, height.toFloat(), regionPaint)
+        }
+    }
+
+    private inner class InequalityView(
+        context: Context,
+        private val relation: Int,
+        private val horizontal: Boolean
+    ) : View(context) {
+        private val markerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
+        }
+        private val markerPath = Path()
+
+        init {
+            contentDescription = when {
+                relation == 0 -> null
+                horizontal && relation == 1 -> "Left is less than right"
+                horizontal -> "Left is greater than right"
+                relation == 1 -> "Top is less than bottom"
+                else -> "Top is greater than bottom"
+            }
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            if (relation == 0) return
+
+            markerPaint.color = ThemeManager.puzzleAccent(
+                this@FutoshikiGameActivity,
+                MainActivity.TYPE_FUTOSHIKI
+            )
+            markerPaint.strokeWidth = maxOf(1f, minOf(width, height) * 0.12f)
+            markerPath.reset()
+
+            if (horizontal) {
+                val innerX = width * 0.28f
+                val outerX = width * 0.72f
+                val topY = height * 0.34f
+                val middleY = height * 0.5f
+                val bottomY = height * 0.66f
+                if (relation == 1) {
+                    markerPath.moveTo(outerX, topY)
+                    markerPath.lineTo(innerX, middleY)
+                    markerPath.lineTo(outerX, bottomY)
+                } else {
+                    markerPath.moveTo(innerX, topY)
+                    markerPath.lineTo(outerX, middleY)
+                    markerPath.lineTo(innerX, bottomY)
+                }
+            } else {
+                val leftX = width * 0.34f
+                val middleX = width * 0.5f
+                val rightX = width * 0.66f
+                val innerY = height * 0.28f
+                val outerY = height * 0.72f
+                if (relation == 1) {
+                    markerPath.moveTo(leftX, outerY)
+                    markerPath.lineTo(middleX, innerY)
+                    markerPath.lineTo(rightX, outerY)
+                } else {
+                    markerPath.moveTo(leftX, innerY)
+                    markerPath.lineTo(middleX, outerY)
+                    markerPath.lineTo(rightX, innerY)
+                }
+            }
+            canvas.drawPath(markerPath, markerPaint)
+        }
     }
 }

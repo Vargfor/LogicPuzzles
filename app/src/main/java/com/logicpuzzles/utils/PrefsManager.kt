@@ -8,11 +8,11 @@ class PrefsManager(context: Context) {
     private val prefs = context.getSharedPreferences("logic_puzzles_prefs", Context.MODE_PRIVATE)
 
     fun isPuzzleCompleted(type: Int, difficulty: Int, index: Int): Boolean {
-        return prefs.getBoolean("completed_${type}_${difficulty}_${index}", false)
+        return prefs.getBoolean(completionKey(type, difficulty, index), false)
     }
 
     fun markPuzzleCompleted(type: Int, difficulty: Int, index: Int) {
-        prefs.edit { putBoolean("completed_${type}_${difficulty}_${index}", true) }
+        prefs.edit { putBoolean(completionKey(type, difficulty, index), true) }
     }
 
     fun getCompletedCount(type: Int, difficulty: Int): Int {
@@ -42,32 +42,32 @@ class PrefsManager(context: Context) {
         prefs.edit { putBoolean(KEY_SKYSCRAPER_BUILDINGS, enabled) }
     }
 
-    fun resetProgressAndShuffleLevels() {
-        val retainedSettings = prefs.all.filterKeys { isRetainedSettingKey(it) }
-        val previousOrders = mutableMapOf<Pair<Int, Int>, List<Int>>()
-        for (type in 0 until PUZZLE_TYPES) {
-            for (difficulty in 0 until DIFFICULTIES) {
-                previousOrders[type to difficulty] = parseLevelOrder(type, difficulty)
-                    ?: identityOrder(type, difficulty)
-            }
-        }
+    fun isDeveloperUnlockAllLevelsAvailable(): Boolean =
+        DEVELOPER_UNLOCK_ALL_LEVELS_AVAILABLE
 
+    fun isDeveloperUnlockAllLevelsEnabled(): Boolean =
+        isDeveloperUnlockAllLevelsAvailable() &&
+            prefs.getBoolean(KEY_DEVELOPER_UNLOCK_ALL_LEVELS, false)
+
+    fun setDeveloperUnlockAllLevelsEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_DEVELOPER_UNLOCK_ALL_LEVELS, enabled) }
+    }
+
+    fun resetProgressAndShuffleLevels() {
+        resetProgressAndShuffleLevels((0 until PUZZLE_TYPES).toSet())
+    }
+
+    fun resetProgressAndShuffleLevels(selectedTypes: Set<Int>) {
+        val validTypes = selectedTypes.filter { it in 0 until PUZZLE_TYPES }.toSet()
+        if (validTypes.isEmpty()) return
         val resetSeed = System.currentTimeMillis() xor System.nanoTime()
         prefs.edit {
-            clear()
-            retainedSettings.forEach { (key, value) ->
-                when (value) {
-                    is Boolean -> putBoolean(key, value)
-                    is Float -> putFloat(key, value)
-                    is Int -> putInt(key, value)
-                    is Long -> putLong(key, value)
-                    is String -> putString(key, value)
-                    is Set<*> -> putStringSet(key, value.filterIsInstance<String>().toSet())
-                }
-            }
-            for (type in 0 until PUZZLE_TYPES) {
+            for (type in validTypes) {
                 for (difficulty in 0 until DIFFICULTIES) {
-                    val previous = previousOrders.getValue(type to difficulty)
+                    for (index in 0 until getPuzzleCount(type, difficulty)) {
+                        remove(completionKey(type, difficulty, index))
+                    }
+                    val previous = parseLevelOrder(type, difficulty) ?: identityOrder(type, difficulty)
                     val order = shuffledLevelOrder(type, difficulty, resetSeed, previous)
                     putString(levelOrderKey(type, difficulty), order.joinToString(","))
                 }
@@ -90,6 +90,8 @@ class PrefsManager(context: Context) {
         const val MASTER_UNLOCK_EXPERT_COMPLETIONS = 10
         private const val SUB_DIFFICULTY_GROUP_SIZE = 5
         private const val KEY_SKYSCRAPER_BUILDINGS = "skyscraper_buildings_enabled"
+        private const val KEY_DEVELOPER_UNLOCK_ALL_LEVELS = "developer_unlock_all_levels_enabled"
+        private const val DEVELOPER_UNLOCK_ALL_LEVELS_AVAILABLE = false
 
         @Suppress("UNUSED_PARAMETER")
         fun getPuzzleCount(type: Int, difficulty: Int): Int = when (difficulty) {
@@ -109,6 +111,13 @@ class PrefsManager(context: Context) {
         difficulty == 3 -> getCompletedCount(type, 2) >= EXPERT_UNLOCK_HARD_COMPLETIONS
         difficulty == 4 -> getCompletedCount(type, 3) >= MASTER_UNLOCK_EXPERT_COMPLETIONS
         else -> true
+    }
+
+    fun isLevelUnlocked(type: Int, difficulty: Int, index: Int): Boolean {
+        if (index !in 0 until getPuzzleCount(type, difficulty)) return false
+        if (isDeveloperUnlockAllLevelsEnabled()) return true
+        return isDifficultyUnlocked(type, difficulty) &&
+            (index == 0 || isPuzzleCompleted(type, difficulty, index - 1))
     }
 
     private fun identityOrder(type: Int, difficulty: Int): List<Int> =
@@ -165,11 +174,15 @@ class PrefsManager(context: Context) {
         return values
     }
 
+    private fun completionKey(type: Int, difficulty: Int, index: Int): String =
+        "completed_${type}_${difficulty}_${index}"
+
     private fun levelOrderKey(type: Int, difficulty: Int): String =
         "level_order_${type}_${difficulty}"
 
     private fun isRetainedSettingKey(key: String): Boolean =
         key == "color_theme" ||
             key == KEY_SKYSCRAPER_BUILDINGS ||
+            key == KEY_DEVELOPER_UNLOCK_ALL_LEVELS ||
             key.startsWith("custom_theme_")
 }

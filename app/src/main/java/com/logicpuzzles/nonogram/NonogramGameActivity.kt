@@ -3,7 +3,9 @@ package com.logicpuzzles.nonogram
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.GridLayout
@@ -16,11 +18,17 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
+import com.logicpuzzles.utils.DragPaintSession
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
+import com.logicpuzzles.utils.interpolatedGridCells
+import kotlin.math.floor
+import kotlin.math.hypot
 import kotlin.math.roundToInt
 
 class NonogramGameActivity : AppCompatActivity() {
@@ -37,12 +45,24 @@ class NonogramGameActivity : AppCompatActivity() {
     private lateinit var grid: Array<IntArray>  // 0=empty, 1=filled, 2=marked
     private lateinit var cellViews: Array<Array<TextView>>
     private lateinit var boardContainer: FrameLayout
+    private lateinit var boardGrid: GridLayout
     private lateinit var zoomPercentText: TextView
     private var rows = 5
     private var cols = 5
     private var solved = false
     private var zoomLevel = 1f
     private var themeSignature = 0
+    private var boardCellSize = 0
+    private var boardGridPadding = 0
+    private var boardRowClueColumns = 0
+    private var boardColumnClueRows = 0
+    private val dragSession = DragPaintSession<Pair<Int, Int>>()
+    private var dragStarted = false
+    private var suppressNextClick = false
+    private var downRawX = 0f
+    private var downRawY = 0f
+    private var lastDragCell: Pair<Int, Int>? = null
+    private val touchSlop by lazy { ViewConfiguration.get(this).scaledTouchSlop.toFloat() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,17 +73,20 @@ class NonogramGameActivity : AppCompatActivity() {
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
 
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_NONOGRAM, difficulty, puzzleIndex)
-        solution = NonogramPuzzles.get(difficulty, catalogIndex)
-        rows = solution.size
-        cols = solution[0].size
-        grid = Array(rows) { IntArray(cols) }
-
-        buildUi()
+        loadGamePuzzle(MainActivity.TYPE_NONOGRAM, "Nonogram d=$difficulty i=$puzzleIndex", {
+            NonogramPuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            solution = loaded
+            rows = solution.size
+            cols = solution[0].size
+            grid = Array(rows) { IntArray(cols) }
+            buildUi()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::solution.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -100,12 +123,10 @@ class NonogramGameActivity : AppCompatActivity() {
         })
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = getString(R.string.instruction_nonogram)
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_NONOGRAM,
+            getString(R.string.instruction_nonogram)
+        ))
 
         main.addView(buildZoomControls())
 
@@ -247,6 +268,11 @@ class NonogramGameActivity : AppCompatActivity() {
                 FrameLayout.LayoutParams.WRAP_CONTENT
             )
         }
+        boardGrid = gridLayout
+        boardCellSize = cellSize
+        boardGridPadding = pad
+        boardRowClueColumns = maxRowClues
+        boardColumnClueRows = maxColClues
 
         cellViews = Array(rows) { Array(cols) { TextView(this) } }
 
@@ -342,7 +368,12 @@ class NonogramGameActivity : AppCompatActivity() {
     }
 
     private fun attachCellHandlers(cell: TextView, r: Int, c: Int) {
+        cell.setOnTouchListener { view, event -> handleCellTouch(view, event, r, c) }
         cell.setOnClickListener {
+            if (suppressNextClick) {
+                suppressNextClick = false
+                return@setOnClickListener
+            }
             if (!solved) {
                 grid[r][c] = if (grid[r][c] == 1) 0 else 1
                 paintCell(r, c)
@@ -356,6 +387,69 @@ class NonogramGameActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    private fun handleCellTouch(view: View, event: MotionEvent, startRow: Int, startCol: Int): Boolean {
+        if (solved) return false
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                view.parent?.requestDisallowInterceptTouchEvent(true)
+                dragStarted = false
+                suppressNextClick = false
+                downRawX = event.rawX
+                downRawY = event.rawY
+                lastDragCell = startRow to startCol
+                dragSession.begin(targetState = grid[startRow][startCol] != 1)
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                if (!dragStarted && hypot(event.rawX - downRawX, event.rawY - downRawY) >= touchSlop) {
+                    dragStarted = true
+                    applyDragCell(startRow to startCol)
+                }
+                if (dragStarted) {
+                    val current = cellAt(event.rawX, event.rawY)
+                    val previous = lastDragCell
+                    if (current != null && previous != null) {
+                        for (target in interpolatedGridCells(previous.first, previous.second, current.first, current.second)) {
+                            applyDragCell(target)
+                        }
+                        lastDragCell = current
+                    }
+                }
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                view.parent?.requestDisallowInterceptTouchEvent(false)
+                if (dragStarted) {
+                    suppressNextClick = true
+                    view.post { suppressNextClick = false }
+                    checkWin()
+                }
+                dragSession.end()
+                lastDragCell = null
+                dragStarted = false
+            }
+        }
+        return false
+    }
+
+    private fun cellAt(rawX: Float, rawY: Float): Pair<Int, Int>? {
+        if (!::boardGrid.isInitialized || boardCellSize <= 0) return null
+        val location = IntArray(2)
+        boardGrid.getLocationOnScreen(location)
+        val gridCol = floor((rawX - location[0] - boardGridPadding) / boardCellSize).toInt()
+        val gridRow = floor((rawY - location[1] - boardGridPadding) / boardCellSize).toInt()
+        val row = gridRow - boardColumnClueRows
+        val col = gridCol - boardRowClueColumns
+        return if (row in 0 until rows && col in 0 until cols) row to col else null
+    }
+
+    private fun applyDragCell(cell: Pair<Int, Int>) {
+        val targetState = dragSession.visit(cell) ?: return
+        val (row, col) = cell
+        grid[row][col] = if (targetState) 1 else 0
+        paintCell(row, col)
     }
 
     private fun paintCell(r: Int, c: Int) {
@@ -389,10 +483,13 @@ class NonogramGameActivity : AppCompatActivity() {
     }
 
     private fun checkWin() {
-        for (r in 0 until rows) for (c in 0 until cols) {
-            val expected = solution[r][c]
-            val actual = if (grid[r][c] == 1) 1 else 0
-            if (expected != actual) return
+        for (r in 0 until rows) {
+            if (lineClues(solution[r]) != lineClues(IntArray(cols) { c -> if (grid[r][c] == 1) 1 else 0 })) return
+        }
+        for (c in 0 until cols) {
+            val expected = IntArray(rows) { r -> solution[r][c] }
+            val actual = IntArray(rows) { r -> if (grid[r][c] == 1) 1 else 0 }
+            if (lineClues(expected) != lineClues(actual)) return
         }
         solved = true
         PrefsManager(this).markPuzzleCompleted(MainActivity.TYPE_NONOGRAM, difficulty, puzzleIndex)
@@ -405,5 +502,20 @@ class NonogramGameActivity : AppCompatActivity() {
             puzzleIndex,
             NonogramGameActivity::class.java
         )
+    }
+
+    private fun lineClues(line: IntArray): List<Int> {
+        val clues = mutableListOf<Int>()
+        var run = 0
+        for (cell in line) {
+            if (cell == 1) {
+                run++
+            } else if (run > 0) {
+                clues.add(run)
+                run = 0
+            }
+        }
+        if (run > 0) clues.add(run)
+        return clues
     }
 }

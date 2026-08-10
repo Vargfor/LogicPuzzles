@@ -1,5 +1,30 @@
 package com.logicpuzzles.logicgrid
 
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.random.Random
+
+data class LogicGridConstraint(
+    val categoryA: Int,
+    val itemA: Int,
+    val categoryB: Int,
+    val itemB: Int,
+    val matches: Boolean
+)
+
+data class LogicGridClue(
+    val constraint: LogicGridConstraint
+) {
+    fun displayText(puzzle: LogicGridPuzzle): String {
+        val left = puzzle.items[constraint.categoryA][constraint.itemA]
+        val right = puzzle.items[constraint.categoryB][constraint.itemB]
+        return if (constraint.matches) {
+            "$left matches $right."
+        } else {
+            "$left does not match $right."
+        }
+    }
+}
+
 data class LogicGridPuzzle(
     val title: String,
     val description: String,
@@ -7,10 +32,12 @@ data class LogicGridPuzzle(
     val items: List<List<String>>,
     val clues: List<String>,
     // solution[entry][cat] = item index in items[cat]
-    val solution: List<List<Int>>
+    val solution: List<List<Int>>,
+    val typedClues: List<LogicGridClue> = emptyList()
 )
 
 object LogicGridPuzzles {
+    private val cache = ConcurrentHashMap<Pair<Int, Int>, LogicGridPuzzle>()
 
     // EASY: 3 categories x 3 items, many direct clues
     private val EASY by lazy {
@@ -1450,9 +1477,121 @@ object LogicGridPuzzles {
     }
 
     fun get(difficulty: Int, index: Int): LogicGridPuzzle {
-        val pool = when (difficulty) {
+        val safeDifficulty = difficulty.coerceIn(0, 4)
+        val pool = when (safeDifficulty) {
             0 -> EASY; 1 -> MEDIUM; 2 -> HARD; 3 -> EXPERT; else -> MASTER
         }
-        return pool[index.coerceIn(0, pool.size - 1)]
+        val safeIndex = index.coerceIn(0, pool.size - 1)
+        return cache.getOrPut(safeDifficulty to safeIndex) {
+            preparePuzzle(pool[safeIndex], safeDifficulty, safeIndex)
+        }
+    }
+
+    private fun preparePuzzle(template: LogicGridPuzzle, difficulty: Int, index: Int): LogicGridPuzzle {
+        val categoryCount = template.categories.size
+        val itemCount = template.items.first().size
+        val random = Random(70_001 + difficulty * 10_007 + index * 379)
+
+        val itemByEntry = Array(categoryCount) { category ->
+            if (category == 0) {
+                IntArray(itemCount) { it }
+            } else {
+                val shuffled = (0 until itemCount).toMutableList().apply { shuffle(random) }
+                if (shuffled.indices.all { shuffled[it] == it }) {
+                    val first = shuffled.removeAt(0)
+                    shuffled.add(first)
+                }
+                shuffled.toIntArray()
+            }
+        }
+        val solution = List(itemCount) { entry ->
+            List(categoryCount) { category -> itemByEntry[category][entry] }
+        }
+
+        val categoryOrder = buildList {
+            add(0)
+            addAll((1 until categoryCount).toList().shuffled(random))
+        }
+        val relationEdges = if (difficulty == 0) {
+            (1 until categoryCount).map { 0 to it }
+        } else {
+            categoryOrder.zipWithNext()
+        }
+
+        val generatedClues = buildList {
+            for ((categoryA, categoryB) in relationEdges) {
+                addAll(relationClues(solution, categoryA, categoryB, difficulty, random))
+            }
+        }.shuffled(random)
+
+        val prepared = template.copy(
+            clues = emptyList(),
+            solution = solution,
+            typedClues = generatedClues
+        )
+        return prepared.copy(
+            clues = generatedClues.mapIndexed { clueIndex, clue ->
+                "${clueIndex + 1}. ${clue.displayText(prepared)}"
+            }
+        )
+    }
+
+    private fun relationClues(
+        solution: List<List<Int>>,
+        categoryA: Int,
+        categoryB: Int,
+        difficulty: Int,
+        random: Random
+    ): List<LogicGridClue> {
+        val itemCount = solution.size
+        val entryForItemA = IntArray(itemCount)
+        for (entry in solution.indices) entryForItemA[solution[entry][categoryA]] = entry
+        val matchingItemB = IntArray(itemCount) { itemA ->
+            solution[entryForItemA[itemA]][categoryB]
+        }
+
+        val sourceOrder = (0 until itemCount).toList().shuffled(random)
+        val positiveCount = when (difficulty) {
+            0 -> itemCount - 1
+            1 -> itemCount - 2
+            2 -> 0
+            3 -> 1
+            else -> 0
+        }.coerceIn(0, itemCount - 1)
+
+        return buildList {
+            for (itemA in sourceOrder.take(positiveCount)) {
+                add(
+                    LogicGridClue(
+                        LogicGridConstraint(
+                            categoryA = categoryA,
+                            itemA = itemA,
+                            categoryB = categoryB,
+                            itemB = matchingItemB[itemA],
+                            matches = true
+                        )
+                    )
+                )
+            }
+
+            val unresolved = sourceOrder.drop(positiveCount)
+            for (sourceIndex in 0 until unresolved.lastIndex) {
+                val itemA = unresolved[sourceIndex]
+                for (targetIndex in sourceIndex + 1 until unresolved.size) {
+                    val excludedItemB = matchingItemB[unresolved[targetIndex]]
+                    add(
+                        LogicGridClue(
+                            LogicGridConstraint(
+                                categoryA = categoryA,
+                                itemA = itemA,
+                                categoryB = categoryB,
+                                itemB = excludedItemB,
+                                matches = false
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 }

@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             }
             setOnClickListener {
                 dialog?.dismiss()
-                confirmReset()
+                showResetPuzzleSelection()
             }
         })
 
@@ -157,45 +157,70 @@ class MainActivity : AppCompatActivity() {
             setPadding(dp(18), dp(10), dp(18), dp(8))
         }
 
-        val toggle = CheckBox(this).apply {
-            isChecked = prefs.isSkyscraperBuildingsEnabled()
-            buttonTintList = ColorStateList.valueOf(palette.accent)
-            setOnCheckedChangeListener { _, checked ->
-                prefs.setSkyscraperBuildingsEnabled(checked)
+        fun addToggleRow(
+            title: String,
+            description: String,
+            checked: Boolean,
+            onCheckedChanged: (Boolean) -> Unit
+        ) {
+            val toggle = CheckBox(this).apply {
+                isChecked = checked
+                buttonTintList = ColorStateList.valueOf(palette.accent)
+                setOnCheckedChangeListener { _, isChecked ->
+                    onCheckedChanged(isChecked)
+                }
             }
+
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                minimumHeight = dp(58)
+                setPadding(dp(12), dp(12), dp(8), dp(12))
+                background = roundedDrawable(palette.surface, palette.gridLine, dp(8).toFloat())
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = if (content.childCount == 0) 0 else dp(10)
+                }
+                setOnClickListener { toggle.isChecked = !toggle.isChecked }
+            }
+
+            row.addView(LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                addView(TextView(this@MainActivity).apply {
+                    text = title
+                    textSize = 14f
+                    setTypeface(null, Typeface.BOLD)
+                    setTextColor(palette.textPrimary)
+                })
+                addView(TextView(this@MainActivity).apply {
+                    text = description
+                    textSize = 12f
+                    setTextColor(palette.textSecondary)
+                    setPadding(0, dp(4), 0, 0)
+                })
+            })
+            row.addView(toggle)
+            content.addView(row)
         }
 
-        val row = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            minimumHeight = dp(58)
-            setPadding(dp(12), dp(12), dp(8), dp(12))
-            background = roundedDrawable(palette.surface, palette.gridLine, dp(8).toFloat())
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+        addToggleRow(
+            title = getString(R.string.skyscraper_display_buildings),
+            description = getString(R.string.skyscraper_display_buildings_desc),
+            checked = prefs.isSkyscraperBuildingsEnabled(),
+            onCheckedChanged = prefs::setSkyscraperBuildingsEnabled
+        )
+
+        if (prefs.isDeveloperUnlockAllLevelsAvailable()) {
+            addToggleRow(
+                title = getString(R.string.developer_unlock_all_levels),
+                description = getString(R.string.developer_unlock_all_levels_desc),
+                checked = prefs.isDeveloperUnlockAllLevelsEnabled(),
+                onCheckedChanged = prefs::setDeveloperUnlockAllLevelsEnabled
             )
-            setOnClickListener { toggle.isChecked = !toggle.isChecked }
         }
-
-        row.addView(LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            addView(TextView(this@MainActivity).apply {
-                text = getString(R.string.skyscraper_display_buildings)
-                textSize = 14f
-                setTypeface(null, Typeface.BOLD)
-                setTextColor(palette.textPrimary)
-            })
-            addView(TextView(this@MainActivity).apply {
-                text = getString(R.string.skyscraper_display_buildings_desc)
-                textSize = 12f
-                setTextColor(palette.textSecondary)
-                setPadding(0, dp(4), 0, 0)
-            })
-        })
-        row.addView(toggle)
-        content.addView(row)
 
         AlertDialog.Builder(this)
             .setTitle(R.string.settings_options)
@@ -478,12 +503,93 @@ class MainActivity : AppCompatActivity() {
             setStroke(1, stroke)
         }
 
-    private fun confirmReset() {
+    private fun showResetPuzzleSelection() {
+        val palette = ThemeManager.currentPalette(this)
+        val prefs = PrefsManager(this)
+        val density = resources.displayMetrics.density
+        fun dp(v: Int) = (v * density).toInt()
+        val selectedTypes = LinkedHashSet<Int>()
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.background)
+            setPadding(dp(18), dp(10), dp(18), dp(4))
+        }
+        content.addView(TextView(this).apply {
+            text = getString(R.string.reset_select_puzzles_desc)
+            textSize = 13f
+            setTextColor(palette.textSecondary)
+            setPadding(0, 0, 0, dp(12))
+        })
+
+        for (info in puzzleTypes) {
+            val puzzleName = getString(info.nameResId)
+            val totalCompleted = prefs.getTotalCompleted(info.type)
+            val checkbox = CheckBox(this).apply {
+                buttonTintList = ColorStateList.valueOf(ThemeManager.puzzleAccent(this@MainActivity, info.type))
+            }
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                minimumHeight = dp(54)
+                setPadding(dp(12), dp(8), dp(8), dp(8))
+                background = roundedDrawable(palette.surface, palette.gridLine, dp(8).toFloat())
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
+            }
+            row.addView(TextView(this).apply {
+                text = "$puzzleName - $totalCompleted/${PrefsManager.PUZZLES_PER_TYPE}"
+                textSize = 14f
+                setTypeface(null, Typeface.BOLD)
+                setTextColor(palette.textPrimary)
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            })
+            row.addView(checkbox)
+            fun setSelected(selected: Boolean) {
+                checkbox.isChecked = selected
+                if (selected) selectedTypes.add(info.type) else selectedTypes.remove(info.type)
+            }
+            checkbox.setOnCheckedChangeListener { _, checked ->
+                if (checked) selectedTypes.add(info.type) else selectedTypes.remove(info.type)
+            }
+            row.setOnClickListener { setSelected(!checkbox.isChecked) }
+            content.addView(row)
+        }
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.reset_select_puzzles_title)
+            .setView(ScrollView(this).apply { addView(content) })
+            .setPositiveButton(R.string.reset, null)
+            .setNegativeButton(R.string.cancel, null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if (selectedTypes.isEmpty()) {
+                    android.widget.Toast.makeText(
+                        this,
+                        getString(R.string.reset_selection_empty),
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    dialog.dismiss()
+                    confirmReset(selectedTypes.toSet())
+                }
+            }
+        }
+        dialog.show()
+    }
+
+    private fun confirmReset(selectedTypes: Set<Int>) {
+        val selectedNames = puzzleTypes
+            .filter { it.type in selectedTypes }
+            .joinToString(", ") { getString(it.nameResId) }
         AlertDialog.Builder(this)
-            .setTitle(R.string.reset_all_progress_title)
-            .setMessage(R.string.reset_all_progress_message)
+            .setTitle(R.string.reset_selected_progress_title)
+            .setMessage(getString(R.string.reset_selected_progress_message, selectedNames))
             .setPositiveButton(R.string.reset) { _, _ ->
-                PrefsManager(this).resetProgressAndShuffleLevels()
+                PrefsManager(this).resetProgressAndShuffleLevels(selectedTypes)
                 buildCards()
             }
             .setNegativeButton(R.string.cancel, null)

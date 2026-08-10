@@ -1,5 +1,7 @@
 package com.logicpuzzles.hidato
 
+import com.logicpuzzles.utils.PuzzleBoardSpecs
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -13,85 +15,92 @@ data class HidatoPuzzle(
 )
 
 object HidatoPuzzles {
+    private val cache = ConcurrentHashMap<Pair<Int, Int>, HidatoPuzzle>()
 
-    private fun build(rows: Int, cols: Int, difficulty: Int, index: Int): HidatoPuzzle {
-        val random = Random(30_000 + difficulty * 997 + index * 131)
-        val path = randomPath(rows, cols, random)
-        val maxNumber = path.size
-        val initial = Array(rows) { IntArray(cols) }
+    private fun build(side: Int, difficulty: Int, index: Int): HidatoPuzzle {
+        val random = Random(30_000 + difficulty * 10_007 + index * 131)
+        val activeCount = activeCount(side, difficulty, index)
+        val path = irregularSerpentinePath(side, activeCount, random)
+        val solution = Array(side) { IntArray(side) { -1 } }
+        val initial = Array(side) { IntArray(side) { -1 } }
 
-        val revealCount = when (difficulty) {
-            0 -> (maxNumber * 0.62f).roundToInt()
-            1 -> (maxNumber * 0.44f).roundToInt()
-            2 -> (maxNumber * 0.34f).roundToInt()
-            3 -> (maxNumber * 0.28f).roundToInt()
-            else -> (maxNumber * 0.22f).roundToInt()
-        }.coerceIn(4, maxNumber)
-
-        val solution = Array(rows) { IntArray(cols) }
         for ((position, cell) in path.withIndex()) {
             solution[cell.first][cell.second] = position + 1
+            initial[cell.first][cell.second] = 0
         }
 
-        for (number in anchorPattern(maxNumber, revealCount, random)) {
-            val cell = path[number - 1]
-            initial[cell.first][cell.second] = number
+        val revealRatio = floatArrayOf(0.58f, 0.44f, 0.34f, 0.27f, 0.22f)[difficulty]
+        val revealCount = (path.size * revealRatio).roundToInt().coerceIn(4, path.size)
+        for (number in anchorPattern(path.size, revealCount, random)) {
+            val (r, c) = path[number - 1]
+            initial[r][c] = number
         }
-        return HidatoPuzzle(rows, cols, initial, maxNumber, solution)
+
+        return HidatoPuzzle(side, side, initial, path.size, solution)
     }
 
-    private fun randomPath(rows: Int, cols: Int, random: Random): List<Pair<Int, Int>> {
-        repeat(80) { attempt ->
-            val attemptRandom = Random(random.nextInt() + attempt * 7_919)
-            val visited = Array(rows) { BooleanArray(cols) }
-            val path = ArrayList<Pair<Int, Int>>(rows * cols)
-            val start = attemptRandom.nextInt(rows) to attemptRandom.nextInt(cols)
+    private fun activeCount(side: Int, difficulty: Int, index: Int): Int {
+        val range = when (difficulty) {
+            0 -> side * side..side * side
+            1 -> 42..47
+            2 -> 68..78
+            3 -> 84..94
+            else -> 90..99
+        }
+        return range.first + positiveMod(index * 17 + difficulty * 11, range.last - range.first + 1)
+    }
 
-            fun onwardCount(r: Int, c: Int): Int {
-                var count = 0
-                for (dr in -1..1) for (dc in -1..1) {
-                    if (dr == 0 && dc == 0) continue
-                    val nr = r + dr
-                    val nc = c + dc
-                    if (nr in 0 until rows && nc in 0 until cols && !visited[nr][nc]) {
-                        count++
-                    }
+    private fun irregularSerpentinePath(
+        side: Int,
+        targetCells: Int,
+        random: Random
+    ): List<Pair<Int, Int>> {
+        if (targetCells == side * side) return fullSnake(side)
+
+        val lengths = IntArray(side) { if (it == 0) side else 2 }
+        var remaining = targetCells - lengths.sum()
+        val expandableRows = (1 until side).toMutableList()
+        while (remaining > 0) {
+            expandableRows.shuffle(random)
+            for (r in expandableRows) {
+                if (remaining == 0) break
+                if (lengths[r] < side) {
+                    lengths[r]++
+                    remaining--
                 }
-                return count
             }
-
-            fun dfs(r: Int, c: Int): Boolean {
-                visited[r][c] = true
-                path.add(r to c)
-                if (path.size == rows * cols) return true
-
-                val candidates = ArrayList<Pair<Pair<Int, Int>, Int>>()
-                for (dr in -1..1) for (dc in -1..1) {
-                    if (dr == 0 && dc == 0) continue
-                    val nr = r + dr
-                    val nc = c + dc
-                    if (nr in 0 until rows && nc in 0 until cols && !visited[nr][nc]) {
-                        candidates.add((nr to nc) to attemptRandom.nextInt(1_000))
-                    }
-                }
-                candidates.sortWith(
-                    compareBy<Pair<Pair<Int, Int>, Int>> { onwardCount(it.first.first, it.first.second) }
-                        .thenBy { it.second }
-                )
-
-                for ((cell, _) in candidates) {
-                    if (dfs(cell.first, cell.second)) return true
-                }
-
-                path.removeAt(path.lastIndex)
-                visited[r][c] = false
-                return false
-            }
-
-            if (dfs(start.first, start.second)) return path
         }
 
-        return snakeFallback(rows, cols)
+        val starts = IntArray(side)
+        val ends = IntArray(side)
+        starts[0] = 0
+        ends[0] = side - 1
+        for (r in 1 until side) {
+            val length = lengths[r]
+            if ((r - 1) % 2 == 0) {
+                val anchor = (ends[r - 1] + random.nextInt(-1, 2)).coerceIn(length - 1, side - 1)
+                ends[r] = anchor
+                starts[r] = anchor - length + 1
+            } else {
+                val anchor = (starts[r - 1] + random.nextInt(-1, 2)).coerceIn(0, side - length)
+                starts[r] = anchor
+                ends[r] = anchor + length - 1
+            }
+        }
+
+        return buildList(targetCells) {
+            for (r in 0 until side) {
+                val columns = if (r % 2 == 0) starts[r]..ends[r] else ends[r] downTo starts[r]
+                for (c in columns) add(r to c)
+            }
+        }
+    }
+
+    private fun fullSnake(side: Int): List<Pair<Int, Int>> = buildList(side * side) {
+        for (r in 0 until side) {
+            val columns = if (r % 2 == 0) 0 until side else side - 1 downTo 0
+            for (c in columns) add(r to c)
+        }
     }
 
     private fun anchorPattern(maxNumber: Int, revealCount: Int, random: Random): Set<Int> {
@@ -100,35 +109,23 @@ object HidatoPuzzles {
         val spacing = maxNumber.toFloat() / (interiorCount + 1)
         for (i in 1..interiorCount) {
             val center = (i * spacing).roundToInt().coerceIn(2, maxNumber - 1)
-            val jitter = random.nextInt(-2, 3)
-            anchors.add((center + jitter).coerceIn(2, maxNumber - 1))
+            anchors.add((center + random.nextInt(-2, 3)).coerceIn(2, maxNumber - 1))
         }
-
-        val remaining = (2 until maxNumber).toMutableList()
-        remaining.shuffle(random)
-        for (number in remaining) {
+        for (number in (2 until maxNumber).toList().shuffled(random)) {
             if (anchors.size >= revealCount) break
             anchors.add(number)
         }
         return anchors
     }
 
-    private fun snakeFallback(rows: Int, cols: Int): List<Pair<Int, Int>> {
-        val path = ArrayList<Pair<Int, Int>>(rows * cols)
-        for (r in 0 until rows) {
-            val range = if (r % 2 == 0) 0 until cols else cols - 1 downTo 0
-            for (c in range) path.add(r to c)
-        }
-        return path
-    }
+    private fun positiveMod(value: Int, modulus: Int): Int = ((value % modulus) + modulus) % modulus
 
     fun get(difficulty: Int, index: Int): HidatoPuzzle {
         val safeDifficulty = difficulty.coerceIn(0, 4)
         val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
         val safeIndex = index.coerceIn(0, maxIndex)
-        val size = when (safeDifficulty) {
-            0 -> 3; 1 -> 4; 2, 3 -> 5; else -> 6
+        return cache.getOrPut(safeDifficulty to safeIndex) {
+            build(PuzzleBoardSpecs.hidatoSide(safeDifficulty), safeDifficulty, safeIndex)
         }
-        return build(size, size, safeDifficulty, safeIndex)
     }
 }

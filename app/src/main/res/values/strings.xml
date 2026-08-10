@@ -30,13 +30,29 @@
     <string name="apply">Apply</string>
     <string name="skyscraper_display_buildings">Use building icons in Skyscraper</string>
     <string name="skyscraper_display_buildings_desc">Turn off to show numbers only.</string>
+    <string name="skyscraper_display_mode">Display</string>
+    <string name="skyscraper_display_buildings_short">Buildings</string>
+    <string name="skyscraper_display_numbers">Numbers</string>
+    <string name="developer_unlock_all_levels">Developer: unlock all levels</string>
+    <string name="developer_unlock_all_levels_desc">Makes every level playable without changing completion progress.</string>
     <string name="theme_selected">%1$s selected</string>
     <string name="reset_progress_shuffle">Reset progress and shuffle levels</string>
     <string name="reset_all_progress_title">Reset all progress?</string>
     <string name="reset_all_progress_message">This will clear every completed puzzle and reshuffle levels within each difficulty group. This cannot be undone.</string>
+    <string name="reset_select_puzzles_title">Choose puzzles to reset</string>
+    <string name="reset_select_puzzles_desc">Selected puzzle types will lose completed levels and get a fresh shuffled order. Unselected puzzle types keep progress.</string>
+    <string name="reset_selected_progress_title">Reset selected progress?</string>
+    <string name="reset_selected_progress_message">This will clear progress and reshuffle levels for: %1$s. Other puzzle types will not change.</string>
+    <string name="reset_selection_empty">Select at least one puzzle type.</string>
     <string name="reset">Reset</string>
     <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
     <string name="verifying_puzzles">Verifying puzzles&#8230; check logcat (tag: PuzzleVerifier)</string>
+    <string name="kakuro_loading">Preparing Kakuro&#8230;</string>
+    <string name="kakuro_load_failed">Could not prepare this Kakuro puzzle.</string>
+    <string name="puzzle_loading">Preparing puzzle&#8230;</string>
+    <string name="puzzle_load_failed">Could not prepare this puzzle.</string>
 
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_medium">Medium</string>
@@ -86,20 +102,73 @@
     <string name="action_check_solution">Check Solution</string>
     <string name="action_reset_puzzle">Reset Puzzle</string>
     <string name="action_submit_guess">Submit Guess</string>
+    <string name="action_how_to_play">How to play %1$s</string>
     <string name="clues">Clues</string>
     <string name="moves_count">Moves: %1$d</string>
     <string name="guesses_count">Guesses: %1$d</string>
     <string name="logic_grid_pair_header">%1$s &#8596; %2$s</string>
     <string name="mastermind_feedback">%1$d&#9679; %2$d&#9675;</string>
 
-    <string name="instruction_futoshiki">Each row &amp; column must contain 1&#8211;%1$d. Honor the &lt; &gt; inequalities.</string>
+    <string name="instruction_futoshiki">Each row, column, and region must contain 1&#8211;%1$d. Honor the &lt; &gt; inequalities.</string>
+    <string name="instruction_futoshiki_symbols">Each row, column, and region uses 1&#8211;9 and A&#8211;G. Honor the &lt; &gt; inequalities.</string>
     <string name="instruction_hidato">Fill 1&#8211;%1$d. Each next number must touch the previous (incl. diagonals).</string>
-    <string name="instruction_kakuro">Tap a cell, then a digit. Runs must sum to the clue with no repeats.</string>
+    <string name="instruction_kakuro">Tap a cell, then a digit 1&#8211;9. Clue cells show run sums; no digit repeats in a run.</string>
     <string name="instruction_lights_out">Tap a light to toggle it and its neighbors. Turn all OFF!</string>
-    <string name="instruction_mastermind">Tap a slot then a color. &#9679; = right color &amp; spot, &#9675; = right color, wrong spot.</string>
-    <string name="instruction_nonogram">Tap = fill &#9632;   Long-press = mark &#10005;</string>
+    <string name="instruction_mastermind">Choose a slot, then a swatch. Feedback is unordered: solid = exact spot; ring = right color, other spot.</string>
+    <string name="mastermind_level_details">%1$d slots  |  %2$d colors  |  %3$s</string>
+    <string name="mastermind_duplicates_allowed">duplicates allowed</string>
+    <string name="mastermind_no_duplicates">no duplicates</string>
+    <string name="instruction_nonogram">Tap or drag to fill. Start a drag on a filled cell to erase. Long-press marks X.</string>
     <string name="instruction_nurikabe">Tap or drag to shade. Each number forms an island of exactly that size. All shaded cells must connect. No 2&#215;2 shaded.</string>
-    <string name="instruction_skyscraper" tools:ignore="PluralsCandidate">Use heights 1&#8211;%1$d. Each row &amp; column includes the tallest height exactly once; lower heights may be skipped but not repeated. Outside numbers = visible buildings.</string>
-    <string name="instruction_skyscraper_with_empty_lots" tools:ignore="PluralsCandidate">Use heights 1&#8211;%1$d with one empty lot per row &amp; column. Each line includes the tallest height exactly once; filled heights cannot repeat.</string>
-    <string name="instruction_slitherlink">Tap an edge to toggle. Numbers = edges around that cell. All edges form one closed loop.</string>
+    <string name="instruction_skyscraper">Use each height 1&#8211;%1$d once per row and column. Edge clues count visible buildings; taller buildings hide shorter ones.</string>
+    <plurals name="instruction_skyscraper_with_empty_lots">
+        <item quantity="one">Use heights 1&#8211;%1$d without repeats and include %1$d once in every row and column. Mark %2$d empty lot per row and column with X. Edge clues count visible buildings; taller buildings hide shorter ones.</item>
+        <item quantity="other">Use heights 1&#8211;%1$d without repeats and include %1$d once in every row and column. Mark %2$d empty lots per row and column with X. Edge clues count visible buildings; taller buildings hide shorter ones.</item>
+    </plurals>
+    <string name="instruction_slitherlink">Tap or drag edges to draw one closed loop. Start on a drawn edge to erase. Numbers count surrounding edges.</string>
+
+    <string name="help_dialog_title">%1$s: How to play</string>
+    <string name="help_section_goal">Goal</string>
+    <string name="help_section_controls">Controls</string>
+    <string name="help_section_tip">Tip</string>
+
+    <string name="help_nonogram_goal">Fill cells so every row and column matches its ordered number clues. Each clue describes one uninterrupted run, with at least one empty cell between runs.</string>
+    <string name="help_nonogram_controls">Tap or drag to fill cells. Begin a drag on a filled cell to erase. Long-press a cell to add or remove an X mark.</string>
+    <string name="help_nonogram_tip">Start with lines whose runs and required gaps nearly fill the available length, then use completed lines to constrain their crossings.</string>
+
+    <string name="help_mastermind_goal">Crack the hidden ordered color code within the available guesses. The level details state whether the code may contain duplicate colors.</string>
+    <string name="help_mastermind_controls">Tap a slot, then choose a color swatch. Fill every slot and submit the guess. A solid feedback peg means correct color and position; a ring means correct color in another position. Feedback pegs are unordered and do not correspond to individual slots.</string>
+    <string name="help_mastermind_tip">Compare the total feedback between guesses and remember that moving a color can change both exact and misplaced counts.</string>
+
+    <string name="help_lights_out_goal">Turn every light off. Pressing one light changes that light and its orthogonal neighbors above, below, left, and right.</string>
+    <string name="help_lights_out_controls">Tap any board cell to toggle its cross-shaped group. Reset restores the starting pattern.</string>
+    <string name="help_lights_out_tip">Pressing the same cell twice cancels itself. A useful approach is to work row by row, using each row to clear the one above it.</string>
+
+    <string name="help_kakuro_goal">Fill every white cell with digits 1&#8211;9. Each horizontal and vertical run must total its clue, and a digit cannot repeat within one run.</string>
+    <string name="help_kakuro_controls">Tap a white cell, then choose a digit. Use X to clear it. Split clue cells show the sums for the runs extending right and down.</string>
+    <string name="help_kakuro_tip">List the possible digit combinations for a run from its sum and length, then use crossing runs to remove possibilities.</string>
+
+    <string name="help_logic_grid_goal">Use every clue to determine the unique one-to-one match between items in each category.</string>
+    <string name="help_logic_grid_controls">Tap a comparison cell to cycle through check, cross, and blank. A check records a confirmed match; a cross rules a match out.</string>
+    <string name="help_logic_grid_tip">Whenever one match is confirmed, cross out every other option in the same row and column before applying the next clue.</string>
+
+    <string name="help_slitherlink_goal">Draw one closed loop along grid edges. The loop cannot branch or cross, and each number states exactly how many of its surrounding edges belong to the loop.</string>
+    <string name="help_slitherlink_controls">Tap an edge to draw or erase it. Drag across edges to fill continuously; begin on a drawn edge to erase while dragging.</string>
+    <string name="help_slitherlink_tip">Resolve 0 and 3 clues early, avoid creating branches, and do not close a smaller loop while unused loop sections remain.</string>
+
+    <string name="help_nurikabe_goal">Leave one unshaded island around each number, with exactly that many cells. All shaded cells form one connected river, islands cannot touch orthogonally, and the river cannot contain a 2&#215;2 block.</string>
+    <string name="help_nurikabe_controls">Tap or drag across unnumbered cells to shade or unshade them. Numbered cells always remain part of their islands.</string>
+    <string name="help_nurikabe_tip">Shade cells between neighboring numbered islands first, and watch island sizes so they cannot grow beyond their clues.</string>
+
+    <string name="help_hidato_goal">Fill the board with consecutive numbers from 1 to the final value. Every number must touch the next one horizontally, vertically, or diagonally.</string>
+    <string name="help_hidato_controls">Tap an empty cell, enter its digits, then confirm. Use delete to correct the current entry. Fixed clues cannot be changed.</string>
+    <string name="help_hidato_tip">Work forward and backward from fixed clues. Narrow spaces between nearby clues often force the only possible route.</string>
+
+    <string name="help_futoshiki_goal">Fill each row, column, and marked region with every allowed value exactly once. Every inequality between neighboring cells must also be true.</string>
+    <string name="help_futoshiki_controls">Tap an editable cell and choose a value from the keypad. Use X to clear it. The open side of an inequality faces the larger value, while its point faces the smaller value.</string>
+    <string name="help_futoshiki_tip">Combine missing-value checks with inequality chains. Values near either end of the range are often forced by long chains.</string>
+
+    <string name="help_skyscraper_goal">Place each available building height once in every row and column. Edge clues count visible buildings from that direction because taller buildings hide shorter ones. Levels with empty lots require the stated number of X cells in each row and column.</string>
+    <string name="help_skyscraper_controls">Tap a cell and select a height or X from the keypad. Buildings and Numbers changes only how placed heights are displayed; it does not change the puzzle or its values.</string>
+    <string name="help_skyscraper_tip">The tallest building blocks everything behind it. A clue of 1 puts the tallest building first, while the maximum clue requires heights to rise from that side.</string>
 </resources>

@@ -12,14 +12,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.cyberhub.logicgames.R
 
-fun Context.difficultyName(difficulty: Int): String = getString(
+@StringRes
+internal fun difficultyNameResId(difficulty: Int): Int =
     when (difficulty) {
         0 -> R.string.difficulty_easy
         1 -> R.string.difficulty_medium
         2 -> R.string.difficulty_hard
-        else -> R.string.difficulty_expert
+        3 -> R.string.difficulty_expert
+        else -> R.string.difficulty_master
     }
-)
+
+fun Context.difficultyName(difficulty: Int): String = getString(difficultyNameResId(difficulty))
 
 fun Context.puzzleHeader(
     @StringRes puzzleNameResId: Int,

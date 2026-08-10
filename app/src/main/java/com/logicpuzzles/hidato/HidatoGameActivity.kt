@@ -15,8 +15,11 @@ import com.logicpuzzles.MainActivity
 import com.cyberhub.logicgames.R
 import com.logicpuzzles.utils.applySystemBarInsets
 import com.logicpuzzles.utils.CompletionDialogs
+import com.logicpuzzles.utils.gameInstructionRow
 import com.logicpuzzles.utils.PrefsManager
 import com.logicpuzzles.utils.ThemeManager
+import com.logicpuzzles.utils.ZoomableBoardHost
+import com.logicpuzzles.utils.loadGamePuzzle
 import com.logicpuzzles.utils.numberText
 import com.logicpuzzles.utils.puzzleHeader
 import com.logicpuzzles.utils.resetSymbolButton
@@ -43,20 +46,20 @@ class HidatoGameActivity : AppCompatActivity() {
         difficulty = intent.getIntExtra(MainActivity.EXTRA_DIFFICULTY, 0)
         puzzleIndex = intent.getIntExtra(MainActivity.EXTRA_PUZZLE_INDEX, 0)
         val catalogIndex = PrefsManager(this).getCatalogIndex(MainActivity.TYPE_HIDATO, difficulty, puzzleIndex)
-        puzzle = HidatoPuzzles.get(difficulty, catalogIndex)
-
-        values = Array(puzzle.rows) { puzzle.initial[it].copyOf() }
-        fixed = Array(puzzle.rows) { r ->
-            BooleanArray(puzzle.cols) { c -> puzzle.initial[r][c] > 0 }
+        loadGamePuzzle(MainActivity.TYPE_HIDATO, "Hidato d=$difficulty i=$puzzleIndex", {
+            HidatoPuzzles.get(difficulty, catalogIndex)
+        }) { loaded ->
+            puzzle = loaded
+            values = Array(puzzle.rows) { puzzle.initial[it].copyOf() }
+            fixed = Array(puzzle.rows) { r -> BooleanArray(puzzle.cols) { c -> puzzle.initial[r][c] > 0 } }
+            cellViews = Array(puzzle.rows) { arrayOfNulls<TextView>(puzzle.cols) }
+            buildUi()
         }
-        cellViews = Array(puzzle.rows) { arrayOfNulls<TextView>(puzzle.cols) }
-
-        buildUi()
     }
 
     override fun onResume() {
         super.onResume()
-        if (themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
+        if (::puzzle.isInitialized && themeSignature != 0 && ThemeManager.paletteSignature(this) != themeSignature) {
             buildUi()
         }
     }
@@ -99,20 +102,15 @@ class HidatoGameActivity : AppCompatActivity() {
         })
         main.addView(header)
 
-        main.addView(TextView(this).apply {
-            text = getString(R.string.instruction_hidato, puzzle.maxNumber)
-            setTextColor(palette.textSecondary)
-            textSize = 12f
-            setPadding(dp(12), 0, dp(12), dp(8))
-        })
+        main.addView(gameInstructionRow(
+            MainActivity.TYPE_HIDATO,
+            getString(R.string.instruction_hidato, puzzle.maxNumber)
+        ))
 
-        val boardWrap = FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
-            )
-        }
-        boardWrap.addView(buildBoard())
-        main.addView(boardWrap)
+        main.addView(
+            ZoomableBoardHost(this, MainActivity.TYPE_HIDATO) { zoom -> buildBoard(zoom) },
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        )
 
         // Numpad
         main.addView(buildNumpad())
@@ -120,11 +118,13 @@ class HidatoGameActivity : AppCompatActivity() {
         root.addView(main)
     }
 
-    private fun buildBoard(): View {
+    private fun buildBoard(zoom: Float): View {
         val palette = ThemeManager.currentPalette(this)
         val displayW = resources.displayMetrics.widthPixels
+        val displayH = resources.displayMetrics.heightPixels
         val pad = dp(16)
-        val cellSize = ((displayW - 2 * pad) / puzzle.cols).coerceAtMost(dp(56)).coerceAtLeast(dp(28))
+        val overview = minOf(displayW - 2 * pad, (displayH * 0.56f).toInt()) / puzzle.cols
+        val cellSize = (overview * zoom).toInt().coerceIn(dp(18), dp(96))
 
         val gl = GridLayout(this).apply {
             rowCount = puzzle.rows
@@ -144,7 +144,7 @@ class HidatoGameActivity : AppCompatActivity() {
                 } else {
                     TextView(this).apply {
                         gravity = Gravity.CENTER
-                        textSize = 16f
+                        textSize = (16f * zoom).coerceIn(10f, 28f)
                         setTypeface(null, Typeface.BOLD)
                         setOnClickListener { selectCell(r, c) }
                     }.also { cellViews[r][c] = it }

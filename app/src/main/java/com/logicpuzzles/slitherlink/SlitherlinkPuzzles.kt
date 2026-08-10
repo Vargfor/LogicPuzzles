@@ -1,5 +1,7 @@
 package com.logicpuzzles.slitherlink
 
+import com.logicpuzzles.utils.PuzzleBoardSpecs
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -13,9 +15,10 @@ data class SlitherlinkPuzzle(
 )
 
 object SlitherlinkPuzzles {
+    private val cache = ConcurrentHashMap<Pair<Int, Int>, SlitherlinkPuzzle>()
 
-    private fun build(rows: Int, cols: Int, difficulty: Int, index: Int): SlitherlinkPuzzle {
-        val random = Random(50_000 + difficulty * 1_013 + index * 193)
+    private fun build(rows: Int, cols: Int, difficulty: Int, index: Int, attempt: Int): SlitherlinkPuzzle {
+        val random = Random(50_000 + difficulty * 1_013 + index * 193 + attempt * 7_919)
         val fillRatio = when (difficulty) {
             0 -> 0.34f
             1 -> 0.42f
@@ -168,13 +171,46 @@ object SlitherlinkPuzzles {
 
     private val ORTHOGONAL = arrayOf(-1 to 0, 1 to 0, 0 to -1, 0 to 1)
 
+    private fun isSingleLoop(puzzle: SlitherlinkPuzzle): Boolean {
+        val hEdges = puzzle.solutionHEdges ?: return false
+        val vEdges = puzzle.solutionVEdges ?: return false
+        val adjacency = HashMap<Pair<Int, Int>, MutableList<Pair<Int, Int>>>()
+
+        fun connect(a: Pair<Int, Int>, b: Pair<Int, Int>) {
+            adjacency.getOrPut(a) { mutableListOf() }.add(b)
+            adjacency.getOrPut(b) { mutableListOf() }.add(a)
+        }
+
+        for (r in hEdges.indices) for (c in hEdges[r].indices) {
+            if (hEdges[r][c]) connect(r to c, r to c + 1)
+        }
+        for (r in vEdges.indices) for (c in vEdges[r].indices) {
+            if (vEdges[r][c]) connect(r to c, r + 1 to c)
+        }
+        if (adjacency.isEmpty() || adjacency.values.any { it.size != 2 }) return false
+
+        val seen = HashSet<Pair<Int, Int>>()
+        val queue = ArrayDeque<Pair<Int, Int>>()
+        queue.add(adjacency.keys.first())
+        while (queue.isNotEmpty()) {
+            val vertex = queue.removeFirst()
+            if (!seen.add(vertex)) continue
+            adjacency[vertex].orEmpty().forEach(queue::add)
+        }
+        return seen.size == adjacency.size
+    }
+
     fun get(difficulty: Int, index: Int): SlitherlinkPuzzle {
         val safeDifficulty = difficulty.coerceIn(0, 4)
         val maxIndex = when (safeDifficulty) { 0 -> 14; 1 -> 24; 2 -> 34; 3 -> 44; else -> 54 }
         val safeIndex = index.coerceIn(0, maxIndex)
-        val size = when (safeDifficulty) {
-            0 -> 5; 1 -> 6; 2 -> 7; 3 -> 8; else -> 9
+        val size = PuzzleBoardSpecs.slitherlinkSide(safeDifficulty)
+        return cache.getOrPut(safeDifficulty to safeIndex) {
+            repeat(64) { attempt ->
+                val puzzle = build(size, size, safeDifficulty, safeIndex, attempt)
+                if (isSingleLoop(puzzle)) return@getOrPut puzzle
+            }
+            error("Unable to construct a single Slitherlink loop d=$safeDifficulty i=$safeIndex")
         }
-        return build(size, size, safeDifficulty, safeIndex)
     }
 }
